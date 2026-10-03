@@ -1,18 +1,18 @@
-# Pocket Ops v0.2.0 검증 보고서
+# Pocket Ops v0.2.1 검증 보고서
 
 검증일: 2026-10-04 (KST). 실행 파일은 단일 `pocket-ops.html`입니다.
 
 | 범위 | 환경 | 통과 | 실패 |
 |---|---|---:|---:|
-| 순수 변환·명령어 데이터·보안 회귀 | Node v22.17.0, Windows PowerShell 구문 분석 | 96 | 0 |
-| 오프라인 UI·보안·배포·로컬 파일 | Chrome 154.0.8037.95, Playwright 1.63.0 | 84 | 0 |
+| 순수 변환·명령어 데이터·보안 회귀 | Node v22.17.0, Windows PowerShell 구문 분석 | 98 | 0 |
+| 오프라인 UI·보안·배포·로컬 파일 | Chrome 154.0.8037.95, Playwright 1.63.0 | 86 | 0 |
 | 완성 HTML·CSP·배포 원본 일치 | Python 표준 라이브러리 | 14 | 0 |
-| 합계 | 자동 검사 항목 수 | 194 | 0 |
+| 합계 | 자동 검사 항목 수 | 198 | 0 |
 
-HTML: 540,548 bytes. ZIP: 558,314 bytes.
+HTML: 542,800 bytes. ZIP: 561,222 bytes.
 
-- HTML SHA-256: `4cdf075b05698c738c83c48cf7f3ad3b4a8af92e4bf45d1bc2cd989bea1409cf`
-- ZIP SHA-256: `ba3183e8492901097c3353affbcef84e283b19abccedee87aea83b10a0fd5a64`
+- HTML SHA-256: `508606b136a8d435a73ba1ce404d7d42e6eb65868cbc656d977dd25d245f53f2`
+- ZIP SHA-256: `f3cbe6e3e503d52d177fcaeb9efcf537f36af617b4cfa85cb0db393b230fa3eb`
 
 상세 결과는 `tests/core-results.json`, `tests/browser-results.json`, `tests/static-results.json`에 있습니다. 별도로 Bash 96개와 PowerShell 19개 명령의 구문을 파싱했습니다. 카탈로그 명령을 실행하거나 서버·DB에 접속하지 않았습니다. DB의 SQL 예제 6개는 해당 DB 엔진에 실행 검증하지 않았습니다.
 
@@ -40,7 +40,7 @@ JSON 큰 정수·소수 표기·중복 키 보존, 텍스트 CRLF 다운로드, 
 
 주 UI 검사는 오프라인 `page.set_content` 컨텍스트에서 수행했습니다. 여기서는 보안 컨텍스트와 Web Crypto가 없으므로 제한 안내를 시험했습니다. 주 설정 저장과 클립보드 payload 검사는 명시적인 대역을 사용했습니다. **OS 클립보드, 브라우저 완전 종료 뒤 저장소 지속성, 기관 작업 PC 정책의 성공까지 검증한 것은 아닙니다.** 화면 미리보기의 정상 저장소 표시는 메모리 저장소 대역이며 제품에 포함되지 않습니다.
 
-검사 워크플로에서 관측한 HTTP(S) 요청은 0건, 주 페이지의 미처리 JavaScript 예외는 0건입니다. CSP 해시·외부 리소스 부재도 검사했습니다. 브라우저/OS 전체를 패킷 캡처한 결과나 보안 인증은 아닙니다.
+검사 워크플로에서 관측한 HTTP(S) 요청은 0건, 전체 시험 페이지의 미처리 JavaScript 예외는 0건입니다. CSP 해시·외부 리소스 부재도 검사했습니다. 브라우저/OS 전체를 패킷 캡처한 결과나 보안 인증은 아닙니다.
 
 390px 모바일 주요 화면의 가로 넘침을 검사하고 밝은/어두운 화면과 모바일 검색 버튼을 육안 확인했습니다. 자동 검사는 모든 입력 조합, 모든 서버 버전, 기관 보안 승인을 대신하지 않습니다.
 
@@ -49,3 +49,9 @@ JSON 큰 정수·소수 표기·중복 키 보존, 텍스트 CRLF 다운로드, 
 ## 재현 경로
 
 개발 PC의 시작 메뉴 → PowerShell → 저장소 폴더에서 `python make_data.py`, `python build.py`, `node tests/core.test.cjs`, `python tests/static_test.py`를 실행합니다. Python Playwright를 준비한 승인된 개발 환경에서는 `$env:CHROMIUM_PATH`를 설치된 Chrome/Edge 실행파일로 지정한 뒤 `python tests/browser_test.py`를 실행합니다. 상세 경로와 제한은 AGENTS.md를 참고하세요. 배포 HTML에는 개발용 Python·Node·Playwright가 필요하지 않습니다.
+
+## v0.2.1 추가 검사
+
+SQL 컬럼 512자 및 최종 결과 2,000,000자 제한을 반복 IN 묶음과 작은따옴표 확장 입력으로 검증했습니다. 공통 즐겨찾기에서 삭제한 항목이 캐시된 명령어 즐겨찾기 필터에도 바로 반영되는지 확인했습니다. 미지원 디코더 대역에서는 빈 파일 저장을 막고, 실제 정상 빈 파일은 그대로 저장합니다. 별도 개발용 재현 검사에서 설정 화면 반복 진입의 콜백 누적 해소와 지연된 설정 가져오기 후 입력 비우기도 확인했습니다.
+
+GitHub → Actions → Verify offline release에서 Windows 검증을 확인할 수 있습니다. 소스를 재생성·빌드했을 때 커밋한 HTML·ZIP·체크섬과 차이가 있으면 실패합니다. 이후 코어, 정적 검사와 오프라인 브라우저 검사를 실행합니다.

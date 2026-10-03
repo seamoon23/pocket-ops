@@ -19,6 +19,7 @@ PASS Route favorites
 PASS 121 built-in commands visible
 PASS Environment tabs match catalog and expose DB editor guidance
 PASS Alternative command opens an independent reviewed choice
+PASS Returning to cached command favorites reflects changes in shared favorites
 PASS Situation search for port
 PASS Port template and invalid port guard
 PASS Changing command requires acknowledgment and PID
@@ -27,6 +28,7 @@ PASS Reject option-like paths and quote shell metacharacters
 PASS Custom command creation and inert HTML text
 PASS CP949 extended Hangul file decode and UTF8 BOM export
 PASS UTF16 BOM autodetection
+PASS Decoder failure cannot export empty output; valid empty file can (decoder double)
 PASS Mojibake repair sample
 PASS Lossy replacement string rejected
 PASS Codec UI roundtrip url
@@ -77,9 +79,9 @@ PASS Mobile 390px layout encoding
 PASS Mobile 390px layout unicode
 PASS Mobile 390px layout sql
 PASS Mobile 390px layout settings
-PASS No uncaught browser errors
-PASS Zero HTTP(S) requests during offline workflow
 PASS Settings-only storage writes (test double)
 PASS Missing Crypto does not prevent settings and backup access
 PASS Local file open, real SHA256, ZIP save/reopen and storage reload
-BROWSER SUMMARY 84 passed, 0 failed
+PASS No uncaught browser errors across all tested pages
+PASS Zero HTTP(S) requests across full offline workflow and reopened pages
+BROWSER SUMMARY 86 passed, 0 failed

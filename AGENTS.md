@@ -42,6 +42,8 @@ python tests/browser_test.py
 
 The core suite targets Node 22+. The browser suite requires the Python Playwright package and an approved Chromium installation only on the development machine. Set `CHROMIUM_PATH` if `/usr/bin/chromium` is not correct. On Windows PowerShell, set `$env:CHROMIUM_PATH` to the approved Chrome/Edge executable, then run the Python script. Never modify enterprise browser policy to run a test.
 
+GitHub → Actions → Verify offline release runs these checks on a Windows runner for pushes and pull requests. It first regenerates the catalog/HTML/ZIP and rejects differences from the committed artifacts. Official actions use pinned commits and read-only repository permission; no secrets or automatic release publishing are needed.
+
 The browser suite uses `page.set_content` in an offline context and a separate `file://` smoke test. A policy block is recorded without changing policy. Read the current report for local file-open, save/reopen and storage-reload results. Storage and clipboard test doubles are explicitly labeled; do not report them as verified OS integration. Do an additional manual file-open/copy/save/reopen check on the target authorized PC.
 
 Node's ICU EUC-KR decoder in the tested runtime did not map some Windows-949 extension bytes the same way as Chromium. Therefore common EUC-KR is tested in Node and extended CP949 is checked with real Chromium TextDecoder plus file read/export fixtures. Preserve that distinction.

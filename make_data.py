@@ -204,5 +204,5 @@ tools=[
 ('regex','정규식 실험실','매치와 캡처를 확인하는 작은 테스트 공간.','regex','rose','데이터 작업','MATCH · CAPTURE','regex 정규식 regexp 검색 패턴 매칭')
 ]
 tool_data=[dict(zip(['id','title','desc','icon','color','group','tag','keywords'],x)) for x in tools]
-Path(__file__).resolve().parent.joinpath('src/data.js').write_text('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.2.0',commands=commands,params=params,tools=tool_data),ensure_ascii=False,indent=2)+';\n',encoding='utf-8')
+Path(__file__).resolve().parent.joinpath('src/data.js').write_text('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.2.1',commands=commands,params=params,tools=tool_data),ensure_ascii=False,indent=2)+';\n',encoding='utf-8')
 print('Commands:',len(commands),'Tools:',len(tools))

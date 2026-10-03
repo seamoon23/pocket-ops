@@ -1,0 +1,50 @@
+name: Verify offline release
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    env:
+      PYTHONIOENCODING: utf-8
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+      - name: Regenerate catalog
+        run: python make_data.py
+      - name: Rebuild HTML and ZIP
+        run: python build.py
+      - name: Require committed artifacts to match source
+        run: git diff --exit-code -- src/data.js pocket-ops.html 'pocket-ops-v*.zip' SHA256SUMS.txt
+      - name: Core and PowerShell parsing checks
+        run: node tests/core.test.cjs
+      - name: CSP and release integrity checks
+        run: python tests/static_test.py
+      - name: Install development-only browser tests
+        run: python -m pip install playwright==1.63.0
+      - name: Install test browser
+        run: python -m playwright install chromium
+      - name: Offline browser and file-open checks
+        run: |
+          $env:CHROMIUM_PATH = python -c "from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()"
+          python tests/browser_test.py

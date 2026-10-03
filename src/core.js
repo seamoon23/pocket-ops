@@ -106,12 +106,12 @@ function cleanText(text,options={}){
  const ending=options.eol==='crlf'?'\r\n':'\n';return arr.join(ending);
 }
 function makeSql(text,column='ITEM_ID',kind='string',chunk=1000,unique=true,trim=true){
- limit(text,1_000_000);if(!/^[A-Za-z_][\w$#]*(?:\.[A-Za-z_][\w$#]*)*$/.test(column))fail('컬럼명은 영문·숫자·_·$·# 및 점(.)만 사용하며 숫자로 시작할 수 없습니다.');
+ limit(text,1_000_000);limit(column,512);if(!/^[A-Za-z_][\w$#]*(?:\.[A-Za-z_][\w$#]*)*$/.test(column))fail('컬럼명은 영문·숫자·_·$·# 및 점(.)만 사용하며 숫자로 시작할 수 없습니다.');
  if(!Number.isInteger(chunk)||chunk<1||chunk>1000)fail('묶음 크기는 1~1000 정수로 지정하세요.');
  let vals=lines(text);if(trim)vals=vals.map(x=>x.trim());vals=vals.filter(x=>x!=='');if(unique)vals=Array.from(new Set(vals));
  if(!vals.length)fail('값을 한 줄에 하나씩 입력하세요. 빈 IN 절은 만들지 않습니다.');if(vals.length>20_000)fail('값은 20,000개 이하로 나누어 주세요.');
  const quoted=vals.map(v=>{if(kind==='number'){if(!/^[+\-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+\-]?\d+)?$/.test(v))fail('숫자 형식이 아닌 값: '+v.slice(0,80));return v;}if(/[\\\u0000-\u001f\u007f]/.test(v))fail('문자열의 역슬래시·제어문자는 DB 설정에 따라 다르게 해석되어 지원하지 않습니다. 해당 값에는 바인드 변수를 사용하세요.');return "'"+v.replace(/'/g,"''")+"'";});
- const groups=[];for(let i=0;i<quoted.length;i+=chunk){const part=quoted.slice(i,i+chunk),rows=[];for(let j=0;j<part.length;j+=6)rows.push('  '+part.slice(j,j+6).join(', '));groups.push(column+' IN (\n'+rows.join(',\n')+'\n)');}
+ const groups=[];let size=quoted.length>chunk?4:0;for(let i=0;i<quoted.length;i+=chunk){const part=quoted.slice(i,i+chunk),rows=[];for(let j=0;j<part.length;j+=6)rows.push('  '+part.slice(j,j+6).join(', '));const group=column+' IN (\n'+rows.join(',\n')+'\n)';size+=group.length+(groups.length?4:0);if(size>2_000_000)fail('SQL 결과가 2,000,000자를 넘습니다. 값을 나누거나 묶음 크기를 늘려 주세요.');groups.push(group);}
  return {sql:groups.length===1?groups[0]:'(\n'+groups.join('\nOR\n')+'\n)',count:vals.length,groups:groups.length};
 }
 function diffLines(before,after,ignoreSpace=false){

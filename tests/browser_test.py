@@ -26,17 +26,17 @@ def contains(text, part):
 with sync_playwright() as p:
     browser=p.chromium.launch(executable_path=os.environ.get('CHROMIUM_PATH','/usr/bin/chromium'),headless=True,args=['--disable-dev-shm-usage'])
     context=browser.new_context(viewport={'width':1440,'height':1050},device_scale_factor=1,offline=True,accept_downloads=True)
-    page=context.new_page();page.set_default_timeout(4000)
     errors=[];requests=[]
-    page.on('pageerror',lambda e:errors.append(str(e)))
+    context.on('page',lambda p:p.on('pageerror',lambda e:errors.append(str(e))))
     context.on('request',lambda r:requests.append(r.url))
+    page=context.new_page();page.set_default_timeout(4000)
     page.on('dialog',lambda d:d.accept())
     page.set_content(HTML,wait_until='load')
     capabilities=page.evaluate('({secureContext:isSecureContext,webCrypto:!!crypto.subtle,worker:!!window.Worker,protocol:location.protocol})')
     def go(name):
         if page.locator('#modal[open]').count(): page.locator('#modal [data-close]').click()
         if page.locator('#palette[open]').count(): page.keyboard.press('Escape')
-        if page.viewport_size['width'] < 800: page.locator('#mobile-menu').click()
+        if page.viewport_size['width'] < 800 and page.locator('#mobile-menu').get_attribute('aria-expanded')!='true': page.locator('#mobile-menu').click()
         page.locator('#sidebar [data-go="'+name+'"]').first.click()
     def v(selector): return page.locator(selector).input_value()
     def txt(selector): return page.locator(selector).inner_text()
@@ -69,6 +69,13 @@ with sync_playwright() as p:
         contains(txt('#modal'),'실행 조건')
         click('#modal [data-close]')
     check('Alternative command opens an independent reviewed choice',alternative_command)
+    def cached_favorites():
+        page.locator('#command-favorites').check();before=page.locator('.command-card').count()
+        target=page.locator('#command-list [data-cmd-star]').first.get_attribute('data-cmd-star')
+        go('favorites');click('[data-cmd-star="'+target+'"]');go('commands')
+        equal(page.locator('.command-card').count(),before-1)
+        page.locator('#command-favorites').uncheck();click('[data-cmd-star="'+target+'"]')
+    check('Returning to cached command favorites reflects changes in shared favorites',cached_favorites)
     check('Situation search for port',lambda:(fill('#command-query','포트'),contains(txt('#command-list'),'포트')))
     def command_builder():
         fill('#command-query','');click('[data-command="cmd-044"]');fill('#param-PORT','8111');contains(v('#command-preview'),':8111');fill('#param-PORT','65536');assert page.locator('#copy-command').is_disabled();click('#modal [data-close]')
@@ -97,6 +104,22 @@ with sync_playwright() as p:
         page.locator('#encoding-file').set_input_files({'name':'utf16.txt','mimeType':'text/plain','buffer':'한글 UTF16'.encode('utf-16')})
         expect(page.locator('#encoding-output')).to_have_value('한글 UTF16');equal(v('#file-charset'),'utf-16le')
     check('UTF16 BOM autodetection',encoding_utf16)
+    def unavailable_decoder_export():
+        limited=context.new_page();limited.set_content(HTML,wait_until='load')
+        limited.locator('#sidebar [data-go="encoding"]').click()
+        limited.locator('#encoding-file').set_input_files({'name':'input.txt','mimeType':'text/plain','buffer':b'original'})
+        expect(limited.locator('#encoding-output')).to_have_value('original')
+        limited.evaluate("() => {window.__decoder=TextDecoder;window.TextDecoder=class {constructor(label,opts){if(label==='euc-kr')throw new Error('decoder unavailable');return new window.__decoder(label,opts)}}}")
+        limited.locator('#file-charset').select_option('euc-kr')
+        downloads=[];limited.on('download',lambda d:downloads.append(d))
+        limited.locator('#encoding-save').click();limited.wait_for_timeout(150)
+        equal(len(downloads),0);expect(limited.locator('#encoding-output')).to_have_value('')
+        limited.evaluate('() => { window.TextDecoder=window.__decoder; }')
+        limited.locator('#encoding-file').set_input_files({'name':'empty.txt','mimeType':'text/plain','buffer':b''})
+        expect(limited.locator('#encoding-file-status')).to_contain_text('읽었습니다')
+        with limited.expect_download() as d: limited.locator('#encoding-save').click()
+        equal(Path(d.value.path()).read_bytes(),b'');limited.close()
+    check('Decoder failure cannot export empty output; valid empty file can (decoder double)',unavailable_decoder_export)
     check('Mojibake repair sample',lambda:(click('#repair-sample'),click('#repair-run'),contains(v('#repair-output'),'안녕하세요')))
     check('Lossy replacement string rejected',lambda:(fill('#repair-input','�'),click('#repair-run'),equal(v('#repair-output'),''),contains(txt('#repair-status'),'복구할 수 없습니다')))
     go('codec')
@@ -248,9 +271,6 @@ with sync_playwright() as p:
         check('Mobile 390px layout '+route,mobile_layout)
     go('home');page.screenshot(path=str(PREVIEWS/'preview-mobile.png'),full_page=False)
     page.set_viewport_size({'width':1440,'height':1050})
-    check('No uncaught browser errors',lambda:equal(errors,[]))
-    external=[u for u in requests if u.startswith(('http:','https:'))]
-    check('Zero HTTP(S) requests during offline workflow',lambda:equal(external,[]))
     # Settings persistence test doubles are separate from real origin tests above.
     normal=context.new_page();normal.set_default_timeout(4000)
     normal.evaluate("""() => { const m=new Map();window.__store=m;Object.defineProperty(window,'localStorage',{configurable:true,value:{getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,String(v)),removeItem:k=>m.delete(k)}}); }""")
@@ -304,6 +324,9 @@ with sync_playwright() as p:
             file_smoke['download_reopen_hash_storage_reload']='passed'
         check('Local file open, real SHA256, ZIP save/reopen and storage reload',local_file_flow)
     local.close()
+    check('No uncaught browser errors across all tested pages',lambda:equal(errors,[]))
+    external=[u for u in requests if u.startswith(('http:','https:'))]
+    check('Zero HTTP(S) requests across full offline workflow and reopened pages',lambda:equal(external,[]))
     report={'browser':browser.version,'capabilities':capabilities,'method':'Offline set_content plus separate local file smoke; browser policy unchanged','file_smoke':file_smoke,'storage_clipboard':'Main persistence and clipboard payload checks use explicitly labeled doubles. File smoke storage, when available, uses real origin and reload, not OS clipboard or browser restart.','external_http_requests':external,'pageerrors':errors,'total':len(RESULTS),'passed':sum(x['pass'] for x in RESULTS),'failed':sum(not x['pass'] for x in RESULTS),'results':RESULTS}
     (ROOT/'tests/browser-results.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
     print('BROWSER SUMMARY',report['passed'],'passed,',report['failed'],'failed')

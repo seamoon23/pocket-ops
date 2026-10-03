@@ -1,7 +1,7 @@
 {
   "environment": "v22.17.0",
-  "total": 96,
-  "passed": 96,
+  "total": 98,
+  "passed": 98,
   "failed": 0,
   "results": [
     {
@@ -214,6 +214,14 @@
     },
     {
       "name": "SQL rejects DB-dependent backslash quoting and controls",
+      "pass": true
+    },
+    {
+      "name": "SQL column and repeated group output are bounded",
+      "pass": true
+    },
+    {
+      "name": "SQL quote expansion is bounded without truncation",
       "pass": true
     },
     {

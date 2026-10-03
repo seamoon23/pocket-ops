@@ -71,3 +71,8 @@ SQL은 해당 DB에 이미 접속한 승인된 클라이언트의 쿼리 창에�
 ## 해석 주의
 
 이 버전은 위 API와 문법의 일부만 구현합니다. 이름이 비슷하더라도 모든 인코딩·모든 크론 문법·모든 셸·모든 브라우저를 지원한다는 뜻이 아닙니다. 실제 지원 범위는 README와 화면의 안내를 따르세요.
+
+## 개발용 자동 검증
+
+- GitHub 공식 [checkout](https://github.com/actions/checkout), [setup-node](https://github.com/actions/setup-node), [setup-python](https://github.com/actions/setup-python): v6 참조의 커밋 SHA를 2026-10-04 확인하여 워크플로에 고정했습니다.
+- [.github/workflows/verify.yml](.github/workflows/verify.yml)은 Windows 개발 러너에서만 실행됩니다. 내려받은 테스트 라이브러리는 배포 HTML에 포함되지 않습니다.

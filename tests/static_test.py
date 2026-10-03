@@ -21,6 +21,7 @@ release=ROOT/('pocket-ops-v'+recipe['version']+'.zip')
 with zipfile.ZipFile(release) as archive:
     release_valid=archive.testzip() is None and archive.read('pocket-ops.html')==(ROOT/'pocket-ops.html').read_bytes()
     release_names=archive.namelist()
+sums=dict(line.split('  ',1)[::-1] for line in (ROOT/'SHA256SUMS.txt').read_text().splitlines())
 checks={
     'CSP hash matches embedded script': f"script-src 'sha256-{actual}'" in html,
     'Exactly one self-contained script': html.count('<script>')==1,
@@ -35,7 +36,7 @@ checks={
     'Release recipe reproduces exact build bytes': recipe['template'].replace('__RELEASE_PAYLOAD__',payload).encode()==(ROOT/'pocket-ops.html').read_bytes(),
     'Release archive CRC and HTML bytes match': release_valid,
     'Release contains only reviewed artifact and guides': set(release_names)=={'pocket-ops.html','START_HERE.txt','README_KO.md','CHANGELOG.md'},
-    'SHA256SUMS covers matching HTML and ZIP': all(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest for digest,name in (line.split('  ',1) for line in (ROOT/'SHA256SUMS.txt').read_text().splitlines())),
+    'SHA256SUMS covers matching HTML and ZIP': set(sums)=={'pocket-ops.html',release.name} and all(hashlib.sha256((ROOT/name).read_bytes()).hexdigest()==digest for name,digest in sums.items()),
 }
 report={'total':len(checks),'passed':sum(checks.values()),'failed':sum(not x for x in checks.values()),'results':checks}
 (ROOT/'tests/static-results.json').write_text(json.dumps(report,indent=2),encoding='utf-8')

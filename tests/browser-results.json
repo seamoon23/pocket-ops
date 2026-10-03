@@ -20,8 +20,8 @@
   "storage_clipboard": "Main persistence and clipboard payload checks use explicitly labeled doubles. File smoke storage, when available, uses real origin and reload, not OS clipboard or browser restart.",
   "external_http_requests": [],
   "pageerrors": [],
-  "total": 84,
-  "passed": 84,
+  "total": 86,
+  "passed": 86,
   "failed": 0,
   "results": [
     {
@@ -109,6 +109,10 @@
       "pass": true
     },
     {
+      "name": "Returning to cached command favorites reflects changes in shared favorites",
+      "pass": true
+    },
+    {
       "name": "Situation search for port",
       "pass": true
     },
@@ -138,6 +142,10 @@
     },
     {
       "name": "UTF16 BOM autodetection",
+      "pass": true
+    },
+    {
+      "name": "Decoder failure cannot export empty output; valid empty file can (decoder double)",
       "pass": true
     },
     {
@@ -341,14 +349,6 @@
       "pass": true
     },
     {
-      "name": "No uncaught browser errors",
-      "pass": true
-    },
-    {
-      "name": "Zero HTTP(S) requests during offline workflow",
-      "pass": true
-    },
-    {
       "name": "Settings-only storage writes (test double)",
       "pass": true
     },
@@ -358,6 +358,14 @@
     },
     {
       "name": "Local file open, real SHA256, ZIP save/reopen and storage reload",
+      "pass": true
+    },
+    {
+      "name": "No uncaught browser errors across all tested pages",
+      "pass": true
+    },
+    {
+      "name": "Zero HTTP(S) requests across full offline workflow and reopened pages",
       "pass": true
     }
   ]
