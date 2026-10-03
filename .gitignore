@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+node_modules/
+test-results/
+playwright-report/
+.test-deps/
+.test-artifacts/
+# Keep the delivered HTML and reviewed source. Do not commit internal data.
+private/
+local-data/
+pocket-ops-settings*.json

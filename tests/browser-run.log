@@ -1,0 +1,85 @@
+PASS Home has 14 tools
+PASS Unavailable opaque-origin storage is explained
+PASS Route commands
+PASS Route encoding
+PASS Route codec
+PASS Route json
+PASS Route text
+PASS Route diff
+PASS Route logs
+PASS Route sql
+PASS Route unicode
+PASS Route time
+PASS Route chmod
+PASS Route cron
+PASS Route hash
+PASS Route regex
+PASS Route settings
+PASS Route favorites
+PASS 121 built-in commands visible
+PASS Environment tabs match catalog and expose DB editor guidance
+PASS Alternative command opens an independent reviewed choice
+PASS Situation search for port
+PASS Port template and invalid port guard
+PASS Changing command requires acknowledgment and PID
+PASS Changing reviewed command parameters requires a fresh acknowledgment
+PASS Reject option-like paths and quote shell metacharacters
+PASS Custom command creation and inert HTML text
+PASS CP949 extended Hangul file decode and UTF8 BOM export
+PASS UTF16 BOM autodetection
+PASS Mojibake repair sample
+PASS Lossy replacement string rejected
+PASS Codec UI roundtrip url
+PASS Codec UI roundtrip base64
+PASS Codec UI roundtrip hex
+PASS Codec UI roundtrip unicode
+PASS Codec UI roundtrip html
+PASS Codec UI error clears previous output
+PASS JSON UI large integer token preservation
+PASS JSON invalid input error
+PASS JSON validation avoids unnecessary pretty-print output expansion
+PASS Inputs survive tool navigation in memory
+PASS Editing JSON source invalidates the previous result
+PASS Text dedupe and actual CRLF download
+PASS Diff UI marks additions and deletions
+PASS Diff input edits invalidate previous comparison
+PASS Log fixed-string matching with context
+PASS SQL quote escaping and dedupe UI
+PASS SQL 1001 values generate OR groups
+PASS SQL rejects ambiguous backslash and clears previous output
+PASS Invisible character inspection
+PASS ASCII 0..127
+PASS Reverse Unicode codes
+PASS Surrogate scalar rejected
+PASS Epoch0 KST and UTC output
+PASS Chmod calculator and warning
+PASS Cron explicit KST future dates
+PASS Cron invalid sixth field rejected
+PASS Hash computes or explicitly reports missing WebCrypto
+PASS Regex actual Worker matching
+PASS Regex zero-width Unicode matches terminate
+PASS Regex catastrophic backtracking killed; UI responsive
+PASS Regex capture amplification stops at a bounded output size
+PASS Outdated regex errors cannot replace a newer result
+PASS Keyboard command palette
+PASS Clipboard failure offers manual selected text
+PASS Clipboard fallback payload (test double)
+PASS Settings backup excludes working inputs
+PASS Release excludes working data and reopens into identical repeatable ZIP
+PASS Invalid backup version rejected
+PASS Imported commands cannot claim trusted read-only risk
+PASS Clear inputs preserves settings, clears working text
+PASS Recommended tools link to matching environment and shared favorites
+PASS Valid backup larger than 2MiB exports and imports without loss
+PASS Mobile 390px layout home
+PASS Mobile 390px layout commands
+PASS Mobile 390px layout encoding
+PASS Mobile 390px layout unicode
+PASS Mobile 390px layout sql
+PASS Mobile 390px layout settings
+PASS No uncaught browser errors
+PASS Zero HTTP(S) requests during offline workflow
+PASS Settings-only storage writes (test double)
+PASS Missing Crypto does not prevent settings and backup access
+PASS Local file open, real SHA256, ZIP save/reopen and storage reload
+BROWSER SUMMARY 84 passed, 0 failed

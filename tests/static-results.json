@@ -1,0 +1,21 @@
+{
+  "total": 14,
+  "passed": 14,
+  "failed": 0,
+  "results": {
+    "CSP hash matches embedded script": true,
+    "Exactly one self-contained script": true,
+    "No remote src or href resource": true,
+    "No inline event attributes": true,
+    "No duplicate shell element IDs": true,
+    "No build placeholders left": true,
+    "Network connections explicitly blocked": true,
+    "No unsafe-eval permission": true,
+    "No font assets": true,
+    "Script element cannot be closed by catalog strings": true,
+    "Release recipe reproduces exact build bytes": true,
+    "Release archive CRC and HTML bytes match": true,
+    "Release contains only reviewed artifact and guides": true,
+    "SHA256SUMS covers matching HTML and ZIP": true
+  }
+}

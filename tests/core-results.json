@@ -1,0 +1,392 @@
+{
+  "environment": "v22.17.0",
+  "total": 96,
+  "passed": 96,
+  "failed": 0,
+  "results": [
+    {
+      "name": "base64 roundtrip \"\"",
+      "pass": true
+    },
+    {
+      "name": "base64 roundtrip \"abc\"",
+      "pass": true
+    },
+    {
+      "name": "base64 roundtrip \"한글 😀\\n<T> & \\\" \\\\uD55C\"",
+      "pass": true
+    },
+    {
+      "name": "base64 roundtrip \"a\\u0000b\\t\\r\\n\"",
+      "pass": true
+    },
+    {
+      "name": "url roundtrip \"\"",
+      "pass": true
+    },
+    {
+      "name": "url roundtrip \"abc\"",
+      "pass": true
+    },
+    {
+      "name": "url roundtrip \"한글 😀\\n<T> & \\\" \\\\uD55C\"",
+      "pass": true
+    },
+    {
+      "name": "url roundtrip \"a\\u0000b\\t\\r\\n\"",
+      "pass": true
+    },
+    {
+      "name": "hex roundtrip \"\"",
+      "pass": true
+    },
+    {
+      "name": "hex roundtrip \"abc\"",
+      "pass": true
+    },
+    {
+      "name": "hex roundtrip \"한글 😀\\n<T> & \\\" \\\\uD55C\"",
+      "pass": true
+    },
+    {
+      "name": "hex roundtrip \"a\\u0000b\\t\\r\\n\"",
+      "pass": true
+    },
+    {
+      "name": "unicode roundtrip \"\"",
+      "pass": true
+    },
+    {
+      "name": "unicode roundtrip \"abc\"",
+      "pass": true
+    },
+    {
+      "name": "unicode roundtrip \"한글 😀\\n<T> & \\\" \\\\uD55C\"",
+      "pass": true
+    },
+    {
+      "name": "unicode roundtrip \"a\\u0000b\\t\\r\\n\"",
+      "pass": true
+    },
+    {
+      "name": "html roundtrip \"\"",
+      "pass": true
+    },
+    {
+      "name": "html roundtrip \"abc\"",
+      "pass": true
+    },
+    {
+      "name": "html roundtrip \"한글 😀\\n<T> & \\\" \\\\uD55C\"",
+      "pass": true
+    },
+    {
+      "name": "html roundtrip \"a\\u0000b\\t\\r\\n\"",
+      "pass": true
+    },
+    {
+      "name": "base64url and no padding",
+      "pass": true
+    },
+    {
+      "name": "base64 invalid padding",
+      "pass": true
+    },
+    {
+      "name": "base64 rejects binary as text",
+      "pass": true
+    },
+    {
+      "name": "Base64 and HEX preserve leading BOM as text",
+      "pass": true
+    },
+    {
+      "name": "UTF8 rejects lone surrogates instead of replacing data",
+      "pass": true
+    },
+    {
+      "name": "URL plus form decode",
+      "pass": true
+    },
+    {
+      "name": "invalid URL percent rejected",
+      "pass": true
+    },
+    {
+      "name": "HEX formats",
+      "pass": true
+    },
+    {
+      "name": "HEX rejects odd nibble",
+      "pass": true
+    },
+    {
+      "name": "unicode scalar notation",
+      "pass": true
+    },
+    {
+      "name": "unicode malformed escape",
+      "pass": true
+    },
+    {
+      "name": "HTML numeric and named",
+      "pass": true
+    },
+    {
+      "name": "HTML surrogate rejected",
+      "pass": true
+    },
+    {
+      "name": "EUC-KR common Hangul decoder",
+      "pass": true
+    },
+    {
+      "name": "mojibake repair latin1",
+      "pass": true
+    },
+    {
+      "name": "mojibake repair windows-1252",
+      "pass": true
+    },
+    {
+      "name": "replacement character not recoverable",
+      "pass": true
+    },
+    {
+      "name": "file BOM and strict UTF8 flags",
+      "pass": true
+    },
+    {
+      "name": "JSON lexical preservation",
+      "pass": true
+    },
+    {
+      "name": "JSON duplicate key preserved",
+      "pass": true
+    },
+    {
+      "name": "JSON strings / nested empty arrays",
+      "pass": true
+    },
+    {
+      "name": "JSON BOM permitted",
+      "pass": true
+    },
+    {
+      "name": "JSON invalid syntax rejected",
+      "pass": true
+    },
+    {
+      "name": "JSON nesting limit",
+      "pass": true
+    },
+    {
+      "name": "JSON nesting limit also protects minify and empty containers",
+      "pass": true
+    },
+    {
+      "name": "JSON whitespace expansion is bounded",
+      "pass": true
+    },
+    {
+      "name": "text clean preserves ordering",
+      "pass": true
+    },
+    {
+      "name": "text natural sort and CRLF",
+      "pass": true
+    },
+    {
+      "name": "text stats code point vs units",
+      "pass": true
+    },
+    {
+      "name": "SQL escapes quotes and deduplicates",
+      "pass": true
+    },
+    {
+      "name": "SQL 1001 split OR",
+      "pass": true
+    },
+    {
+      "name": "SQL numeric precision preserved",
+      "pass": true
+    },
+    {
+      "name": "SQL rejects DB-dependent backslash quoting and controls",
+      "pass": true
+    },
+    {
+      "name": "SQL rejects invalid column",
+      "pass": true
+    },
+    {
+      "name": "SQL rejects empty list",
+      "pass": true
+    },
+    {
+      "name": "SQL rejects numeric injection",
+      "pass": true
+    },
+    {
+      "name": "SQL rejects oversized chunk",
+      "pass": true
+    },
+    {
+      "name": "diff simple additions",
+      "pass": true
+    },
+    {
+      "name": "diff empty input",
+      "pass": true
+    },
+    {
+      "name": "diff distinguishes final newline",
+      "pass": true
+    },
+    {
+      "name": "diff whitespace option",
+      "pass": true
+    },
+    {
+      "name": "diff 200 randomized reconstruction properties",
+      "pass": true
+    },
+    {
+      "name": "log OR, exclude and context",
+      "pass": true
+    },
+    {
+      "name": "Log search bounds and integer context",
+      "pass": true
+    },
+    {
+      "name": "epoch explicit units",
+      "pass": true
+    },
+    {
+      "name": "epoch invalid units precision",
+      "pass": true
+    },
+    {
+      "name": "KST epoch zero conversion",
+      "pass": true
+    },
+    {
+      "name": "date rejects nonexistent leap day",
+      "pass": true
+    },
+    {
+      "name": "date handles leap day",
+      "pass": true
+    },
+    {
+      "name": "permissions rwx",
+      "pass": true
+    },
+    {
+      "name": "shell quoting literal apostrophes and command substitution",
+      "pass": true
+    },
+    {
+      "name": "PowerShell quoting",
+      "pass": true
+    },
+    {
+      "name": "PowerShell quotes all smart single quotation marks",
+      "pass": true
+    },
+    {
+      "name": "PowerShell parser keeps hostile arguments as one literal (no execution)",
+      "pass": true
+    },
+    {
+      "name": "template numeric validation",
+      "pass": true
+    },
+    {
+      "name": "template port range",
+      "pass": true
+    },
+    {
+      "name": "shell control characters rejected",
+      "pass": true
+    },
+    {
+      "name": "template bounds and option-looking identifiers",
+      "pass": true
+    },
+    {
+      "name": "HTTP templates reject credentials and non-HTTP protocols",
+      "pass": true
+    },
+    {
+      "name": "cron every5 excludes exact start",
+      "pass": true
+    },
+    {
+      "name": "cron KST daily",
+      "pass": true
+    },
+    {
+      "name": "cron DOM/DOW OR",
+      "pass": true
+    },
+    {
+      "name": "cron leap year lookahead",
+      "pass": true
+    },
+    {
+      "name": "cron impossible date no fabricated result",
+      "pass": true
+    },
+    {
+      "name": "cron Sunday7 alias",
+      "pass": true
+    },
+    {
+      "name": "cron rejects * * * * * *",
+      "pass": true
+    },
+    {
+      "name": "cron rejects 0 24 * * *",
+      "pass": true
+    },
+    {
+      "name": "cron rejects */0 * * * *",
+      "pass": true
+    },
+    {
+      "name": "cron rejects 0 0 * JAN MON",
+      "pass": true
+    },
+    {
+      "name": "cron rejects 0 0 ? * *",
+      "pass": true
+    },
+    {
+      "name": "hash known abc SHA-256",
+      "pass": true
+    },
+    {
+      "name": "hash known abc SHA-384",
+      "pass": true
+    },
+    {
+      "name": "hash known abc SHA-512",
+      "pass": true
+    },
+    {
+      "name": "Unicode ASCII boundaries",
+      "pass": true
+    },
+    {
+      "name": "Command catalog unique and supported metadata",
+      "pass": true
+    },
+    {
+      "name": "All command placeholders resolved; Docker Go template retained",
+      "pass": true
+    }
+  ]
+}

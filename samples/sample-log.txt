@@ -1,0 +1,6 @@
+2026-10-03 09:00:00 INFO application started
+2026-10-03 09:00:01 WARN pool nearly full
+2026-10-03 09:00:02 ERROR request failed
+java.sql.SQLException: connection timeout
+  at app.service.Example.find(Example.java:23)
+2026-10-03 09:00:03 INFO retry complete

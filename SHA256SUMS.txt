@@ -1,0 +1,2 @@
+4cdf075b05698c738c83c48cf7f3ad3b4a8af92e4bf45d1bc2cd989bea1409cf  pocket-ops.html
+ba3183e8492901097c3353affbcef84e283b19abccedee87aea83b10a0fd5a64  pocket-ops-v0.2.0.zip

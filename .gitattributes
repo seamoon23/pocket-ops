@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.png binary
+*.zip binary
+samples/*.txt -text
+samples/korean-*.txt binary

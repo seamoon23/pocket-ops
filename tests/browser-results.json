@@ -1,0 +1,364 @@
+{
+  "browser": "154.0.8037.95",
+  "capabilities": {
+    "secureContext": false,
+    "webCrypto": false,
+    "worker": true,
+    "protocol": "about:"
+  },
+  "method": "Offline set_content plus separate local file smoke; browser policy unchanged",
+  "file_smoke": {
+    "status": "opened",
+    "capabilities": {
+      "secureContext": true,
+      "webCrypto": true,
+      "worker": true,
+      "protocol": "file:"
+    },
+    "download_reopen_hash_storage_reload": "passed"
+  },
+  "storage_clipboard": "Main persistence and clipboard payload checks use explicitly labeled doubles. File smoke storage, when available, uses real origin and reload, not OS clipboard or browser restart.",
+  "external_http_requests": [],
+  "pageerrors": [],
+  "total": 84,
+  "passed": 84,
+  "failed": 0,
+  "results": [
+    {
+      "name": "Home has 14 tools",
+      "pass": true
+    },
+    {
+      "name": "Unavailable opaque-origin storage is explained",
+      "pass": true
+    },
+    {
+      "name": "Route commands",
+      "pass": true
+    },
+    {
+      "name": "Route encoding",
+      "pass": true
+    },
+    {
+      "name": "Route codec",
+      "pass": true
+    },
+    {
+      "name": "Route json",
+      "pass": true
+    },
+    {
+      "name": "Route text",
+      "pass": true
+    },
+    {
+      "name": "Route diff",
+      "pass": true
+    },
+    {
+      "name": "Route logs",
+      "pass": true
+    },
+    {
+      "name": "Route sql",
+      "pass": true
+    },
+    {
+      "name": "Route unicode",
+      "pass": true
+    },
+    {
+      "name": "Route time",
+      "pass": true
+    },
+    {
+      "name": "Route chmod",
+      "pass": true
+    },
+    {
+      "name": "Route cron",
+      "pass": true
+    },
+    {
+      "name": "Route hash",
+      "pass": true
+    },
+    {
+      "name": "Route regex",
+      "pass": true
+    },
+    {
+      "name": "Route settings",
+      "pass": true
+    },
+    {
+      "name": "Route favorites",
+      "pass": true
+    },
+    {
+      "name": "121 built-in commands visible",
+      "pass": true
+    },
+    {
+      "name": "Environment tabs match catalog and expose DB editor guidance",
+      "pass": true
+    },
+    {
+      "name": "Alternative command opens an independent reviewed choice",
+      "pass": true
+    },
+    {
+      "name": "Situation search for port",
+      "pass": true
+    },
+    {
+      "name": "Port template and invalid port guard",
+      "pass": true
+    },
+    {
+      "name": "Changing command requires acknowledgment and PID",
+      "pass": true
+    },
+    {
+      "name": "Changing reviewed command parameters requires a fresh acknowledgment",
+      "pass": true
+    },
+    {
+      "name": "Reject option-like paths and quote shell metacharacters",
+      "pass": true
+    },
+    {
+      "name": "Custom command creation and inert HTML text",
+      "pass": true
+    },
+    {
+      "name": "CP949 extended Hangul file decode and UTF8 BOM export",
+      "pass": true
+    },
+    {
+      "name": "UTF16 BOM autodetection",
+      "pass": true
+    },
+    {
+      "name": "Mojibake repair sample",
+      "pass": true
+    },
+    {
+      "name": "Lossy replacement string rejected",
+      "pass": true
+    },
+    {
+      "name": "Codec UI roundtrip url",
+      "pass": true
+    },
+    {
+      "name": "Codec UI roundtrip base64",
+      "pass": true
+    },
+    {
+      "name": "Codec UI roundtrip hex",
+      "pass": true
+    },
+    {
+      "name": "Codec UI roundtrip unicode",
+      "pass": true
+    },
+    {
+      "name": "Codec UI roundtrip html",
+      "pass": true
+    },
+    {
+      "name": "Codec UI error clears previous output",
+      "pass": true
+    },
+    {
+      "name": "JSON UI large integer token preservation",
+      "pass": true
+    },
+    {
+      "name": "JSON invalid input error",
+      "pass": true
+    },
+    {
+      "name": "JSON validation avoids unnecessary pretty-print output expansion",
+      "pass": true
+    },
+    {
+      "name": "Inputs survive tool navigation in memory",
+      "pass": true
+    },
+    {
+      "name": "Editing JSON source invalidates the previous result",
+      "pass": true
+    },
+    {
+      "name": "Text dedupe and actual CRLF download",
+      "pass": true
+    },
+    {
+      "name": "Diff UI marks additions and deletions",
+      "pass": true
+    },
+    {
+      "name": "Diff input edits invalidate previous comparison",
+      "pass": true
+    },
+    {
+      "name": "Log fixed-string matching with context",
+      "pass": true
+    },
+    {
+      "name": "SQL quote escaping and dedupe UI",
+      "pass": true
+    },
+    {
+      "name": "SQL 1001 values generate OR groups",
+      "pass": true
+    },
+    {
+      "name": "SQL rejects ambiguous backslash and clears previous output",
+      "pass": true
+    },
+    {
+      "name": "Invisible character inspection",
+      "pass": true
+    },
+    {
+      "name": "ASCII 0..127",
+      "pass": true
+    },
+    {
+      "name": "Reverse Unicode codes",
+      "pass": true
+    },
+    {
+      "name": "Surrogate scalar rejected",
+      "pass": true
+    },
+    {
+      "name": "Epoch0 KST and UTC output",
+      "pass": true
+    },
+    {
+      "name": "Chmod calculator and warning",
+      "pass": true
+    },
+    {
+      "name": "Cron explicit KST future dates",
+      "pass": true
+    },
+    {
+      "name": "Cron invalid sixth field rejected",
+      "pass": true
+    },
+    {
+      "name": "Hash computes or explicitly reports missing WebCrypto",
+      "pass": true
+    },
+    {
+      "name": "Regex actual Worker matching",
+      "pass": true
+    },
+    {
+      "name": "Regex zero-width Unicode matches terminate",
+      "pass": true
+    },
+    {
+      "name": "Regex catastrophic backtracking killed; UI responsive",
+      "pass": true
+    },
+    {
+      "name": "Regex capture amplification stops at a bounded output size",
+      "pass": true
+    },
+    {
+      "name": "Outdated regex errors cannot replace a newer result",
+      "pass": true
+    },
+    {
+      "name": "Keyboard command palette",
+      "pass": true
+    },
+    {
+      "name": "Clipboard failure offers manual selected text",
+      "pass": true
+    },
+    {
+      "name": "Clipboard fallback payload (test double)",
+      "pass": true
+    },
+    {
+      "name": "Settings backup excludes working inputs",
+      "pass": true
+    },
+    {
+      "name": "Release excludes working data and reopens into identical repeatable ZIP",
+      "pass": true
+    },
+    {
+      "name": "Invalid backup version rejected",
+      "pass": true
+    },
+    {
+      "name": "Imported commands cannot claim trusted read-only risk",
+      "pass": true
+    },
+    {
+      "name": "Clear inputs preserves settings, clears working text",
+      "pass": true
+    },
+    {
+      "name": "Recommended tools link to matching environment and shared favorites",
+      "pass": true
+    },
+    {
+      "name": "Valid backup larger than 2MiB exports and imports without loss",
+      "pass": true
+    },
+    {
+      "name": "Mobile 390px layout home",
+      "pass": true
+    },
+    {
+      "name": "Mobile 390px layout commands",
+      "pass": true
+    },
+    {
+      "name": "Mobile 390px layout encoding",
+      "pass": true
+    },
+    {
+      "name": "Mobile 390px layout unicode",
+      "pass": true
+    },
+    {
+      "name": "Mobile 390px layout sql",
+      "pass": true
+    },
+    {
+      "name": "Mobile 390px layout settings",
+      "pass": true
+    },
+    {
+      "name": "No uncaught browser errors",
+      "pass": true
+    },
+    {
+      "name": "Zero HTTP(S) requests during offline workflow",
+      "pass": true
+    },
+    {
+      "name": "Settings-only storage writes (test double)",
+      "pass": true
+    },
+    {
+      "name": "Missing Crypto does not prevent settings and backup access",
+      "pass": true
+    },
+    {
+      "name": "Local file open, real SHA256, ZIP save/reopen and storage reload",
+      "pass": true
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-__SCRIPT_HASH__'; style-src 'unsafe-inline'; img-src data: blob:; font-src 'none'; connect-src 'none'; worker-src blob:; object-src 'none'; base-uri 'none'; form-action 'none';">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="서버와 인터넷 없이 쓰는 작은 개발·운영 공구함. Linux 명령어, 한글 인코딩, JSON, 로그, 시간과 권한 계산을 한 페이지에.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%23536add'/%3E%3Cpath d='M11 9h18v13a9 9 0 0 1-18 0V9m0 6h18m-14 6 5 3 5-3' stroke='white' stroke-width='2' fill='none'/%3E%3C/svg%3E">
+<title>Pocket Ops · 내 작업실</title>
+<style>
+__STYLES__
+</style>
+</head>
+<body>
+<noscript><div class="note error">JavaScript가 꺼져 있습니다. 허용된 브라우저 설정에서 JavaScript를 활성화해야 도구를 사용할 수 있습니다.</div></noscript>
+<div class="layout">
+<aside class="sidebar" id="sidebar" aria-label="주 메뉴">
+<button class="brand" data-go="home" aria-label="Pocket Ops 홈"><span class="brand-mark" id="brand-icon"></span><span><strong>pocket ops<span style="color:var(--accent)">.</span></strong><small>OFFLINE FIELD KIT</small></span></button>
+<nav class="nav-area" id="nav"></nav>
+<div class="sidebar-bottom"><button class="nav-btn" data-go="settings"><span id="settings-icon"></span>내 포켓 관리</button><div class="local-mini"><strong><span class="dot"></span>작업은 로컬에서만</strong><span class="muted" id="storage-status">설정 저장소 확인 중</span></div></div>
+</aside>
+<main class="main">
+<header class="topbar"><button class="icon-btn mobile-toggle" id="mobile-menu" aria-label="메뉴 열기" aria-expanded="false" aria-controls="sidebar"></button><div class="breadcrumb"><span>Pocket Ops</span><span>/</span><span id="page-crumb">내 작업실</span></div><div class="toolbar"><button class="search-launch" data-open-palette aria-label="도구와 명령어 빠른 검색"><span id="top-search-icon"></span><span>필요한 도구 찾기</span><kbd>Ctrl K</kbd></button><button class="btn small release-button" id="release-download" title="현재 버전의 깨끗한 배포 ZIP 저장">배포하기</button><button class="icon-btn" id="theme-toggle" aria-label="테마 변경"></button><button class="icon-btn" id="clear-all-button" aria-label="모든 도구 입력 비우기" title="열린 도구 입력 비우기"></button></div></header>
+<div class="warning-bar" id="storage-warning" role="status"></div>
+<div class="content" id="view"></div>
+</main>
+</div>
+<dialog id="modal" aria-label="명령어 및 설정 대화상자"></dialog>
+<dialog id="palette" aria-label="도구와 명령어 검색"><div class="palette-search"><span id="palette-icon"></span><input id="palette-input" aria-label="도구 또는 상황 검색" role="combobox" aria-expanded="true" aria-controls="palette-results" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="도구 이름이나 막힌 상황을 입력하세요…"><kbd>Esc</kbd></div><div class="palette-results" id="palette-results" role="listbox"></div><div class="palette-footer">↑ ↓ 선택 &nbsp;&nbsp; Enter 열기 &nbsp;&nbsp; Esc 닫기 &nbsp;&nbsp; · &nbsp;&nbsp; 도구와 명령어를 함께 찾습니다.</div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+__SCRIPT__
+</script>
+</body>
+</html>
