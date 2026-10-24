@@ -79,9 +79,34 @@ PASS Mobile 390px layout encoding
 PASS Mobile 390px layout unicode
 PASS Mobile 390px layout sql
 PASS Mobile 390px layout settings
+PASS Resizing between mobile drawer and desktop restores visible keyboard focus
+PASS Touch 320x740: all 17 routes fit viewport
+PASS Touch 320x740: drawer closes by button, backdrop and navigation
+PASS Touch 320x740: search opens, closes and selects without keyboard
+PASS Touch 320x740: readable fields, commands and 44px primary targets
+PASS Touch 320x740: command copy fallback and safety gates (clipboard double)
+PASS Touch 360x800: all 17 routes fit viewport
+PASS Touch 360x800: drawer closes by button, backdrop and navigation
+PASS Touch 360x800: search opens, closes and selects without keyboard
+PASS Touch 360x800: readable fields, commands and 44px primary targets
+PASS Touch 360x800: command copy fallback and safety gates (clipboard double)
+PASS Touch 412x915: all 17 routes fit viewport
+PASS Touch 412x915: drawer closes by button, backdrop and navigation
+PASS Touch 412x915: search opens, closes and selects without keyboard
+PASS Touch 412x915: readable fields, commands and 44px primary targets
+PASS Touch 412x915: command copy fallback and safety gates (clipboard double)
+PASS Touch 844x390: all 17 routes fit viewport
+PASS Touch 844x390: drawer closes by button, backdrop and navigation
+PASS Touch 844x390: search opens, closes and selects without keyboard
+PASS Touch 844x390: readable fields, commands and 44px primary targets
+PASS Touch 844x390: command copy fallback and safety gates (clipboard double)
+PASS JavaScript disabled 360px: all 121 commands and risk guidance remain readable
+PASS JavaScript disabled 360px: native reference fits viewport
+PASS JavaScript disabled 1440px: all 121 commands and risk guidance remain readable
+PASS JavaScript disabled 1440px: native reference fits viewport
 PASS Settings-only storage writes (test double)
 PASS Missing Crypto does not prevent settings and backup access
 PASS Local file open, real SHA256, ZIP save/reopen and storage reload
 PASS No uncaught browser errors across all tested pages
 PASS Zero HTTP(S) requests across full offline workflow and reopened pages
-BROWSER SUMMARY 86 passed, 0 failed
+BROWSER SUMMARY 111 passed, 0 failed

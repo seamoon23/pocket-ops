@@ -1,6 +1,6 @@
 {
-  "total": 14,
-  "passed": 14,
+  "total": 17,
+  "passed": 17,
   "failed": 0,
   "results": {
     "CSP hash matches embedded script": true,
@@ -16,6 +16,9 @@
     "Release recipe reproduces exact build bytes": true,
     "Release archive CRC and HTML bytes match": true,
     "Release contains only reviewed artifact and guides": true,
-    "SHA256SUMS covers matching HTML and ZIP": true
+    "SHA256SUMS covers matching HTML and ZIP": true,
+    "No-script reference contains every curated command once": true,
+    "No-script reference escapes HTML and retains literal source": true,
+    "No-script reference warns about placeholders and change commands": true
   }
 }

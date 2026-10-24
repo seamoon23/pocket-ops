@@ -76,3 +76,7 @@ SQL은 해당 DB에 이미 접속한 승인된 클라이언트의 쿼리 창에�
 
 - GitHub 공식 [checkout](https://github.com/actions/checkout), [setup-node](https://github.com/actions/setup-node), [setup-python](https://github.com/actions/setup-python): v6 참조의 커밋 SHA를 2026-10-04 확인하여 워크플로에 고정했습니다.
 - [.github/workflows/verify.yml](.github/workflows/verify.yml)은 Windows 개발 러너에서만 실행됩니다. 내려받은 테스트 라이브러리는 배포 HTML에 포함되지 않습니다.
+
+## 갤럭시 파일 열기 안내
+
+- 삼성 공식 [다운로드 파일과 내 파일 위치](https://www.samsung.com/uk/support/mobile-devices/where-can-i-find-downloaded-files-on-my-samsung-galaxy-smartphone/): 앱스에서 내 파일 검색, 다운로드 분류, 앱별 저장 위치 차이를 확인했습니다(2026-10-24). 이 문서는 임의 로컬 HTML의 JavaScript·클립보드 지원을 보증하지 않습니다.

@@ -14,6 +14,7 @@ Maintain a small, attractive Korean-language offline utility pocket for an opera
 - `src/app.js`: routes, UI binding, safety prompts, import/export, in-memory views.
 - `src/release.js`: immutable source recipe to offline ZIP; never serialize live inputs or configuration.
 - `build.py`: combines sources, computes CSP script hash, writes self-contained HTML.
+- `build.py` also renders an escaped read-only catalog into the shell's noscript placeholder. Keep all built-in commands and risk/placeholder warnings available in that same HTML when JavaScript is disabled; never include personal configuration.
 - `tests/`: Node core suite, offline Playwright browser suite, Python static suite, measured reports.
 - `samples/`: non-sensitive encoding/log/config fixtures.
 
@@ -81,4 +82,4 @@ Storage key `pocket-ops:v1`. Fields: version, theme, toolFavs, cmdFavs, customCo
 
 ## Product direction for a later iteration
 
-Start with feedback from actual authorized offline use, especially copied command shapes, Korean labels, keyboard search and restrictions. Candidate additions are an environment-specific command pack, checklist/runbook view and a manual log-redaction preview. They are not implemented in v0.1.0. Do not add cloud AI, background sync or user accounts to implement them.
+Start with feedback from actual authorized offline use, especially copied command shapes, Korean labels, keyboard search and restrictions. Candidate additions are an environment-specific command pack, checklist/runbook view and a manual log-redaction preview. They are not implemented in v0.3.0. Do not add cloud AI, background sync or user accounts to implement them.

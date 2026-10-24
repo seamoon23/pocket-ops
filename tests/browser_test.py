@@ -36,7 +36,7 @@ with sync_playwright() as p:
     def go(name):
         if page.locator('#modal[open]').count(): page.locator('#modal [data-close]').click()
         if page.locator('#palette[open]').count(): page.keyboard.press('Escape')
-        if page.viewport_size['width'] < 800 and page.locator('#mobile-menu').get_attribute('aria-expanded')!='true': page.locator('#mobile-menu').click()
+        if page.locator('#mobile-menu').is_visible() and page.locator('#mobile-menu').get_attribute('aria-expanded')!='true': page.locator('#mobile-menu').click()
         page.locator('#sidebar [data-go="'+name+'"]').first.click()
     def v(selector): return page.locator(selector).input_value()
     def txt(selector): return page.locator(selector).inner_text()
@@ -271,6 +271,148 @@ with sync_playwright() as p:
         check('Mobile 390px layout '+route,mobile_layout)
     go('home');page.screenshot(path=str(PREVIEWS/'preview-mobile.png'),full_page=False)
     page.set_viewport_size({'width':1440,'height':1050})
+    def menu_resize_focus():
+        page.set_viewport_size({'width':390,'height':844})
+        page.locator('#mobile-menu').click();expect(page.locator('#mobile-close')).to_be_focused()
+        page.set_viewport_size({'width':1440,'height':1050})
+        expect(page.locator('#sidebar .nav-btn.active')).to_be_focused()
+        assert not page.locator('.main').evaluate('el=>el.inert')
+        assert not page.locator('#sidebar').evaluate('el=>el.inert')
+        page.set_viewport_size({'width':390,'height':844})
+        expect(page.locator('#mobile-menu')).to_be_focused()
+        assert page.locator('#sidebar').evaluate('el=>el.inert')
+        expect(page.locator('#menu-scrim')).to_be_hidden()
+        page.set_viewport_size({'width':1440,'height':1050})
+    check('Resizing between mobile drawer and desktop restores visible keyboard focus',menu_resize_focus)
+    # Touch/viewport emulation checks layout and browser behavior, not a real Galaxy file viewer.
+    mobile_viewports=[(320,740),(360,800),(412,915),(844,390)]
+    mobile_routes=['home','commands','encoding','codec','json','text','diff','logs','sql','unicode','time','chmod','cron','hash','regex','settings','favorites']
+    for width,height in mobile_viewports:
+        touch=browser.new_context(viewport={'width':width,'height':height},device_scale_factor=2.625,
+                                  is_mobile=True,has_touch=True,offline=True,accept_downloads=True)
+        touch.on('request',lambda r:requests.append(r.url))
+        phone=touch.new_page();phone.set_default_timeout(4000)
+        phone.on('pageerror',lambda e:errors.append(str(e)))
+        phone.set_content(HTML,wait_until='load')
+        def phone_go(route):
+            if phone.locator('#modal[open]').count(): phone.locator('#modal [data-close]').tap()
+            if phone.locator('#palette[open]').count(): phone.locator('#palette-close').tap()
+            menu=phone.locator('#mobile-menu')
+            if menu.is_visible() and menu.get_attribute('aria-expanded')!='true': menu.tap()
+            phone.locator('#sidebar [data-go="'+route+'"]').first.tap()
+        def phone_overflow():
+            assert phone.evaluate('document.documentElement.scrollWidth <= window.innerWidth+1'), 'Horizontal page overflow'
+            equal(phone.evaluate('window.innerWidth'),width)
+        def touch_routes():
+            for route in mobile_routes:
+                phone_go(route);equal(phone.locator('#view h1').count(),1)
+                try: phone_overflow()
+                except AssertionError as e: raise AssertionError(route+': '+str(e)) from e
+        check(f'Touch {width}x{height}: all 17 routes fit viewport',touch_routes)
+        def touch_menu():
+            phone_go('home')
+            menu=phone.locator('#mobile-menu');expect(menu).to_be_visible()
+            for close in ['#mobile-close','#menu-scrim']:
+                menu.tap();expect(menu).to_have_attribute('aria-expanded','true')
+                expect(phone.locator('#menu-scrim')).to_be_visible()
+                assert phone.locator('.main').evaluate('el=>el.inert')
+                close_button=phone.locator(close)
+                if close=='#menu-scrim': close_button.tap(position={'x':width-8,'y':height/2})
+                else: close_button.tap()
+                expect(menu).to_have_attribute('aria-expanded','false')
+                expect(phone.locator('#menu-scrim')).to_be_hidden()
+                assert not phone.locator('.main').evaluate('el=>el.inert')
+                assert phone.locator('#sidebar').evaluate('el=>el.inert')
+                expect(menu).to_be_focused()
+            phone_go('json');expect(menu).to_have_attribute('aria-expanded','false')
+            expect(phone.locator('#menu-scrim')).to_be_hidden()
+        check(f'Touch {width}x{height}: drawer closes by button, backdrop and navigation',touch_menu)
+        def touch_search():
+            phone.locator('.topbar [data-open-palette]').tap()
+            close=phone.locator('#palette-close');expect(close).to_be_visible()
+            box=close.bounding_box();assert box['width']>=44 and box['height']>=44
+            assert box['y']>=0 and box['y']+box['height']<=height+1
+            phone.locator('#palette-input').fill('JSON')
+            contains(phone.locator('#palette-results').inner_text(),'JSON')
+            close.tap();equal(phone.locator('#palette[open]').count(),0)
+            phone.locator('.topbar [data-open-palette]').tap()
+            phone.locator('#palette-input').fill('JSON')
+            phone.locator('#palette-results .palette-item').first.tap()
+            contains(phone.locator('#view h1').inner_text(),'JSON')
+            phone_overflow()
+        check(f'Touch {width}x{height}: search opens, closes and selects without keyboard',touch_search)
+        def touch_readability():
+            for route in ['json','commands','cron','sql']:
+                phone_go(route)
+                bad=phone.locator('#view input:not([type=checkbox]):not([type=file]), #view select, #view textarea').evaluate_all(
+                    'els=>els.filter(el=>el.getClientRects().length&&parseFloat(getComputedStyle(el).fontSize)<16).map(el=>el.id)')
+                equal(bad,[])
+            phone_go('commands')
+            assert phone.locator('.command-card pre').first.evaluate('el=>parseFloat(getComputedStyle(el).fontSize)')>=14
+            phone.locator('[data-command="cmd-001"]').tap()
+            assert phone.locator('#command-preview').evaluate('el=>parseFloat(getComputedStyle(el).fontSize)')>=14
+            for selector in ['#copy-command','#modal [data-close]']:
+                box=phone.locator(selector).bounding_box();assert box['width']>=44 and box['height']>=44
+            phone_overflow();phone.locator('#modal [data-close]').tap()
+        check(f'Touch {width}x{height}: readable fields, commands and 44px primary targets',touch_readability)
+        def touch_command_copy():
+            phone_go('commands')
+            phone.evaluate("document.execCommand=()=>false;Object.defineProperty(navigator,'clipboard',{configurable:true,value:undefined})")
+            phone.locator('[data-command="cmd-001"]').tap()
+            equal(phone.locator('#command-preview').input_value(),'cat /etc/os-release')
+            phone.locator('#copy-command').tap()
+            expect(phone.locator('#manual-copy')).to_have_value('cat /etc/os-release')
+            contains(phone.locator('#modal').inner_text(),'길게')
+            phone_overflow();phone.locator('#modal [data-close]').tap()
+            phone.locator('[data-command="cmd-018"]').tap()
+            expect(phone.locator('#copy-command')).to_be_disabled()
+            phone.locator('#param-PID').fill('1234');expect(phone.locator('#copy-command')).to_be_disabled()
+            phone.locator('#command-ack').check();expect(phone.locator('#copy-command')).to_be_enabled()
+            phone.locator('#param-PID').fill('1234;id');expect(phone.locator('#copy-command')).to_be_disabled()
+            phone.locator('#modal [data-close]').tap()
+        check(f'Touch {width}x{height}: command copy fallback and safety gates (clipboard double)',touch_command_copy)
+        if width==360:
+            phone_go('commands')
+            phone.locator('#command-query').fill('포트')
+            phone.screenshot(path=str(PREVIEWS/'preview-galaxy-commands.png'),full_page=False,animations='disabled')
+        if width==844:
+            phone_go('home')
+            phone.screenshot(path=str(PREVIEWS/'preview-mobile-landscape.png'),full_page=False,animations='disabled')
+        touch.close()
+    # Native HTML must remain useful in file previewers that disable JavaScript.
+    for width,height in [(360,800),(1440,1050)]:
+        nojs=browser.new_context(viewport={'width':width,'height':height},java_script_enabled=False,
+                                 has_touch=True,is_mobile=width<800,offline=True)
+        nojs.on('request',lambda r:requests.append(r.url))
+        reader=nojs.new_page();reader.set_default_timeout(4000)
+        reader.set_content(HTML,wait_until='load')
+        reference=reader.locator('#offline-reference')
+        def static_reference():
+            expect(reference).to_be_visible()
+            contains(reference.inner_text(),'읽기 전용 명령어 참고')
+            equal(reference.locator('.reference-command').count(),121)
+            expect(reader.locator('.layout')).to_be_hidden()
+            for domain in ['windows','linux','db']:
+                assert reference.locator('#reference-'+domain+' .reference-command').count()>0
+            content=reference.text_content()
+            for text in ['cat /etc/os-release','PowerShell','실제 변경','권한','{{PID}}']:
+                contains(content,text)
+            # No injected script/evaluate is used in this JS-disabled context.
+            equal(reference.locator('button, input, textarea, select').count(),0)
+        check(f'JavaScript disabled {width}px: all 121 commands and risk guidance remain readable',static_reference)
+        def static_reference_layout():
+            for domain in ['windows','linux','db']:
+                reference.locator('nav a[href="#reference-'+domain+'"]').tap()
+                expect(reference.locator('#reference-'+domain+' h2')).to_be_in_viewport()
+            for selector in ['#offline-reference','.reference-command','.reference-command pre']:
+                for entry in reader.locator(selector).all():
+                    box=entry.bounding_box();assert box is not None, selector+' is hidden'
+                    assert box['x']>=-1 and box['x']+box['width']<=width+1, selector+' exceeds viewport'
+            reference.locator('header').scroll_into_view_if_needed()
+            if width==360:
+                reader.screenshot(path=str(PREVIEWS/'preview-mobile-nojs.png'),full_page=False,animations='disabled')
+        check(f'JavaScript disabled {width}px: native reference fits viewport',static_reference_layout)
+        nojs.close()
     # Settings persistence test doubles are separate from real origin tests above.
     normal=context.new_page();normal.set_default_timeout(4000)
     normal.evaluate("""() => { const m=new Map();window.__store=m;Object.defineProperty(window,'localStorage',{configurable:true,value:{getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,String(v)),removeItem:k=>m.delete(k)}}); }""")
@@ -327,7 +469,7 @@ with sync_playwright() as p:
     check('No uncaught browser errors across all tested pages',lambda:equal(errors,[]))
     external=[u for u in requests if u.startswith(('http:','https:'))]
     check('Zero HTTP(S) requests across full offline workflow and reopened pages',lambda:equal(external,[]))
-    report={'browser':browser.version,'capabilities':capabilities,'method':'Offline set_content plus separate local file smoke; browser policy unchanged','file_smoke':file_smoke,'storage_clipboard':'Main persistence and clipboard payload checks use explicitly labeled doubles. File smoke storage, when available, uses real origin and reload, not OS clipboard or browser restart.','external_http_requests':external,'pageerrors':errors,'total':len(RESULTS),'passed':sum(x['pass'] for x in RESULTS),'failed':sum(not x['pass'] for x in RESULTS),'results':RESULTS}
+    report={'browser':browser.version,'capabilities':capabilities,'method':'Offline set_content plus separate local file smoke; browser policy unchanged','file_smoke':file_smoke,'mobile':'Chromium touch/mobile emulation at 320x740, 360x800, 412x915 and 844x390; not real Galaxy hardware, Android content:// handlers, OS clipboard or download integration.','storage_clipboard':'Main persistence and clipboard payload checks use explicitly labeled doubles. File smoke storage, when available, uses real origin and reload, not OS clipboard or browser restart.','external_http_requests':external,'pageerrors':errors,'total':len(RESULTS),'passed':sum(x['pass'] for x in RESULTS),'failed':sum(not x['pass'] for x in RESULTS),'results':RESULTS}
     (ROOT/'tests/browser-results.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
     print('BROWSER SUMMARY',report['passed'],'passed,',report['failed'],'failed')
     browser.close()

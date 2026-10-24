@@ -1,5 +1,5 @@
 {
-  "browser": "154.0.8037.95",
+  "browser": "155.0.8059.86",
   "capabilities": {
     "secureContext": false,
     "webCrypto": false,
@@ -17,11 +17,12 @@
     },
     "download_reopen_hash_storage_reload": "passed"
   },
+  "mobile": "Chromium touch/mobile emulation at 320x740, 360x800, 412x915 and 844x390; not real Galaxy hardware, Android content:// handlers, OS clipboard or download integration.",
   "storage_clipboard": "Main persistence and clipboard payload checks use explicitly labeled doubles. File smoke storage, when available, uses real origin and reload, not OS clipboard or browser restart.",
   "external_http_requests": [],
   "pageerrors": [],
-  "total": 86,
-  "passed": 86,
+  "total": 111,
+  "passed": 111,
   "failed": 0,
   "results": [
     {
@@ -346,6 +347,106 @@
     },
     {
       "name": "Mobile 390px layout settings",
+      "pass": true
+    },
+    {
+      "name": "Resizing between mobile drawer and desktop restores visible keyboard focus",
+      "pass": true
+    },
+    {
+      "name": "Touch 320x740: all 17 routes fit viewport",
+      "pass": true
+    },
+    {
+      "name": "Touch 320x740: drawer closes by button, backdrop and navigation",
+      "pass": true
+    },
+    {
+      "name": "Touch 320x740: search opens, closes and selects without keyboard",
+      "pass": true
+    },
+    {
+      "name": "Touch 320x740: readable fields, commands and 44px primary targets",
+      "pass": true
+    },
+    {
+      "name": "Touch 320x740: command copy fallback and safety gates (clipboard double)",
+      "pass": true
+    },
+    {
+      "name": "Touch 360x800: all 17 routes fit viewport",
+      "pass": true
+    },
+    {
+      "name": "Touch 360x800: drawer closes by button, backdrop and navigation",
+      "pass": true
+    },
+    {
+      "name": "Touch 360x800: search opens, closes and selects without keyboard",
+      "pass": true
+    },
+    {
+      "name": "Touch 360x800: readable fields, commands and 44px primary targets",
+      "pass": true
+    },
+    {
+      "name": "Touch 360x800: command copy fallback and safety gates (clipboard double)",
+      "pass": true
+    },
+    {
+      "name": "Touch 412x915: all 17 routes fit viewport",
+      "pass": true
+    },
+    {
+      "name": "Touch 412x915: drawer closes by button, backdrop and navigation",
+      "pass": true
+    },
+    {
+      "name": "Touch 412x915: search opens, closes and selects without keyboard",
+      "pass": true
+    },
+    {
+      "name": "Touch 412x915: readable fields, commands and 44px primary targets",
+      "pass": true
+    },
+    {
+      "name": "Touch 412x915: command copy fallback and safety gates (clipboard double)",
+      "pass": true
+    },
+    {
+      "name": "Touch 844x390: all 17 routes fit viewport",
+      "pass": true
+    },
+    {
+      "name": "Touch 844x390: drawer closes by button, backdrop and navigation",
+      "pass": true
+    },
+    {
+      "name": "Touch 844x390: search opens, closes and selects without keyboard",
+      "pass": true
+    },
+    {
+      "name": "Touch 844x390: readable fields, commands and 44px primary targets",
+      "pass": true
+    },
+    {
+      "name": "Touch 844x390: command copy fallback and safety gates (clipboard double)",
+      "pass": true
+    },
+    {
+      "name": "JavaScript disabled 360px: all 121 commands and risk guidance remain readable",
+      "pass": true
+    },
+    {
+      "name": "JavaScript disabled 360px: native reference fits viewport",
+      "pass": true
+    },
+    {
+      "name": "JavaScript disabled 1440px: all 121 commands and risk guidance remain readable",
+      "pass": true
+    },
+    {
+      "name": "JavaScript disabled 1440px: native reference fits viewport",
       "pass": true
     },
     {
