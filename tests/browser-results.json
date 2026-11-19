@@ -1,5 +1,5 @@
 {
-  "browser": "155.0.8059.86",
+  "browser": "158.0.8127.36",
   "capabilities": {
     "secureContext": false,
     "webCrypto": false,
@@ -21,12 +21,12 @@
   "storage_clipboard": "Main persistence and clipboard payload checks use explicitly labeled doubles. File smoke storage, when available, uses real origin and reload, not OS clipboard or browser restart.",
   "external_http_requests": [],
   "pageerrors": [],
-  "total": 111,
-  "passed": 111,
+  "total": 117,
+  "passed": 117,
   "failed": 0,
   "results": [
     {
-      "name": "Home has 14 tools",
+      "name": "Home has 15 tools",
       "pass": true
     },
     {
@@ -66,6 +66,10 @@
       "pass": true
     },
     {
+      "name": "Route sqlformat",
+      "pass": true
+    },
+    {
       "name": "Route unicode",
       "pass": true
     },
@@ -98,11 +102,15 @@
       "pass": true
     },
     {
-      "name": "121 built-in commands visible",
+      "name": "135 built-in commands visible",
       "pass": true
     },
     {
       "name": "Environment tabs match catalog and expose DB editor guidance",
+      "pass": true
+    },
+    {
+      "name": "DB menu separates CSQL login and session commands from guarded SQL changes",
       "pass": true
     },
     {
@@ -179,6 +187,10 @@
     },
     {
       "name": "Codec UI error clears previous output",
+      "pass": true
+    },
+    {
+      "name": "Codec output download and swap keep CRLF and CR until the input is edited",
       "pass": true
     },
     {
@@ -282,6 +294,10 @@
       "pass": true
     },
     {
+      "name": "Serialized regex output includes structural overhead in its size cap",
+      "pass": true
+    },
+    {
       "name": "Outdated regex errors cannot replace a newer result",
       "pass": true
     },
@@ -295,6 +311,14 @@
     },
     {
       "name": "Clipboard fallback payload (test double)",
+      "pass": true
+    },
+    {
+      "name": "Clear also removes palette history and cancels late copy fallback (clipboard double)",
+      "pass": true
+    },
+    {
+      "name": "SQL formatter sample, preserved literals, UTF8 SQL download and stale result clearing",
       "pass": true
     },
     {
@@ -354,7 +378,7 @@
       "pass": true
     },
     {
-      "name": "Touch 320x740: all 17 routes fit viewport",
+      "name": "Touch 320x740: all 18 routes fit viewport",
       "pass": true
     },
     {
@@ -374,7 +398,7 @@
       "pass": true
     },
     {
-      "name": "Touch 360x800: all 17 routes fit viewport",
+      "name": "Touch 360x800: all 18 routes fit viewport",
       "pass": true
     },
     {
@@ -394,7 +418,7 @@
       "pass": true
     },
     {
-      "name": "Touch 412x915: all 17 routes fit viewport",
+      "name": "Touch 412x915: all 18 routes fit viewport",
       "pass": true
     },
     {
@@ -414,7 +438,7 @@
       "pass": true
     },
     {
-      "name": "Touch 844x390: all 17 routes fit viewport",
+      "name": "Touch 844x390: all 18 routes fit viewport",
       "pass": true
     },
     {
@@ -434,7 +458,7 @@
       "pass": true
     },
     {
-      "name": "JavaScript disabled 360px: all 121 commands and risk guidance remain readable",
+      "name": "JavaScript disabled 360px: all 135 commands and risk guidance remain readable",
       "pass": true
     },
     {
@@ -442,7 +466,7 @@
       "pass": true
     },
     {
-      "name": "JavaScript disabled 1440px: all 121 commands and risk guidance remain readable",
+      "name": "JavaScript disabled 1440px: all 135 commands and risk guidance remain readable",
       "pass": true
     },
     {

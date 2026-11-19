@@ -1,8 +1,8 @@
 # Pocket Ops
 
-Windows 작업 PC와 휴대폰에서 보는 한국어 오프라인 공구함입니다. **`pocket-ops.html` 파일 하나**, 도구 14개, 명령어 121개. 별도 폴더·설치·서버·인터넷·로그인 없이 사용합니다.
+Windows 작업 PC와 휴대폰에서 보는 한국어 오프라인 공구함입니다. **`pocket-ops.html` 파일 하나**, 도구 15개, 명령어 135개. 별도 폴더·설치·서버·인터넷·로그인 없이 사용합니다.
 
-**[v0.3.0 단일 HTML 받기](https://github.com/seamoon23/pocket-ops/releases/download/v0.3.0/pocket-ops.html)** · [안내문 포함 ZIP](https://github.com/seamoon23/pocket-ops/releases/download/v0.3.0/pocket-ops-v0.3.0.zip) · [상세 사용법](README_KO.md) · [보안 검토](SECURITY_REVIEW.md) · [검증 결과](TEST_REPORT.md)
+**[v0.4.0 단일 HTML 받기](https://github.com/seamoon23/pocket-ops/releases/download/v0.4.0/pocket-ops.html)** · [안내문 포함 ZIP](https://github.com/seamoon23/pocket-ops/releases/download/v0.4.0/pocket-ops-v0.4.0.zip) · [상세 사용법](README_KO.md) · [보안 검토](SECURITY_REVIEW.md) · [검증 결과](TEST_REPORT.md)
 
 1. 위 **단일 HTML 받기**로 파일을 저장합니다. ZIP은 안내문을 함께 받을 때만 필요합니다.
 2. PC: 탐색기 → `pocket-ops.html` 우클릭 → **연결 프로그램 → 허용된 Edge/Chrome**. 기관 반입은 승인된 절차를 따릅니다.
@@ -13,6 +13,8 @@ JavaScript를 실행하지 않는 HTML 뷰어에는 같은 파일 안의 **읽�
 
 ![Pocket Ops 화면](previews/preview-desktop.png)
 
+- 메뉴 → 명령어 포켓 → DB → CSQL 접속 · 쿼리 프리셋에서 셸 접속, 세션 확인, SELECT/INSERT/UPDATE/DELETE 예제 확인
+- 메뉴 → 데이터 작업 → SQL 쿼리 정렬에서 기본 SQL 한 문장 정렬·복사·UTF-8 SQL 저장
 - JSON·텍스트·로그·SQL IN·인코딩·파일 해시 등 로컬 작업 도구
 - Windows PowerShell 5.1, Ubuntu 22.04/RHEL 7 중심 명령어와 기본 도구 대안
 - 도구·명령어 통합 즐겨찾기, 키보드 검색, 설정 백업

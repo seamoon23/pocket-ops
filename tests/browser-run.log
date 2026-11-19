@@ -1,4 +1,4 @@
-PASS Home has 14 tools
+PASS Home has 15 tools
 PASS Unavailable opaque-origin storage is explained
 PASS Route commands
 PASS Route encoding
@@ -8,6 +8,7 @@ PASS Route text
 PASS Route diff
 PASS Route logs
 PASS Route sql
+PASS Route sqlformat
 PASS Route unicode
 PASS Route time
 PASS Route chmod
@@ -16,8 +17,9 @@ PASS Route hash
 PASS Route regex
 PASS Route settings
 PASS Route favorites
-PASS 121 built-in commands visible
+PASS 135 built-in commands visible
 PASS Environment tabs match catalog and expose DB editor guidance
+PASS DB menu separates CSQL login and session commands from guarded SQL changes
 PASS Alternative command opens an independent reviewed choice
 PASS Returning to cached command favorites reflects changes in shared favorites
 PASS Situation search for port
@@ -37,6 +39,7 @@ PASS Codec UI roundtrip hex
 PASS Codec UI roundtrip unicode
 PASS Codec UI roundtrip html
 PASS Codec UI error clears previous output
+PASS Codec output download and swap keep CRLF and CR until the input is edited
 PASS JSON UI large integer token preservation
 PASS JSON invalid input error
 PASS JSON validation avoids unnecessary pretty-print output expansion
@@ -62,10 +65,13 @@ PASS Regex actual Worker matching
 PASS Regex zero-width Unicode matches terminate
 PASS Regex catastrophic backtracking killed; UI responsive
 PASS Regex capture amplification stops at a bounded output size
+PASS Serialized regex output includes structural overhead in its size cap
 PASS Outdated regex errors cannot replace a newer result
 PASS Keyboard command palette
 PASS Clipboard failure offers manual selected text
 PASS Clipboard fallback payload (test double)
+PASS Clear also removes palette history and cancels late copy fallback (clipboard double)
+PASS SQL formatter sample, preserved literals, UTF8 SQL download and stale result clearing
 PASS Settings backup excludes working inputs
 PASS Release excludes working data and reopens into identical repeatable ZIP
 PASS Invalid backup version rejected
@@ -80,33 +86,33 @@ PASS Mobile 390px layout unicode
 PASS Mobile 390px layout sql
 PASS Mobile 390px layout settings
 PASS Resizing between mobile drawer and desktop restores visible keyboard focus
-PASS Touch 320x740: all 17 routes fit viewport
+PASS Touch 320x740: all 18 routes fit viewport
 PASS Touch 320x740: drawer closes by button, backdrop and navigation
 PASS Touch 320x740: search opens, closes and selects without keyboard
 PASS Touch 320x740: readable fields, commands and 44px primary targets
 PASS Touch 320x740: command copy fallback and safety gates (clipboard double)
-PASS Touch 360x800: all 17 routes fit viewport
+PASS Touch 360x800: all 18 routes fit viewport
 PASS Touch 360x800: drawer closes by button, backdrop and navigation
 PASS Touch 360x800: search opens, closes and selects without keyboard
 PASS Touch 360x800: readable fields, commands and 44px primary targets
 PASS Touch 360x800: command copy fallback and safety gates (clipboard double)
-PASS Touch 412x915: all 17 routes fit viewport
+PASS Touch 412x915: all 18 routes fit viewport
 PASS Touch 412x915: drawer closes by button, backdrop and navigation
 PASS Touch 412x915: search opens, closes and selects without keyboard
 PASS Touch 412x915: readable fields, commands and 44px primary targets
 PASS Touch 412x915: command copy fallback and safety gates (clipboard double)
-PASS Touch 844x390: all 17 routes fit viewport
+PASS Touch 844x390: all 18 routes fit viewport
 PASS Touch 844x390: drawer closes by button, backdrop and navigation
 PASS Touch 844x390: search opens, closes and selects without keyboard
 PASS Touch 844x390: readable fields, commands and 44px primary targets
 PASS Touch 844x390: command copy fallback and safety gates (clipboard double)
-PASS JavaScript disabled 360px: all 121 commands and risk guidance remain readable
+PASS JavaScript disabled 360px: all 135 commands and risk guidance remain readable
 PASS JavaScript disabled 360px: native reference fits viewport
-PASS JavaScript disabled 1440px: all 121 commands and risk guidance remain readable
+PASS JavaScript disabled 1440px: all 135 commands and risk guidance remain readable
 PASS JavaScript disabled 1440px: native reference fits viewport
 PASS Settings-only storage writes (test double)
 PASS Missing Crypto does not prevent settings and backup access
 PASS Local file open, real SHA256, ZIP save/reopen and storage reload
 PASS No uncaught browser errors across all tested pages
 PASS Zero HTTP(S) requests across full offline workflow and reopened pages
-BROWSER SUMMARY 111 passed, 0 failed
+BROWSER SUMMARY 117 passed, 0 failed

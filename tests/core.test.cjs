@@ -14,6 +14,16 @@ async function test(name, fn){try{await fn();pass++;results.push({name,pass:true
 (async()=>{
  for(const mode of ['base64','url','hex','unicode','html'])for(const text of ['', 'abc', '한글 😀\n<T> & " \\uD55C', 'a\u0000b\t\r\n'])await test(mode+' roundtrip '+JSON.stringify(text),()=>assert.equal(C.codec(C.codec(text,mode,'encode'),mode,'decode'),text));
  await test('base64url and no padding',()=>assert.equal(C.fromBase64('8J-YgA'),'😀'));
+ await test('All expanding codecs bound output before displaying it',()=>{
+  for(const [mode,char,count] of [['base64','a',1500001],['hex','한',222223],['url','한',222223],['unicode','한',333334],['html','&',400001]]){
+   assert.throws(()=>C.codec(char.repeat(count),mode,'encode'),/결과가 2,000,000자/);
+  }
+  assert.equal(C.codec('&'.repeat(400000),'html','encode').length,2000000);
+ });
+ await test('Encoding chunks preserve a supplementary character across boundaries',()=>{
+  const text='a'.repeat(8191)+'😀한글';
+  for(const mode of ['url','html','unicode'])assert.equal(C.codec(C.codec(text,mode,'encode'),mode,'decode'),text);
+ });
  await test('base64 invalid padding',()=>assert.throws(()=>C.fromBase64('YQ=')));
  await test('base64 rejects binary as text',()=>assert.throws(()=>C.fromBase64('/w==')));
  await test('Base64 and HEX preserve leading BOM as text',()=>{for(const mode of ['base64','hex'])assert.equal(C.codec(C.codec('\ufeff한글',mode,'encode'),mode,'decode'),'\ufeff한글');});
@@ -43,7 +53,54 @@ async function test(name, fn){try{await fn();pass++;results.push({name,pass:true
  await test('text clean preserves ordering',()=>assert.equal(C.cleanText(' a \n\na\nb\r\n',{trim:true,empty:true,unique:true}),'a\nb'));
  await test('text natural sort and CRLF',()=>assert.equal(C.cleanText('item10\nitem2',{sort:'asc',eol:'crlf'}),'item2\r\nitem10'));
  await test('text stats code point vs units',()=>assert.deepEqual(C.textStats('A😀\r\n'),{chars:4,units:5,bytes:7,lines:2,crlf:1,lf:0}));
+ await test('SQL formatting changes only outer clause and list whitespace for four CRUD verbs',()=>{
+  const cases=[
+   ['select p.id,p.title from product p left outer join stock s ON s.id=p.id where p.n=001 and s.n>1 order by p.id;',
+    'select p.id,\n  p.title\nfrom product p\nleft outer join stock s ON s.id=p.id\nwhere p.n=001\n  and s.n>1\norder by p.id;'],
+   ["INSERT INTO t(a,b) VALUES(1,'하나,둘')", "INSERT INTO t(a,b)\nVALUES(1,'하나,둘')"],
+   ['UPDATE t SET a=-0,b=(select max(n) from z) WHERE id=900719925474099312345;',
+    'UPDATE t\nSET a=-0,\n  b=(select max(n) from z)\nWHERE id=900719925474099312345;'],
+   ['DELETE FROM t WHERE 1=0;', 'DELETE FROM t\nWHERE 1=0;']
+  ];
+  for(const [input,expected] of cases){
+   assert.equal(C.formatSql(input),expected);
+   assert.equal(C.formatSql(expected),expected);
+  }
+ });
+ await test('SQL hints, line comment endings, quoted identifiers and multibyte literals survive formatting',()=>{
+  const select = '/* ; */ SELECT /*+ INDEX(t) */ \'O\'\'Brien; WHERE\',';
+  const protectedText = '"order by", [from], `and`, \'a\r\nb\'';
+  const input = select+protectedText+' FROM t -- abc WHERE 1;\r\n WHERE /* SELECT -- */ id=1 // where;\r\n AND n=2; -- 끝\r\n';
+  assert.equal(C.formatSql(input),select+'\r\n  '+protectedText.split(', ').join(',\r\n  ')+
+   '\r\nFROM t -- abc WHERE 1;\r\n WHERE /* SELECT -- */ id=1 // where;\r\n AND n=2; -- 끝\r\n');
+ });
+ await test('SQL formatting rejects ambiguous literals, unsupported scripts and unmatched structure',()=>{
+  for(const input of ["SELECT 'unterminated",'select [unclosed','select (1','SELECT )','SELECT 1 /*x','SELECT /* /*bad*/ x',
+                      'SELECT 1; UPDATE x SET a=1;', ';shell', 'SELECT 1\n;read other.sql',
+                      "SELECT 'a\\b'", 'SELECT $tag$x where$tag$', "select q'[a\' where x]'",'/* comment only */']){
+   assert.throws(()=>C.formatSql(input),input);
+  }
+ });
+ await test('SQL format input and output caps fail without producing a partial query',()=>{
+  assert.throws(()=>C.formatSql('SELECT '+'x'.repeat(100_000)),/100,000/);
+  assert.throws(()=>C.formatSql('SELECT '+'a,'.repeat(48_000)+'b'),/200,000/);
+ });
+ await test('SQL intended for interactive CSQL rejects session command lines inside literals and comments',()=>{
+  for(const value of ["SELECT 'first\n  ;help\nlast';",'/* note\r\n\t;.\r\n*/ SELECT 1;']){
+   assert.throws(()=>C.formatSql(value),/CSQL 세션 명령/);
+  }
+  assert.equal(C.formatSql("SELECT ';help'\n  ;"), "SELECT ';help'\n  ;");
+ });
  await test('SQL escapes quotes and deduplicates',()=>{const r=C.makeSql("O'Brien\nA\nA");assert.equal(r.count,2);assert.ok(r.sql.includes("'O''Brien'"));});
+ await test('Archive listing treats colon filenames as local even when quoted',()=>{
+  const listing=D.commands.find(entry=>entry.id==='cmd-027');
+  assert.ok(listing.command.includes('tar --force-local '));
+  assert.equal(listing.risk,'load');
+ });
+ await test('Dialect-dependent comment marker rejected only in SQL column names',()=>{
+  assert.throws(()=>C.makeSql('ABC','DEMO.ITEM#ID'),/주석/);
+  assert.ok(C.makeSql('#ABC','DEMO.ITEM_ID').sql.includes("'#ABC'"));
+ });
  await test('SQL 1001 split OR',()=>{const r=C.makeSql(Array.from({length:1001},(_,i)=>''+i).join('\n'));assert.equal(r.groups,2);assert.ok(r.sql.includes('\nOR\n'));});
  await test('SQL numeric precision preserved',()=>assert.ok(C.makeSql('900719925474099312345','T.ID','number').sql.includes('900719925474099312345')));
  await test('SQL rejects DB-dependent backslash quoting and controls',()=>{for(const value of ["\\' OR 1=1 -- ",'C:\\logs\\app','a\u0000b','a\tb'])assert.throws(()=>C.makeSql(value),/바인드 변수/);});
@@ -95,6 +152,18 @@ foreach ($sample in $samples) {
  for(const s of ['* * * * * *','0 24 * * *','*/0 * * * *','0 0 * JAN MON','0 0 ? * *'])await test('cron rejects '+s,()=>assert.throws(()=>C.parseCron(s)));
  for(const alg of ['SHA-256','SHA-384','SHA-512'])await test('hash known abc '+alg,async()=>assert.equal(await C.digest(C.utf8('abc'),alg),createHash(alg.toLowerCase().replace('-','')).update('abc').digest('hex')));
  await test('Unicode ASCII boundaries',()=>{const r=C.characterRows('A한😀');assert.equal(r[0].ascii,65);assert.equal(r[1].ascii,null);assert.equal(r[2].cp,128512);assert.equal(r[2].hex,'F0 9F 98 80');});
+ await test('CSQL shell templates require a target and user, and never embed a password',()=>{
+  const params={DBUSER:'user_a',DBTARGET:'testdb'};
+  for(const id of ['cmd-123','cmd-124']){
+   const entry=D.commands.find(c=>c.id===id);
+   assert.equal(entry.shell,'bash');
+   const result=C.fillCommand(entry.command,params,D.params,entry.shell);
+   assert.ok(result.includes(id==='cmd-123'?' -r ':' --no-auto-commit '));
+   assert.ok(!/--password| -p /.test(result));
+   assert.throws(()=>C.fillCommand(entry.command,{...params,DBTARGET:'-x'},D.params,entry.shell));
+  }
+  for(const shell of ['sql','csql']) assert.throws(()=>C.fillCommand('sample {{DBUSER}}',params,D.params,shell));
+ });
  await test('Command catalog unique and supported metadata',()=>{assert.ok(D.commands.length>=93);assert.equal(new Set(D.commands.map(x=>x.id)).size,D.commands.length);for(const c of D.commands){assert.ok(['read','load','change'].includes(c.risk));assert.ok(['user','limited'].includes(c.permission));assert.ok(c.title&&c.note&&c.command);}});
  await test('All command placeholders resolved; Docker Go template retained',()=>{for(const c of D.commands){const params=Object.fromEntries(Object.entries(D.params).map(([k,v])=>[k,v.default||'1234']));const out=C.fillCommand(c.command,params,D.params,c.shell);assert.ok(!/\{\{[A-Z_]+\}\}/.test(out));}assert.ok(D.commands.find(c=>c.id==='cmd-080').command.includes('{{.State.Status}}'));});
  const report={environment:process.version,total:pass+fail,passed:pass,failed:fail,results};fs.writeFileSync(path.join(__dirname,'core-results.json'),JSON.stringify(report,null,2));console.log(`Core: ${pass} passed, ${fail} failed`);process.exitCode=fail?1:0;

@@ -1,7 +1,7 @@
 {
   "environment": "v22.17.0",
-  "total": 98,
-  "passed": 98,
+  "total": 108,
+  "passed": 108,
   "failed": 0,
   "results": [
     {
@@ -86,6 +86,14 @@
     },
     {
       "name": "base64url and no padding",
+      "pass": true
+    },
+    {
+      "name": "All expanding codecs bound output before displaying it",
+      "pass": true
+    },
+    {
+      "name": "Encoding chunks preserve a supplementary character across boundaries",
       "pass": true
     },
     {
@@ -201,7 +209,35 @@
       "pass": true
     },
     {
+      "name": "SQL formatting changes only outer clause and list whitespace for four CRUD verbs",
+      "pass": true
+    },
+    {
+      "name": "SQL hints, line comment endings, quoted identifiers and multibyte literals survive formatting",
+      "pass": true
+    },
+    {
+      "name": "SQL formatting rejects ambiguous literals, unsupported scripts and unmatched structure",
+      "pass": true
+    },
+    {
+      "name": "SQL format input and output caps fail without producing a partial query",
+      "pass": true
+    },
+    {
+      "name": "SQL intended for interactive CSQL rejects session command lines inside literals and comments",
+      "pass": true
+    },
+    {
       "name": "SQL escapes quotes and deduplicates",
+      "pass": true
+    },
+    {
+      "name": "Archive listing treats colon filenames as local even when quoted",
+      "pass": true
+    },
+    {
+      "name": "Dialect-dependent comment marker rejected only in SQL column names",
       "pass": true
     },
     {
@@ -386,6 +422,10 @@
     },
     {
       "name": "Unicode ASCII boundaries",
+      "pass": true
+    },
+    {
+      "name": "CSQL shell templates require a target and user, and never embed a password",
       "pass": true
     },
     {

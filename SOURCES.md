@@ -53,9 +53,9 @@
 - [.NET GetActiveTcpListeners](https://learn.microsoft.com/en-us/dotnet/api/system.net.networkinformation.ipglobalproperties.getactivetcplisteners?view=netframework-4.8.1)
   - NetTCPIP 명령이 없을 때 사용할 로컬 수신 주소·포트 조회. PID 제공이나 제한 언어 모드 우회를 뜻하지 않음.
 
-## DB 조회 예제
+## DB 클라이언트와 SQL 예제
 
-SQL은 해당 DB에 이미 접속한 승인된 클라이언트의 쿼리 창에서 사용합니다. 계정 비밀번호를 포함한 접속 문자열, 임의 입력의 SQL 보간, 데이터 수정 예제는 추가하지 않았습니다.
+SQL은 대상 DB에 연결한 클라이언트의 쿼리 창에 입력합니다. CUBRID에서는 먼저 SSH 셸에서 CSQL에 접속합니다. CSQL 세션 명령과 SQL 예시는 고정된 원문이며, 접속 비밀번호는 실제 클라이언트의 프롬프트에서 입력합니다.
 
 - [Oracle SYS_CONTEXT](https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/SYS_CONTEXT.html), [Oracle NLS_SESSION_PARAMETERS](https://docs.oracle.com/en/database/oracle/oracle-database/19/refrn/NLS_SESSION_PARAMETERS.html)
   - 세션 계정·스키마·DB 이름과 세션 NLS 설정 조회.
@@ -67,6 +67,12 @@ SQL은 해당 DB에 이미 접속한 승인된 클라이언트의 쿼리 창에�
   - 기존 PostgreSQL 환경에서도 사용할 수 있는 접속 정보와 설정 조회 구문.
 - [CUBRID 9.3 Process Control](https://www.cubrid.org/manual/en/9.3.0/admin/control.html)
   - 기존 `cubrid broker status`, `cubrid service status` 예제의 조회 구문 확인.
+
+CUBRID의 클라이언트/서버 모드, 읽기 전용 접속, 수동 커밋 접속과 세션 명령을 10.1·11.2 매뉴얼과 대조했습니다. 설치 버전의 옵션은 SSH 셸에서 `csql`, 접속 후 세션 명령은 `csql>`에서 `;help`로 확인합니다. [CSQL 10.1](https://cubrid-manual.readthedocs.io/en/latest/csql.html) · [CSQL 11.2](https://www.cubrid.org/manual/en/11.2/csql.html)
+
+네 가지 기본 쿼리는 가상의 테이블과 키를 사용합니다. INSERT·UPDATE·DELETE의 각 줄은 주석으로 시작하므로 편집기에서 테이블·값·조건을 검토한 뒤 사용합니다. [SELECT](https://cubrid-manual.readthedocs.io/en/latest/sql/query/select.html) · [INSERT](https://cubrid-manual.readthedocs.io/en/latest/sql/query/insert.html) · [UPDATE](https://cubrid-manual.readthedocs.io/en/latest/sql/query/update.html) · [DELETE](https://www.cubrid.org/manual/en/11.2/sql/query/delete.html)
+
+GNU tar는 콜론이 포함된 아카이브 이름을 원격 경로로 해석할 수 있어 로컬 목록 조회 예시에 `--force-local`을 사용합니다. [GNU tar 아카이브 파일명](https://www.gnu.org/software/tar/manual/html_node/file.html)
 
 ## 해석 주의
 
@@ -80,3 +86,5 @@ SQL은 해당 DB에 이미 접속한 승인된 클라이언트의 쿼리 창에�
 ## 갤럭시 파일 열기 안내
 
 - 삼성 공식 [다운로드 파일과 내 파일 위치](https://www.samsung.com/uk/support/mobile-devices/where-can-i-find-downloaded-files-on-my-samsung-galaxy-smartphone/): 앱스에서 내 파일 검색, 다운로드 분류, 앱별 저장 위치 차이를 확인했습니다(2026-10-24). 이 문서는 임의 로컬 HTML의 JavaScript·클립보드 지원을 보증하지 않습니다.
+
+CSQL 대화형 입력이 따옴표나 주석 안의 줄 시작 세션 명령도 인식하는 경우를 고려하여, SQL 정렬기는 이 형태를 감지하면 원문을 유지하고 출력을 중단합니다. [CUBRID CSQL 매뉴얼 원문 · Session Commands](https://github.com/CUBRID/cubrid-manual/blob/develop/en/csql.rst#session-commands)

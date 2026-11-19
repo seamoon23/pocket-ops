@@ -9,7 +9,7 @@ Maintain a small, attractive Korean-language offline utility pocket for an opera
 - `src/shell.html`: document, application containers, CSP placeholders.
 - `src/styles.css`: responsive system-font UI, light/dark tokens, inline SVG styling.
 - `src/data.js`: generated tool/catalog metadata (`window.PocketData`).
-- `make_data.py`: human-editable source of the 121 catalog entries; run it to regenerate data.js after catalog edits.
+- `make_data.py`: human-editable source of the 135 catalog entries; run it to regenerate data.js after catalog edits.
 - `src/core.js`: dependency-free pure transformations (`window.PocketCore`).
 - `src/app.js`: routes, UI binding, safety prompts, import/export, in-memory views.
 - `src/release.js`: immutable source recipe to offline ZIP; never serialize live inputs or configuration.
@@ -64,7 +64,7 @@ Node's ICU EUC-KR decoder in the tested runtime did not map some Windows-949 ext
 
 ## Adding a command
 
-Add an entry in `make_data.py`; use a unique ID and stable IDs for compatibility with favorites. Include concise Korean title, group, tags, exact command, notes, risk (`read`, `load`, `change`), permission (`user`, `limited`), shell (`bash`, `powershell`, or static `sql` queries without interpolation), domain, prerequisite and explicit alternative IDs. Templates use `{{UPPER_CASE}}`; Docker's literal `{{.State.Status}}` is intentionally not a Pocket Ops placeholder.
+Add an entry in `make_data.py`; use a unique ID and stable IDs for compatibility with favorites. Include concise Korean title, group, tags, exact command, notes, risk (`read`, `load`, `change`), permission (`user`, `limited`), shell (`bash`, `powershell`, or static `sql` queries or `csql` session commands without interpolation), domain, prerequisite and explicit alternative IDs. Templates use `{{UPPER_CASE}}`; Docker's literal `{{.State.Status}}` is intentionally not a Pocket Ops placeholder.
 
 PID/port/numeric fields must validate before interpolation; string and path fields must be shell-quoted. A quoted string is not automatically protected against option parsing: path values starting with `-` are rejected and should be entered with `./`. Avoid destructive examples; put reads before writes and leave real process IDs blank.
 
@@ -82,4 +82,4 @@ Storage key `pocket-ops:v1`. Fields: version, theme, toolFavs, cmdFavs, customCo
 
 ## Product direction for a later iteration
 
-Start with feedback from actual authorized offline use, especially copied command shapes, Korean labels, keyboard search and restrictions. Candidate additions are an environment-specific command pack, checklist/runbook view and a manual log-redaction preview. They are not implemented in v0.3.0. Do not add cloud AI, background sync or user accounts to implement them.
+Start with feedback from actual authorized offline use, especially copied command shapes, Korean labels, keyboard search and restrictions. Candidate additions are an environment-specific command pack, checklist/runbook view and a manual log-redaction preview. They are not implemented in v0.4.0. Do not add cloud AI, background sync or user accounts to implement them.

@@ -10,9 +10,20 @@ const lines = s => s===''?[]:s.replace(/\r\n?/g,'\n').split('\n');
 function fromHex(input){
  const s=limit(input).replace(/\b0x/gi,'').replace(/[\s:\-]/g,'');
  if(s.length%2 || /[^0-9a-f]/i.test(s)) fail('HEX는 두 자리 바이트로 입력하세요. 예: ED 95 9C 또는 ED959C');
- return Uint8Array.from(s.match(/.{2}/g)||[],v=>parseInt(v,16));
+ const bytes=new Uint8Array(s.length/2);
+ for(let i=0;i<bytes.length;i++) bytes[i]=parseInt(s.slice(i*2,i*2+2),16);
+ return bytes;
 }
-function toBase64(text){ const bytes=utf8(limit(text)); let binary=''; for(let i=0;i<bytes.length;i+=8192) binary+=String.fromCharCode(...bytes.subarray(i,i+8192)); return btoa(binary); }
+const checkCodecSize = size => {
+ if(size > 2_000_000) fail('변환 결과가 2,000,000자를 넘습니다. 입력을 나누어 주세요.');
+};
+function toBase64(text){
+ const bytes=utf8(limit(text));
+ checkCodecSize(4*Math.ceil(bytes.length/3));
+ let binary='';
+ for(let i=0;i<bytes.length;i+=8192) binary+=String.fromCharCode(...bytes.subarray(i,i+8192));
+ return btoa(binary);
+}
 function fromBase64(input){
  let s=limit(input).replace(/\s/g,'').replace(/-/g,'+').replace(/_/g,'/');
  if(!/^[A-Za-z0-9+/]*={0,2}$/.test(s)||s.length%4===1) fail('올바른 Base64 / Base64URL 문자열이 아닙니다.');
@@ -22,7 +33,8 @@ function fromBase64(input){
  return decode(Uint8Array.from(binary,c=>c.charCodeAt(0)),'utf-8',true,true);
 }
 function unicodeEscape(text){
- let out='';for(let i=0;i<limit(text).length;i++){const n=text.charCodeAt(i),ch=text[i]; out+= ch==='\\'?'\\\\':(n<32||n>126)?'\\u'+n.toString(16).padStart(4,'0'):ch; } return out;
+ limit(text);
+ let out='';for(let i=0;i<text.length;i++){const n=text.charCodeAt(i),ch=text[i]; out+= ch==='\\'?'\\\\':(n<32||n>126)?'\\u'+n.toString(16).padStart(4,'0'):ch; } return out;
 }
 function unicodeUnescape(text){
  limit(text);let out='';const simple={n:'\n',r:'\r',t:'\t',b:'\b',f:'\f','\\':'\\','"':'"',"'":"'"};
@@ -50,13 +62,33 @@ function htmlUnescape(text){
   return String.fromCodePoint(cp);
  });
 }
+function boundedEncode(text,encode){
+ const parts=[];
+ let length=0;
+ for(let start=0;start<text.length;){
+  let end=Math.min(start+8192,text.length);
+  // Keep the two halves of a Unicode character in the same chunk for URL encoding.
+  if(end<text.length && /[\ud800-\udbff]/.test(text[end-1]) && /[\udc00-\udfff]/.test(text[end])) end++;
+  const part=encode(text.slice(start,end));
+  length+=part.length;
+  checkCodecSize(length);
+  parts.push(part);
+  start=end;
+ }
+ return parts.join('');
+}
 function codec(text,mode,direction,plus=false){
  limit(text);const enc=direction==='encode';
  if(mode==='base64')return enc?toBase64(text):fromBase64(text);
- if(mode==='url')return enc?encodeURIComponent(text):decodeURIComponent(plus?text.replace(/\+/g,' '):text);
- if(mode==='hex')return enc?hex(utf8(text)):decode(fromHex(text),'utf-8',true,true);
- if(mode==='unicode')return enc?unicodeEscape(text):unicodeUnescape(text);
- if(mode==='html')return enc?htmlEscape(text):htmlUnescape(text);
+ if(mode==='url')return enc?boundedEncode(text,encodeURIComponent):decodeURIComponent(plus?text.replace(/\+/g,' '):text);
+ if(mode==='hex'){
+  if(!enc)return decode(fromHex(text),'utf-8',true,true);
+  const bytes=utf8(text);
+  checkCodecSize(Math.max(0,bytes.length*3-1));
+  return hex(bytes);
+ }
+ if(mode==='unicode')return enc?boundedEncode(text,unicodeEscape):unicodeUnescape(text);
+ if(mode==='html')return enc?boundedEncode(text,htmlEscape):htmlUnescape(text);
  fail('지원하지 않는 변환입니다.');
 }
 let cp1252;
@@ -101,12 +133,85 @@ function textStats(s){const raw=limit(s);return{chars:Array.from(raw).length,uni
 function cleanText(text,options={}){
  let arr=lines(limit(text));if(options.trim)arr=arr.map(x=>x.trim());if(options.empty)arr=arr.filter(x=>x.trim()!=='');
  if(options.unique)arr=Array.from(new Set(arr));
- if(options.sort==='asc')arr.sort((a,b)=>a.localeCompare(b,'ko',{numeric:true}));
- if(options.sort==='desc')arr.sort((a,b)=>b.localeCompare(a,'ko',{numeric:true}));
+ if(options.sort==='asc'||options.sort==='desc'){
+  const compare=new Intl.Collator('ko',{numeric:true}).compare;
+  arr.sort(options.sort==='asc'?compare:(a,b)=>compare(b,a));
+ }
  const ending=options.eol==='crlf'?'\r\n':'\n';return arr.join(ending);
 }
+// Move only top-level token boundaries. The lexer copies all quoted and commented text verbatim.
+function formatSql(source) {
+ limit(source, 100_000);
+ // Interactive CSQL can process a line as a session command even inside an SQL literal or comment.
+ if (/^[ \t]*;[ \t]*[a-z.!]/im.test(source)) {
+  fail('줄 첫머리에 CSQL 세션 명령으로 읽힐 수 있는 내용이 있습니다. 문자열·주석 안에서도 인식될 수 있으므로 원문을 확인하세요.');
+ }
+ const tokens = /[ \t\r\n]+|--[^\r\n]*|\/\/[^\r\n]*|\/\*|[A-Za-z0-9_\u0080-\uFFFF]+|[\s\S]/gy;
+ const startsStatement = /^(SELECT|INSERT|UPDATE|DELETE)$/i;
+ const majorClause = /^(FROM|WHERE|GROUP|ORDER|HAVING|LIMIT|SET|VALUES|UNION|EXCEPT|INTERSECT|JOIN|LEFT|RIGHT|INNER|CROSS|FULL)$/i;
+ const newline = source.match(/\r\n|\r|\n/)?.[0] || '\n';
+ let output = '', gap = '', previous = '', depth = 0, started = false, ended = false;
+ let match;
+ while ((match = tokens.exec(source)) !== null) {
+  let token = match[0];
+  if (/^[ \t\r\n]/.test(token)) {
+   gap = token;
+   continue;
+  }
+  const start = match.index;
+  const comment = token.startsWith('--') || token.startsWith('//') || token === '/*';
+  if (token === '/*') {
+   const end = source.indexOf('*/', tokens.lastIndex);
+   if (end < 0 || source.slice(tokens.lastIndex, end).includes('/*')) fail('닫히지 않았거나 중첩된 블록 주석이 있습니다.');
+   tokens.lastIndex = end + 2;
+   token = source.slice(start, tokens.lastIndex);
+  } else if (['\'', '"', '`', '['].includes(token)) {
+   if (!gap && /^(n?q)$/i.test(previous) && token === '\'') fail('Oracle 대체 인용문은 지원하지 않습니다.');
+   const close = token === '[' ? ']' : token;
+   let cursor = tokens.lastIndex;
+   for (;;) {
+    const end = source.indexOf(close, cursor);
+    if (end < 0) fail('문자열 또는 인용 식별자가 닫히지 않았습니다.');
+    cursor = end + 1;
+    if (source[cursor] !== close) break;
+    cursor++;
+   }
+   tokens.lastIndex = cursor;
+   token = source.slice(start, cursor);
+   if (token.includes('\\')) fail('역슬래시의 해석은 DB 설정에 따라 달라 정렬을 중단했습니다.');
+  } else if (/^[\\$#{}\x00-\x08\x0B\x0C\x0E-\x1F]$/.test(token)) {
+   fail('지원 범위 밖의 특수 구문이 있습니다. CUBRID 기본 SQL 한 문장을 입력하세요.');
+  }
+  if (!comment) {
+   if (!started && !startsStatement.test(token)) fail('SELECT, INSERT, UPDATE, DELETE 중 한 문장을 입력하세요.');
+   if (ended) fail('SQL 한 문장씩 정렬하세요. CSQL 세션 명령은 제외하세요.');
+   if (depth === 0 && !/[\r\n]/.test(gap)) {
+    if (previous === ',' && token !== ';') gap = newline + '  ';
+    else if (gap && /^(AND|OR)$/i.test(token)) gap = newline + '  ';
+    else if (gap && majorClause.test(token) && !/^(DELETE|LEFT|RIGHT|INNER|OUTER|CROSS|FULL)$/i.test(previous)) gap = newline;
+   }
+   started = true;
+   if (token === '(') depth++;
+   if (token === ')' && --depth < 0) fail('닫는 괄호의 짝을 확인하세요.');
+   if (token === ';') {
+    if (depth) fail('괄호 안의 문장 구분자는 지원하지 않습니다.');
+    ended = true;
+   }
+  }
+  output += gap + token;
+  if (output.length > 200_000) fail('정렬 결과는 200,000자 이하로 나누어 주세요.');
+  gap = '';
+  previous = token;
+ }
+ if (!started) fail('정렬할 SQL 한 문장을 입력하세요.');
+ if (depth) fail('여는 괄호의 짝을 확인하세요.');
+ if (output.length + gap.length > 200_000) fail('정렬 결과는 200,000자 이하로 나누어 주세요.');
+ return output + gap;
+}
+
 function makeSql(text,column='ITEM_ID',kind='string',chunk=1000,unique=true,trim=true){
- limit(text,1_000_000);limit(column,512);if(!/^[A-Za-z_][\w$#]*(?:\.[A-Za-z_][\w$#]*)*$/.test(column))fail('컬럼명은 영문·숫자·_·$·# 및 점(.)만 사용하며 숫자로 시작할 수 없습니다.');
+ limit(text,1_000_000);limit(column,512);
+ if(!/^[A-Za-z_][\w$]*(?:\.[A-Za-z_][\w$]*)*$/.test(column))fail('컬럼명에는 영문·숫자·_·$ 및 구분점(.)만 사용하세요. 각 이름은 영문이나 _로 시작해야 합니다. #은 DB에 따라 주석으로 해석됩니다.');
  if(!Number.isInteger(chunk)||chunk<1||chunk>1000)fail('묶음 크기는 1~1000 정수로 지정하세요.');
  let vals=lines(text);if(trim)vals=vals.map(x=>x.trim());vals=vals.filter(x=>x!=='');if(unique)vals=Array.from(new Set(vals));
  if(!vals.length)fail('값을 한 줄에 하나씩 입력하세요. 빈 IN 절은 만들지 않습니다.');if(vals.length>20_000)fail('값은 20,000개 이하로 나누어 주세요.');
@@ -155,6 +260,7 @@ function permission(octal){
 function shellQuote(s,shell='bash'){limit(s,4096);if(/[\u0000-\u001f\u007f]/.test(s))fail('매개변수에 개행·제어문자를 넣을 수 없습니다.');return shell==='powershell'?"'"+s.replace(/['\u2018-\u201b]/g,ch=>ch+ch)+"'":"'"+s.replace(/'/g,"'\"'\"'")+"'";}
 function fillCommand(template,values,spec,shell='bash'){
  return limit(template,16_000).replace(/\{\{([A-Z_]+)\}\}/g,(_,name)=>{
+  if(shell==='sql'||shell==='csql')fail('SQL과 CSQL 세션 명령은 고정 예시만 지원합니다.');
   const v=limit(String(values[name]===undefined?'':values[name]),4096);if(!v.trim())fail(name+' 값을 입력하세요.');const kind=(spec[name]||{}).kind;
   if(kind==='path'&&v.startsWith('-'))fail('하이픈으로 시작하는 경로에는 ./를 앞에 붙이세요. 명령 옵션으로 해석되지 않도록 차단했습니다.');
   if(kind==='identifier'&&v.startsWith('-'))fail(name+'는 하이픈(-)으로 시작할 수 없습니다. 명령 옵션으로 해석되지 않도록 차단했습니다.');
@@ -205,5 +311,5 @@ async function digest(bytes,algorithm='SHA-256'){
 function characterRows(text){
  limit(text,40_000);const out=[];for(const ch of text){if(out.length>=2000)fail('문자 검사는 코드 포인트 2,000개 이하로 나누어 주세요.');const cp=ch.codePointAt(0);out.push({ch,cp,unicode:'U+'+cp.toString(16).toUpperCase().padStart(4,'0'),hex:hex(utf8(ch)),ascii:cp<=127?cp:null});}return out;
 }
-global.PocketCore={limit,utf8,decode,hex,fromHex,lines,toBase64,fromBase64,unicodeEscape,unicodeUnescape,htmlEscape,htmlUnescape,codec,repair,singleByteEncode,fileInfo,formatJson,textStats,cleanText,makeSql,diffLines,filterLogs,timestamp,dateInputToMs,formatTime,permission,shellQuote,fillCommand,parseCron,nextCron,digest,characterRows};
+global.PocketCore={limit,utf8,decode,hex,fromHex,lines,toBase64,fromBase64,unicodeEscape,unicodeUnescape,htmlEscape,htmlUnescape,codec,repair,singleByteEncode,fileInfo,formatJson,textStats,cleanText,formatSql,makeSql,diffLines,filterLogs,timestamp,dateInputToMs,formatTime,permission,shellQuote,fillCommand,parseCron,nextCron,digest,characterRows};
 })(typeof window!=='undefined'?window:globalThis);

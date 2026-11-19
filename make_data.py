@@ -3,10 +3,11 @@ import re
 from pathlib import Path
 commands=[]
 # IDs 001–093 belong to v0.1.0 favorites. Keep this order; append new entries.
-def add(title,group,command,note,tags='',risk='read',permission='user',shell='bash',prerequisite=''):
-    domain='windows' if shell=='powershell' else 'db' if group=='DB · 연동' else 'linux'
-    if shell=='sql' and re.search(r'\{\{[A-Z_]+\}\}',command):
-        raise ValueError('SQL examples must be static: shell quoting is not SQL parameter binding.')
+def add(title,group,command,note,tags='',risk='read',permission='user',shell='bash',prerequisite='',domain=None):
+    if domain is None:
+        domain='windows' if shell=='powershell' else 'db' if group=='DB · 연동' else 'linux'
+    if shell in ('sql', 'csql') and re.search(r'\{\{[A-Z_]+\}\}',command):
+        raise ValueError('SQL and CSQL session examples must be static.')
     if not prerequisite:
         prerequisite=('Windows 11 · 기본 Windows PowerShell 5.1 이상' if shell=='powershell' else
                       '기존에 설치·승인된 해당 DB 클라이언트와 접속 권한' if shell=='sql' else
@@ -40,7 +41,7 @@ add('큰 파일 찾기 · 100MB 이상','디스크 · 파일',"find {{DIR}} -max
 add('최근 60분 변경 파일','디스크 · 파일',"find {{DIR}} -maxdepth 3 -type f -mmin -60 -print",'수정 시각 기준입니다. 생성 시간이나 실제 배포 시간을 보장하지 않습니다.','배포 변경 파일 시간','load')
 add('파일 상세 정보 확인','디스크 · 파일','stat -- {{FILE}}','권한, 크기, 접근·변경 시각을 확인합니다. ctime은 생성 시각이 아닙니다.','stat 날짜 파일정보')
 add('심볼릭 링크 실제 경로','디스크 · 파일','readlink -f -- {{PATH}}','GNU readlink 기준입니다. 공용 Tomcat 링크가 실제 어떤 설치 경로를 가리키는지 확인합니다.','tomcat 링크 심볼릭 경로')
-add('압축 파일 내용만 확인','디스크 · 파일','tar -tzf {{ARCHIVE}}','gzip tar 아카이브의 파일 목록만 표시합니다. 추출하거나 덮어쓰지 않습니다.','tar gz 압축 목록')
+add('압축 파일 내용만 확인','디스크 · 파일','tar --force-local -tzf {{ARCHIVE}}','목록을 읽기 위해 압축 파일 전체를 검사합니다. 파일명에 콜론이 있어도 로컬 파일로 해석합니다. 큰 파일은 점검 시간을 고려하세요.','tar gz 압축 목록',risk='load',prerequisite='Linux의 기존 GNU tar 및 gzip · 로컬 파일 읽기 권한')
 add('파일 SHA-256 확인','디스크 · 파일','sha256sum -- {{FILE}}','반입 전후 같은 파일인지 해시를 비교합니다. 해시만으로 공급자의 신원을 검증하지는 못합니다.','checksum 무결성 반입')
 add('파일 인코딩 추정','디스크 · 파일','file --mime -- {{FILE}}','file 명령의 추정 결과입니다. 인코딩을 확정하는 판정은 아닙니다.','문자셋 utf8 euc-kr 한글')
 add('바이너리 앞부분 64바이트','디스크 · 파일','od -An -tx1 -N64 -- {{FILE}}','별도 xxd가 없는 환경에서 BOM이나 파일 헤더를 확인할 수 있습니다.','hex 16진수 xxd 대체 BOM')
@@ -136,6 +137,52 @@ add('MySQL · MariaDB 계정 · 버전','DB · 연동','SELECT VERSION() AS serv
 add('MySQL · MariaDB 문자셋 · 시간대','DB · 연동','SELECT @@character_set_client AS client_charset,\n       @@character_set_connection AS connection_charset,\n       @@character_set_results AS result_charset,\n       @@session.time_zone AS session_time_zone;','현재 세션의 변수를 조회합니다. 테이블·컬럼별 문자셋을 보장하지 않으며 time_zone이 SYSTEM이면 서버 OS 시간대의 영향도 확인하세요.','mysql mariadb sql 문자셋 시간대 한글',shell='sql')
 add('PostgreSQL 접속 계정 · 버전','DB · 연동','SELECT version(), current_database(), session_user, current_user;','기존 PostgreSQL 쿼리 창에서 실행하세요. 접속 DB와 세션 사용자·현재 권한 사용자를 조회합니다. 서버 버전 문자열을 반출할 때 내부 정보 여부를 확인하세요.','postgresql postgres sql 버전 접속 계정',shell='sql')
 add('PostgreSQL 문자셋 · 시간대','DB · 연동',"SELECT name, setting\nFROM pg_settings\nWHERE name IN ('server_encoding', 'client_encoding', 'TimeZone')\nORDER BY name;",'PostgreSQL 설정 뷰에서 해당 세션에 보이는 문자셋과 시간대를 읽습니다. 설정을 변경하지 않습니다.','postgresql postgres sql 문자셋 시간대 한글',shell='sql')
+# A CSQL session command is entered at csql>, never at a Linux or generic SQL prompt.
+csql_group = 'CUBRID · CSQL'
+shell_path = '승인된 SSH 도구 → 대상 Linux 서버 접속 → 셸 프롬프트 · 설치된 CUBRID CSQL 필요'
+session_path = 'SSH 셸 → CSQL 연결 → csql> 에 한 줄 입력'
+sql_path = 'CUBRID 접속 → csql> 또는 CUBRID SQL 편집기 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인'
+write_path = sql_path + ' · 변경 권한과 현재 세션의 자동 커밋 OFF 확인'
+
+add('CSQL 실행 옵션 확인', csql_group, 'csql',
+    'DB 이름을 생략하면 설치된 버전과 옵션 목록을 표시합니다. DB 이름 누락 메시지는 이 확인 과정에서 정상입니다.',
+    '도움말 옵션 버전', prerequisite=shell_path, domain='db')
+add('CSQL 조회 전용 접속', csql_group, 'csql -C -r -u {{DBUSER}} {{DBTARGET}}',
+    '클라이언트/서버 모드(-C)와 읽기 전용(-r)으로 접속합니다. 계정에 비밀번호가 있으면 CSQL의 비밀번호 프롬프트에 직접 입력하세요.',
+    'SSH 로그인 접속 읽기 전용', prerequisite=shell_path, domain='db')
+add('CSQL 변경 작업용 접속', csql_group, 'csql -C --no-auto-commit -u {{DBUSER}} {{DBTARGET}}',
+    '변경 작업 전용 세션을 엽니다. 비밀번호는 CSQL 프롬프트에 입력하세요. 접속 후 ;database로 대상을, ;autocommit으로 OFF 표시를 확인합니다.',
+    'SSH 로그인 접속 수동 커밋 트랜잭션', risk='change', permission='limited', prerequisite=shell_path, domain='db')
+
+for title, command, note, risk in [
+    ('CSQL 세션 도움말', ';help', '현재 설치 버전이 지원하는 세션 명령을 표시합니다. 맨 앞에 세미콜론을 쓰고 Enter를 누릅니다.', 'read'),
+    ('CSQL 접속 대상 확인', ';database', '현재 연결한 DB 이름과 호스트를 확인합니다. 예상한 대상인지 변경 작업 전에 비교하세요.', 'read'),
+    ('CSQL 테이블 구조 확인', ';schema pocket_ops_sample', '예시 이름을 확인할 테이블명으로 바꿔 입력하세요. 컬럼, 타입, 제약 조건을 보고 SQL에 사용할 키를 확인합니다.', 'read'),
+    ('CSQL 자동 커밋 상태 확인', ';autocommit', '현재 설정을 표시합니다. ON이면 실행한 변경이 즉시 확정될 수 있습니다. 변경 작업은 새 수동 커밋 세션에서 시작하세요.', 'read'),
+    ('CSQL 트랜잭션 확정', ';commit', '현재 트랜잭션의 미확정 변경 전체를 저장합니다. 영향 행 수와 결과를 확인한 후 선택하세요. 확정 뒤에는 ;rollback으로 되돌릴 수 없습니다.', 'change'),
+    ('CSQL 트랜잭션 취소', ';rollback', '현재 트랜잭션의 미확정 변경 전체를 취소합니다. 같은 세션의 다른 작업까지 포함되므로 범위를 확인하세요.', 'change'),
+    ('CSQL 종료', ';exit', '미확정 작업을 먼저 확정하거나 취소한 뒤 종료합니다. 종료 시 나타나는 질문은 읽고 응답하세요.', 'change'),
+]:
+    add(title, csql_group, command, note, '세션 명령', risk=risk, shell='csql', prerequisite=session_path, domain='db')
+
+add('SELECT · 키로 대상 행 확인', csql_group,
+    'SELECT item_id, item_name\nFROM pocket_ops_sample\nWHERE item_id = 1001;',
+    'item_id가 기본 키인 가상 테이블 예시입니다. 실제 키와 조건에 맞게 수정해 조회하고, 변경 전 대상 행과 현재 값을 확인하세요.',
+    '조회 기본 쿼리 프리셋', shell='sql', prerequisite=sql_path, domain='db')
+for title, statement, note in [
+    ('INSERT · 한 행 추가', "INSERT INTO pocket_ops_sample (item_id, item_name)\nVALUES (1001, 'SAMPLE');",
+     '대상 키가 비어 있는지, 컬럼 타입과 필수 값이 맞는지 확인하세요.'),
+    ('UPDATE · 키와 기존 값으로 수정', "UPDATE pocket_ops_sample\nSET item_name = 'UPDATED'\nWHERE item_id = 1001 AND item_name = 'SAMPLE';",
+     '같은 WHERE 조건을 SELECT로 먼저 조회하고 변경할 행 수와 기존 값을 확인하세요.'),
+    ('DELETE · 키와 기존 값으로 삭제', "DELETE FROM pocket_ops_sample\nWHERE item_id = 1001 AND item_name = 'SAMPLE';",
+     '같은 WHERE 조건을 SELECT로 먼저 조회하고 삭제할 행 수와 복구 방법을 확인하세요.'),
+]:
+    # Disable every line on copy, including when a sample table happens to exist.
+    commented = '\n'.join('-- ' + line for line in statement.splitlines())
+    add(title, csql_group, commented,
+        note + ' 편집기에서 예시 이름·값을 바꾼 뒤 각 줄의 -- 를 지우고 한 문장만 실행하세요. 반영 전 영향 행 수를 확인하세요.',
+        '변경 기본 쿼리 프리셋', risk='change', permission='limited', shell='sql', prerequisite=write_path, domain='db')
+
 commands_by_id={entry['id']:entry for entry in commands}
 for original,alternative in [
     ('cmd-010',memory_fallback),('cmd-009',load_fallback),('cmd-013',process_fallback),
@@ -170,6 +217,8 @@ for command_id,requirement in {
     'cmd-087':'Linux의 기존 iproute2 · 로컬 Oracle 기본 포트 가정',
 }.items(): commands_by_id[command_id]['prerequisite']=requirement
 params={
+'DBUSER':{'label':'승인된 DB 계정명','default':'','kind':'identifier'},
+'DBTARGET':{'label':'대상 DB 이름 또는 DB이름@승인된호스트','default':'','kind':'identifier'},
 'BIN':{'label':'명령어 이름','default':'java','kind':'identifier'},
 'PATTERN':{'label':'검색 문자열 / 패턴','default':'ERROR','kind':'string'},
 'PID':{'label':'PID · 실제 값으로 교체','default':'','kind':'pid'},
@@ -196,6 +245,7 @@ tools=[
 ('diff','변경점 비교','두 설정 파일 사이의 차이를 한눈에.','diff','rose','데이터 작업','BEFORE · AFTER','diff 비교 변경 설정 config 차이'),
 ('logs','로그 돋보기','포함·제외 검색과 오류 주변 문맥을 모아요.','search','orange','서버 운영','FILTER · CONTEXT','log 로그 오류 에러 exception error warn info 필터 grep'),
 ('sql','SQL IN 도우미','목록을 안전한 따옴표와 분할 조건으로.','database','accent','데이터 작업','QUOTE · CHUNK','sql in oracle 오라클 1000 db 쿼리 리스트'),
+('sqlformat','SQL 쿼리 정렬','SQL 절을 줄별로 나누어 읽고 복사하세요.','database','green','데이터 작업','SQL FORMAT','CUBRID CSQL SELECT INSERT UPDATE DELETE 포맷 SQL 쿼리 정렬'),
 ('unicode','문자 · ASCII 검사기','눈에 안 보이는 공백과 문자 코드를 확인해요.','scan','rose','변환 도구','ASCII · UNICODE','아스키 ascii 문자 코드 16진수 decimal 한글 utf8 바이트 invisible'),
 ('time','시간 번역기','Unix 타임스탬프를 KST·UTC로 나란히.','clock','green','서버 운영','UNIX · KST · UTC','시간 날짜 타임스탬프 timestamp epoch kst utc 초 밀리초'),
 ('chmod','권한 계산기','rwx 체크로 숫자 권한과 명령어를 확인해요.','lock','orange','서버 운영','RWX · OCTAL','chmod 권한 퍼미션 755 644 640 777 계산'),
@@ -204,5 +254,5 @@ tools=[
 ('regex','정규식 실험실','매치와 캡처를 확인하는 작은 테스트 공간.','regex','rose','데이터 작업','MATCH · CAPTURE','regex 정규식 regexp 검색 패턴 매칭')
 ]
 tool_data=[dict(zip(['id','title','desc','icon','color','group','tag','keywords'],x)) for x in tools]
-Path(__file__).resolve().parent.joinpath('src/data.js').write_text('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.3.0',commands=commands,params=params,tools=tool_data),ensure_ascii=False,indent=2)+';\n',encoding='utf-8')
+Path(__file__).resolve().parent.joinpath('src/data.js').write_text('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.4.0',commands=commands,params=params,tools=tool_data),ensure_ascii=False,indent=2)+';\n',encoding='utf-8')
 print('Commands:',len(commands),'Tools:',len(tools))

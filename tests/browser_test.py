@@ -45,12 +45,12 @@ with sync_playwright() as p:
     def download(selector):
         with page.expect_download() as d: click(selector)
         return Path(d.value.path()).read_bytes()
-    check('Home has 14 tools',lambda:equal(page.locator('.tool-card').count(),14))
+    check('Home has 15 tools',lambda:equal(page.locator('.tool-card').count(),15))
     check('Unavailable opaque-origin storage is explained',lambda:contains(txt('#storage-warning'),'저장소를 사용할 수 없습니다'))
-    for route in ['commands','encoding','codec','json','text','diff','logs','sql','unicode','time','chmod','cron','hash','regex','settings','favorites']:
+    for route in ['commands','encoding','codec','json','text','diff','logs','sql','sqlformat','unicode','time','chmod','cron','hash','regex','settings','favorites']:
         check('Route '+route,lambda r=route:(go(r),equal(page.locator('#view h1').count(),1)))
     go('commands')
-    check('121 built-in commands visible',lambda:equal(page.locator('.command-card').count(),121))
+    check('135 built-in commands visible',lambda:equal(page.locator('.command-card').count(),135))
     def environment_tabs():
         for domain in ['windows','linux','db']:
             click('[data-command-domain="'+domain+'"]')
@@ -59,6 +59,24 @@ with sync_playwright() as p:
             assert expected>0
         click('[data-command-domain=""]')
     check('Environment tabs match catalog and expose DB editor guidance',environment_tabs)
+    def csql_workflow():
+        click('[data-command-domain="db"]')
+        click('[data-command-search="CSQL"]')
+        click('[data-command="cmd-123"]')
+        assert page.locator('#copy-command').is_disabled()
+        fill('#param-DBUSER','reader');fill('#param-DBTARGET','sampledb')
+        contains(v('#command-preview'),"csql -C -r -u 'reader' 'sampledb'")
+        click('#modal [data-close]')
+        click('[data-command="cmd-128"]');equal(v('#command-preview'),';autocommit');click('#modal [data-close]')
+        for cmd_id,verb in [('cmd-133','INSERT'),('cmd-134','UPDATE'),('cmd-135','DELETE')]:
+            click('[data-command="'+cmd_id+'"]')
+            draft=v('#command-preview');contains(draft,verb)
+            assert all(line.startswith('--') for line in draft.splitlines() if line.strip())
+            expect(page.locator('#copy-command')).to_be_disabled()
+            page.locator('#command-ack').check();expect(page.locator('#copy-command')).to_be_enabled()
+            click('#modal [data-close]')
+        click('[data-command-domain=""]');fill('#command-query','')
+    check('DB menu separates CSQL login and session commands from guarded SQL changes',csql_workflow)
     def alternative_command():
         command=page.evaluate('PocketData.commands.find(c=>c.alternatives.length)')
         click('[data-command="'+command['id']+'"]')
@@ -130,6 +148,19 @@ with sync_playwright() as p:
     def rejected_codec():
         page.locator('#codec-mode').select_option('hex');fill('#codec-input','ZZ');click('#codec-decode');equal(v('#codec-output'),'');contains(txt('#codec-status'),'HEX')
     check('Codec UI error clears previous output',rejected_codec)
+    def codec_exact_endings():
+        page.locator('#codec-mode').select_option('hex')
+        fill('#codec-input','41 0D 0A 42 0D 43')
+        click('#codec-decode')
+        equal(download('[data-download-id="codec-output"]'), b'A\r\nB\rC')
+        click('#codec-swap')
+        click('#codec-encode')
+        equal(v('#codec-output'),'41 0D 0A 42 0D 43')
+        fill('#codec-input','A\nB')
+        equal(v('#codec-output'),'')
+        click('#codec-encode')
+        equal(v('#codec-output'),'41 0A 42')
+    check('Codec output download and swap keep CRLF and CR until the input is edited',codec_exact_endings)
     go('json')
     check('JSON UI large integer token preservation',lambda:(click('#json-sample'),click('#json-pretty'),contains(v('#json-output'),'900719925474099312345'),contains(v('#json-output'),'1.2300')))
     check('JSON invalid input error',lambda:(fill('#json-input','{"a":}'),click('#json-pretty'),equal(v('#json-output'),''),contains(txt('#json-status'),'오류')))
@@ -188,10 +219,16 @@ with sync_playwright() as p:
     def regex_output_budget():
         fill('#regex-input','a'*200000);fill('#regex-pattern','(?=(.*))');fill('#regex-flags','g');click('#regex-run')
         expect(page.locator('#regex-output')).to_have_value(re.compile(r'^\['),timeout=5000)
-        assert len(v('#regex-output'))<2200000
+        assert len(v('#regex-output'))<=500000
         contains(txt('#regex-status'),'500,000자')
         click('#theme-toggle')
     check('Regex capture amplification stops at a bounded output size',regex_output_budget)
+    def regex_empty_captures_budget():
+        fill('#regex-input','a'*1000);fill('#regex-pattern','()'*300+'a');fill('#regex-flags','g');click('#regex-run')
+        expect(page.locator('#regex-status')).to_contain_text('500,000자')
+        output=v('#regex-output')
+        assert 0 < len(json.loads(output)) < 1000 and len(output) <= 500000
+    check('Serialized regex output includes structural overhead in its size cap', regex_empty_captures_budget)
     def regex_stale_error():
         fill('#regex-input','a'*32+'!');fill('#regex-pattern','(a+)+$');fill('#regex-flags','g');click('#regex-run')
         fill('#regex-pattern','a');click('#regex-run')
@@ -212,7 +249,36 @@ with sync_playwright() as p:
         page.evaluate("document.execCommand=()=>{window.__copied=document.activeElement.value;return true}")
         click('[data-copy-id="codec-output"]');equal(page.evaluate('window.__copied'),v('#codec-output'))
     check('Clipboard fallback payload (test double)',simulated_copy)
+    def clear_pending_copy_and_search():
+        go('codec');fill('#codec-input','private-fixture');click('#codec-encode')
+        page.keyboard.press('Control+k');fill('#palette-input','fixture-private-query');page.keyboard.press('Escape')
+        page.evaluate("""() => {
+            Object.defineProperty(window,'isSecureContext',{configurable:true,value:true});
+            Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:()=>new Promise((_,reject)=>window.rejectCopy=reject)}});
+            document.execCommand=()=>false;
+        }""")
+        click('[data-copy-id="codec-output"]');click('#clear-all-button')
+        page.evaluate("async()=>{window.rejectCopy(new Error('test'));await Promise.resolve()}")
+        equal(v('#palette-input'),''); equal(page.locator('#palette-results').text_content(),'')
+        equal(page.locator('#modal[open]').count(),0)
+        page.evaluate("delete window.isSecureContext; delete navigator.clipboard")
+    check('Clear also removes palette history and cancels late copy fallback (clipboard double)',clear_pending_copy_and_search)
+    def format_sql_flow():
+        go('home');click('[data-home-domain="db"]');click('#home-cards [data-go="sqlformat"]')
+        click('#sqlformat-sample');click('#sqlformat-run')
+        sample=v('#sqlformat-output');assert sample and '\n' in sample
+        fill('#sqlformat-input',"select '한글, FROM', 900719925474099312345 from sample_items where id = 1;")
+        equal(v('#sqlformat-output'),'');click('#sqlformat-run')
+        output=v('#sqlformat-output')
+        contains(output,"'한글, FROM'");contains(output,'900719925474099312345')
+        with page.expect_download() as result: click('[data-download-id="sqlformat-output"]')
+        assert result.value.suggested_filename.endswith('.sql')
+        equal(Path(result.value.path()).read_bytes(), output.encode('utf-8'))
+        fill('#sqlformat-input',"select 'unclosed");click('#sqlformat-run')
+        equal(v('#sqlformat-output'),'');assert txt('#sqlformat-status')
+    check('SQL formatter sample, preserved literals, UTF8 SQL download and stale result clearing',format_sql_flow)
     go('settings')
+    go('json');fill('#json-input','{"session":"DO_NOT_PERSIST_INPUT_MARKER"}');go('settings')
     def backup():
         data=download('#settings-export');obj=json.loads(data);assert b'DO_NOT_PERSIST_INPUT_MARKER' not in data;equal(len(obj['customCommands']),1);equal(obj['customCommands'][0]['risk'],'custom')
     check('Settings backup excludes working inputs',backup)
@@ -286,7 +352,7 @@ with sync_playwright() as p:
     check('Resizing between mobile drawer and desktop restores visible keyboard focus',menu_resize_focus)
     # Touch/viewport emulation checks layout and browser behavior, not a real Galaxy file viewer.
     mobile_viewports=[(320,740),(360,800),(412,915),(844,390)]
-    mobile_routes=['home','commands','encoding','codec','json','text','diff','logs','sql','unicode','time','chmod','cron','hash','regex','settings','favorites']
+    mobile_routes=['home','commands','encoding','codec','json','text','diff','logs','sql','sqlformat','unicode','time','chmod','cron','hash','regex','settings','favorites']
     for width,height in mobile_viewports:
         touch=browser.new_context(viewport={'width':width,'height':height},device_scale_factor=2.625,
                                   is_mobile=True,has_touch=True,offline=True,accept_downloads=True)
@@ -308,7 +374,7 @@ with sync_playwright() as p:
                 phone_go(route);equal(phone.locator('#view h1').count(),1)
                 try: phone_overflow()
                 except AssertionError as e: raise AssertionError(route+': '+str(e)) from e
-        check(f'Touch {width}x{height}: all 17 routes fit viewport',touch_routes)
+        check(f'Touch {width}x{height}: all 18 routes fit viewport',touch_routes)
         def touch_menu():
             phone_go('home')
             menu=phone.locator('#mobile-menu');expect(menu).to_be_visible()
@@ -342,7 +408,7 @@ with sync_playwright() as p:
             phone_overflow()
         check(f'Touch {width}x{height}: search opens, closes and selects without keyboard',touch_search)
         def touch_readability():
-            for route in ['json','commands','cron','sql']:
+            for route in ['json','commands','cron','sql','sqlformat']:
                 phone_go(route)
                 bad=phone.locator('#view input:not([type=checkbox]):not([type=file]), #view select, #view textarea').evaluate_all(
                     'els=>els.filter(el=>el.getClientRects().length&&parseFloat(getComputedStyle(el).fontSize)<16).map(el=>el.id)')
@@ -390,16 +456,16 @@ with sync_playwright() as p:
         def static_reference():
             expect(reference).to_be_visible()
             contains(reference.inner_text(),'읽기 전용 명령어 참고')
-            equal(reference.locator('.reference-command').count(),121)
+            equal(reference.locator('.reference-command').count(),135)
             expect(reader.locator('.layout')).to_be_hidden()
             for domain in ['windows','linux','db']:
                 assert reference.locator('#reference-'+domain+' .reference-command').count()>0
             content=reference.text_content()
-            for text in ['cat /etc/os-release','PowerShell','실제 변경','권한','{{PID}}']:
+            for text in ['cat /etc/os-release','PowerShell','실제 변경','권한','{{PID}}','--no-auto-commit',';autocommit','-- DELETE FROM pocket_ops_sample']:
                 contains(content,text)
             # No injected script/evaluate is used in this JS-disabled context.
             equal(reference.locator('button, input, textarea, select').count(),0)
-        check(f'JavaScript disabled {width}px: all 121 commands and risk guidance remain readable',static_reference)
+        check(f'JavaScript disabled {width}px: all 135 commands and risk guidance remain readable',static_reference)
         def static_reference_layout():
             for domain in ['windows','linux','db']:
                 reference.locator('nav a[href="#reference-'+domain+'"]').tap()
