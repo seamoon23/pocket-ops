@@ -72,6 +72,9 @@ PASS Clipboard failure offers manual selected text
 PASS Clipboard fallback payload (test double)
 PASS Clear also removes palette history and cancels late copy fallback (clipboard double)
 PASS SQL formatter sample, preserved literals, UTF8 SQL download and stale result clearing
+PASS Edited SELECT copies directly; each DML preset reviews the final edited text before copying
+PASS Editing SELECT into UPDATE rechecks the current SQL, including on file export
+PASS Declining a preset preserves the draft; manual clipboard fallback receives only confirmed SQL
 PASS Settings backup excludes working inputs
 PASS Release excludes working data and reopens into identical repeatable ZIP
 PASS Invalid backup version rejected
@@ -115,4 +118,4 @@ PASS Missing Crypto does not prevent settings and backup access
 PASS Local file open, real SHA256, ZIP save/reopen and storage reload
 PASS No uncaught browser errors across all tested pages
 PASS Zero HTTP(S) requests across full offline workflow and reopened pages
-BROWSER SUMMARY 117 passed, 0 failed
+BROWSER SUMMARY 120 passed, 0 failed

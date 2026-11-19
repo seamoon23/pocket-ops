@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 commands=[]
 # IDs 001–093 belong to v0.1.0 favorites. Keep this order; append new entries.
-def add(title,group,command,note,tags='',risk='read',permission='user',shell='bash',prerequisite='',domain=None):
+def add(title,group,command,note,tags='',risk='read',permission='user',shell='bash',prerequisite='',domain=None,editor_preset=False):
     if domain is None:
         domain='windows' if shell=='powershell' else 'db' if group=='DB · 연동' else 'linux'
     if shell in ('sql', 'csql') and re.search(r'\{\{[A-Z_]+\}\}',command):
@@ -14,6 +14,13 @@ def add(title,group,command,note,tags='',risk='read',permission='user',shell='ba
                       'Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인')
     command_id=f'cmd-{len(commands)+1:03}'
     commands.append(dict(id=command_id,title=title,group=group,command=command,note=note,tags=tags,risk=risk,permission=permission,shell=shell,domain=domain,prerequisite=prerequisite,alternatives=[]))
+    if editor_preset:
+        if shell != 'sql' or domain != 'db' or risk not in ('read', 'change'):
+            raise ValueError('Editable presets require a curated SQL example.')
+        entry = commands[-1]
+        entry['editorSql'] = command
+        if risk == 'change':
+            entry['command'] = '\n'.join('-- ' + line for line in command.splitlines())
     return command_id
 add('배포판과 버전 확인','기본 점검','cat /etc/os-release','RHEL·Ubuntu 등 배포판 정보를 확인합니다. 아주 오래된 배포판은 파일이 없을 수 있습니다.','리눅스 버전 redhat centos ubuntu OS')
 add('커널 · CPU 아키텍처 확인','기본 점검','uname -a','커널 버전과 x86_64 등 아키텍처를 확인합니다.','32비트 64비트 kernel')
@@ -168,7 +175,7 @@ for title, command, note, risk in [
 add('SELECT · 키로 대상 행 확인', csql_group,
     'SELECT item_id, item_name\nFROM pocket_ops_sample\nWHERE item_id = 1001;',
     'item_id가 기본 키인 가상 테이블 예시입니다. 실제 키와 조건에 맞게 수정해 조회하고, 변경 전 대상 행과 현재 값을 확인하세요.',
-    '조회 기본 쿼리 프리셋', shell='sql', prerequisite=sql_path, domain='db')
+    '조회 기본 쿼리 프리셋', shell='sql', prerequisite=sql_path, domain='db', editor_preset=True)
 for title, statement, note in [
     ('INSERT · 한 행 추가', "INSERT INTO pocket_ops_sample (item_id, item_name)\nVALUES (1001, 'SAMPLE');",
      '대상 키가 비어 있는지, 컬럼 타입과 필수 값이 맞는지 확인하세요.'),
@@ -177,11 +184,9 @@ for title, statement, note in [
     ('DELETE · 키와 기존 값으로 삭제', "DELETE FROM pocket_ops_sample\nWHERE item_id = 1001 AND item_name = 'SAMPLE';",
      '같은 WHERE 조건을 SELECT로 먼저 조회하고 삭제할 행 수와 복구 방법을 확인하세요.'),
 ]:
-    # Disable every line on copy, including when a sample table happens to exist.
-    commented = '\n'.join('-- ' + line for line in statement.splitlines())
-    add(title, csql_group, commented,
-        note + ' 편집기에서 예시 이름·값을 바꾼 뒤 각 줄의 -- 를 지우고 한 문장만 실행하세요. 반영 전 영향 행 수를 확인하세요.',
-        '변경 기본 쿼리 프리셋', risk='change', permission='limited', shell='sql', prerequisite=write_path, domain='db')
+    add(title, csql_group, statement,
+        note + ' 앱에서 쿼리 정렬로 열어 예시 이름·값을 바꾸고 최종 SQL을 확인하세요. 원문 복사는 모든 줄에 주석을 붙입니다.',
+        '변경 기본 쿼리 프리셋', risk='change', permission='limited', shell='sql', prerequisite=write_path, domain='db', editor_preset=True)
 
 commands_by_id={entry['id']:entry for entry in commands}
 for original,alternative in [
@@ -254,5 +259,5 @@ tools=[
 ('regex','정규식 실험실','매치와 캡처를 확인하는 작은 테스트 공간.','regex','rose','데이터 작업','MATCH · CAPTURE','regex 정규식 regexp 검색 패턴 매칭')
 ]
 tool_data=[dict(zip(['id','title','desc','icon','color','group','tag','keywords'],x)) for x in tools]
-Path(__file__).resolve().parent.joinpath('src/data.js').write_text('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.4.0',commands=commands,params=params,tools=tool_data),ensure_ascii=False,indent=2)+';\n',encoding='utf-8')
+Path(__file__).resolve().parent.joinpath('src/data.js').write_text('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.5.0',commands=commands,params=params,tools=tool_data),ensure_ascii=False,indent=2)+';\n',encoding='utf-8')
 print('Commands:',len(commands),'Tools:',len(tools))

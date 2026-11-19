@@ -21,8 +21,8 @@
   "storage_clipboard": "Main persistence and clipboard payload checks use explicitly labeled doubles. File smoke storage, when available, uses real origin and reload, not OS clipboard or browser restart.",
   "external_http_requests": [],
   "pageerrors": [],
-  "total": 117,
-  "passed": 117,
+  "total": 120,
+  "passed": 120,
   "failed": 0,
   "results": [
     {
@@ -319,6 +319,18 @@
     },
     {
       "name": "SQL formatter sample, preserved literals, UTF8 SQL download and stale result clearing",
+      "pass": true
+    },
+    {
+      "name": "Edited SELECT copies directly; each DML preset reviews the final edited text before copying",
+      "pass": true
+    },
+    {
+      "name": "Editing SELECT into UPDATE rechecks the current SQL, including on file export",
+      "pass": true
+    },
+    {
+      "name": "Declining a preset preserves the draft; manual clipboard fallback receives only confirmed SQL",
       "pass": true
     },
     {

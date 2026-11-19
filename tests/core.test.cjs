@@ -67,6 +67,22 @@ async function test(name, fn){try{await fn();pass++;results.push({name,pass:true
    assert.equal(C.formatSql(expected),expected);
   }
  });
+ await test('SQL review uses the first SQL keyword after comments for the current query',()=>{
+  const cases=[
+   ["/* DELETE */ select 'UPDATE' from sample;",'SELECT'],
+   ["-- SELECT\r\ninSeRt into sample values ('DELETE');",'INSERT'],
+   ["// SELECT\n/* hint */ uPdAtE sample set title='SELECT';",'UPDATE'],
+   ["/* SELECT; */ -- UPDATE\n  dElEtE from sample where id=42;",'DELETE']
+  ];
+  for(const [input,verb] of cases){
+   const prepared=C.prepareSql(input);
+   assert.equal(prepared.verb,verb);
+   assert.equal(prepared.sql,C.formatSql(input));
+  }
+  for(const input of ['/* SELECT */','WITH t AS (SELECT 1) SELECT * FROM t;', 'SELECT 1; DELETE FROM sample;']){
+   assert.throws(()=>C.prepareSql(input));
+  }
+ });
  await test('SQL hints, line comment endings, quoted identifiers and multibyte literals survive formatting',()=>{
   const select = '/* ; */ SELECT /*+ INDEX(t) */ \'O\'\'Brien; WHERE\',';
   const protectedText = '"order by", [from], `and`, \'a\r\nb\'';

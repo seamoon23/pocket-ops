@@ -1,8 +1,9 @@
 {
-  "total": 17,
-  "passed": 17,
+  "total": 18,
+  "passed": 18,
   "failed": 0,
   "results": {
+    "Only four curated CRUD presets have corresponding editor and reference text": true,
     "CSP hash matches embedded script": true,
     "Exactly one self-contained script": true,
     "No remote src or href resource": true,

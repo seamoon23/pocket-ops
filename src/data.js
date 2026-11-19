@@ -1,6 +1,6 @@
 /* Curated offline reference data. Never auto-executed. */
 window.PocketData = {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "commands": [
     {
       "id": "cmd-001",
@@ -1875,49 +1875,53 @@ window.PocketData = {
       "shell": "sql",
       "domain": "db",
       "prerequisite": "CUBRID 접속 → csql> 또는 CUBRID SQL 편집기 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인",
-      "alternatives": []
+      "alternatives": [],
+      "editorSql": "SELECT item_id, item_name\nFROM pocket_ops_sample\nWHERE item_id = 1001;"
     },
     {
       "id": "cmd-133",
       "title": "INSERT · 한 행 추가",
       "group": "CUBRID · CSQL",
       "command": "-- INSERT INTO pocket_ops_sample (item_id, item_name)\n-- VALUES (1001, 'SAMPLE');",
-      "note": "대상 키가 비어 있는지, 컬럼 타입과 필수 값이 맞는지 확인하세요. 편집기에서 예시 이름·값을 바꾼 뒤 각 줄의 -- 를 지우고 한 문장만 실행하세요. 반영 전 영향 행 수를 확인하세요.",
+      "note": "대상 키가 비어 있는지, 컬럼 타입과 필수 값이 맞는지 확인하세요. 앱에서 쿼리 정렬로 열어 예시 이름·값을 바꾸고 최종 SQL을 확인하세요. 원문 복사는 모든 줄에 주석을 붙입니다.",
       "tags": "변경 기본 쿼리 프리셋",
       "risk": "change",
       "permission": "limited",
       "shell": "sql",
       "domain": "db",
       "prerequisite": "CUBRID 접속 → csql> 또는 CUBRID SQL 편집기 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인 · 변경 권한과 현재 세션의 자동 커밋 OFF 확인",
-      "alternatives": []
+      "alternatives": [],
+      "editorSql": "INSERT INTO pocket_ops_sample (item_id, item_name)\nVALUES (1001, 'SAMPLE');"
     },
     {
       "id": "cmd-134",
       "title": "UPDATE · 키와 기존 값으로 수정",
       "group": "CUBRID · CSQL",
       "command": "-- UPDATE pocket_ops_sample\n-- SET item_name = 'UPDATED'\n-- WHERE item_id = 1001 AND item_name = 'SAMPLE';",
-      "note": "같은 WHERE 조건을 SELECT로 먼저 조회하고 변경할 행 수와 기존 값을 확인하세요. 편집기에서 예시 이름·값을 바꾼 뒤 각 줄의 -- 를 지우고 한 문장만 실행하세요. 반영 전 영향 행 수를 확인하세요.",
+      "note": "같은 WHERE 조건을 SELECT로 먼저 조회하고 변경할 행 수와 기존 값을 확인하세요. 앱에서 쿼리 정렬로 열어 예시 이름·값을 바꾸고 최종 SQL을 확인하세요. 원문 복사는 모든 줄에 주석을 붙입니다.",
       "tags": "변경 기본 쿼리 프리셋",
       "risk": "change",
       "permission": "limited",
       "shell": "sql",
       "domain": "db",
       "prerequisite": "CUBRID 접속 → csql> 또는 CUBRID SQL 편집기 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인 · 변경 권한과 현재 세션의 자동 커밋 OFF 확인",
-      "alternatives": []
+      "alternatives": [],
+      "editorSql": "UPDATE pocket_ops_sample\nSET item_name = 'UPDATED'\nWHERE item_id = 1001 AND item_name = 'SAMPLE';"
     },
     {
       "id": "cmd-135",
       "title": "DELETE · 키와 기존 값으로 삭제",
       "group": "CUBRID · CSQL",
       "command": "-- DELETE FROM pocket_ops_sample\n-- WHERE item_id = 1001 AND item_name = 'SAMPLE';",
-      "note": "같은 WHERE 조건을 SELECT로 먼저 조회하고 삭제할 행 수와 복구 방법을 확인하세요. 편집기에서 예시 이름·값을 바꾼 뒤 각 줄의 -- 를 지우고 한 문장만 실행하세요. 반영 전 영향 행 수를 확인하세요.",
+      "note": "같은 WHERE 조건을 SELECT로 먼저 조회하고 삭제할 행 수와 복구 방법을 확인하세요. 앱에서 쿼리 정렬로 열어 예시 이름·값을 바꾸고 최종 SQL을 확인하세요. 원문 복사는 모든 줄에 주석을 붙입니다.",
       "tags": "변경 기본 쿼리 프리셋",
       "risk": "change",
       "permission": "limited",
       "shell": "sql",
       "domain": "db",
       "prerequisite": "CUBRID 접속 → csql> 또는 CUBRID SQL 편집기 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인 · 변경 권한과 현재 세션의 자동 커밋 OFF 확인",
-      "alternatives": []
+      "alternatives": [],
+      "editorSql": "DELETE FROM pocket_ops_sample\nWHERE item_id = 1001 AND item_name = 'SAMPLE';"
     }
   ],
   "params": {

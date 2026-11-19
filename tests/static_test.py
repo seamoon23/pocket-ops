@@ -30,7 +30,18 @@ hostile='</code></pre></noscript><img src=x onerror="alert(1)"> & \'quoted\''
 fixture=dict(catalog['commands'][0],title=hostile,command=hostile,note=hostile,prerequisite=hostile)
 escaped_reference=render_reference({'commands':[fixture]})
 escaped_parser=Inspect();escaped_parser.feed(escaped_reference)
+presets = {item['id']: item for item in catalog['commands'] if 'editorSql' in item}
+def valid_editor_preset(item):
+    sql = item['editorSql']
+    verb = sql.split(maxsplit=1)[0]
+    risk = 'read' if verb == 'SELECT' else 'change'
+    guarded = '\n'.join('-- ' + line for line in sql.splitlines())
+    return (verb in ('SELECT', 'INSERT', 'UPDATE', 'DELETE') and item['risk'] == risk
+            and item['shell'] == 'sql' and item['command'] == (guarded if risk == 'change' else sql))
+
 checks={
+    'Only four curated CRUD presets have corresponding editor and reference text':
+        set(presets) == {'cmd-132', 'cmd-133', 'cmd-134', 'cmd-135'} and all(valid_editor_preset(p) for p in presets.values()),
     'CSP hash matches embedded script': f"script-src 'sha256-{actual}'" in html,
     'Exactly one self-contained script': html.count('<script>')==1,
     'No remote src or href resource': not p.remote,

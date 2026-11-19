@@ -140,7 +140,7 @@ function cleanText(text,options={}){
  const ending=options.eol==='crlf'?'\r\n':'\n';return arr.join(ending);
 }
 // Move only top-level token boundaries. The lexer copies all quoted and commented text verbatim.
-function formatSql(source) {
+function prepareSql(source) {
  limit(source, 100_000);
  // Interactive CSQL can process a line as a session command even inside an SQL literal or comment.
  if (/^[ \t]*;[ \t]*[a-z.!]/im.test(source)) {
@@ -150,7 +150,7 @@ function formatSql(source) {
  const startsStatement = /^(SELECT|INSERT|UPDATE|DELETE)$/i;
  const majorClause = /^(FROM|WHERE|GROUP|ORDER|HAVING|LIMIT|SET|VALUES|UNION|EXCEPT|INTERSECT|JOIN|LEFT|RIGHT|INNER|CROSS|FULL)$/i;
  const newline = source.match(/\r\n|\r|\n/)?.[0] || '\n';
- let output = '', gap = '', previous = '', depth = 0, started = false, ended = false;
+ let output = '', gap = '', previous = '', depth = 0, verb = '', ended = false;
  let match;
  while ((match = tokens.exec(source)) !== null) {
   let token = match[0];
@@ -183,14 +183,16 @@ function formatSql(source) {
    fail('지원 범위 밖의 특수 구문이 있습니다. CUBRID 기본 SQL 한 문장을 입력하세요.');
   }
   if (!comment) {
-   if (!started && !startsStatement.test(token)) fail('SELECT, INSERT, UPDATE, DELETE 중 한 문장을 입력하세요.');
+   if (!verb) {
+    if (!startsStatement.test(token)) fail('SELECT, INSERT, UPDATE, DELETE 중 한 문장을 입력하세요.');
+    verb = token.toUpperCase();
+   }
    if (ended) fail('SQL 한 문장씩 정렬하세요. CSQL 세션 명령은 제외하세요.');
    if (depth === 0 && !/[\r\n]/.test(gap)) {
     if (previous === ',' && token !== ';') gap = newline + '  ';
     else if (gap && /^(AND|OR)$/i.test(token)) gap = newline + '  ';
     else if (gap && majorClause.test(token) && !/^(DELETE|LEFT|RIGHT|INNER|OUTER|CROSS|FULL)$/i.test(previous)) gap = newline;
    }
-   started = true;
    if (token === '(') depth++;
    if (token === ')' && --depth < 0) fail('닫는 괄호의 짝을 확인하세요.');
    if (token === ';') {
@@ -203,10 +205,14 @@ function formatSql(source) {
   gap = '';
   previous = token;
  }
- if (!started) fail('정렬할 SQL 한 문장을 입력하세요.');
+ if (!verb) fail('정렬할 SQL 한 문장을 입력하세요.');
  if (depth) fail('여는 괄호의 짝을 확인하세요.');
  if (output.length + gap.length > 200_000) fail('정렬 결과는 200,000자 이하로 나누어 주세요.');
- return output + gap;
+ return {sql: output + gap, verb};
+}
+
+function formatSql(source) {
+ return prepareSql(source).sql;
 }
 
 function makeSql(text,column='ITEM_ID',kind='string',chunk=1000,unique=true,trim=true){
@@ -311,5 +317,5 @@ async function digest(bytes,algorithm='SHA-256'){
 function characterRows(text){
  limit(text,40_000);const out=[];for(const ch of text){if(out.length>=2000)fail('문자 검사는 코드 포인트 2,000개 이하로 나누어 주세요.');const cp=ch.codePointAt(0);out.push({ch,cp,unicode:'U+'+cp.toString(16).toUpperCase().padStart(4,'0'),hex:hex(utf8(ch)),ascii:cp<=127?cp:null});}return out;
 }
-global.PocketCore={limit,utf8,decode,hex,fromHex,lines,toBase64,fromBase64,unicodeEscape,unicodeUnescape,htmlEscape,htmlUnescape,codec,repair,singleByteEncode,fileInfo,formatJson,textStats,cleanText,formatSql,makeSql,diffLines,filterLogs,timestamp,dateInputToMs,formatTime,permission,shellQuote,fillCommand,parseCron,nextCron,digest,characterRows};
+global.PocketCore={limit,utf8,decode,hex,fromHex,lines,toBase64,fromBase64,unicodeEscape,unicodeUnescape,htmlEscape,htmlUnescape,codec,repair,singleByteEncode,fileInfo,formatJson,textStats,cleanText,prepareSql,formatSql,makeSql,diffLines,filterLogs,timestamp,dateInputToMs,formatTime,permission,shellQuote,fillCommand,parseCron,nextCron,digest,characterRows};
 })(typeof window!=='undefined'?window:globalThis);

@@ -70,6 +70,8 @@ PID/port/numeric fields must validate before interpolation; string and path fiel
 
 Do not infer installation absence from empty process/PATH/package/header output. In particular WebtoB/JEUS version and privileges vary across installations. Add alternative commands as explicit variants, not a script that executes everything.
 
+For the four built-in CSQL CRUD presets, `editorSql` holds the editable example; the catalog generator comments every line of a change preset's `command` for direct reference/copy. Classify the current SQL through `prepareSql` for formatter copy/save. Review the exact INSERT/UPDATE/DELETE output before delivery; an edit invalidates that review. Never trust imported commands as editor presets.
+
 ## Adding a tool
 
 Add metadata in the catalog generator, pure functions in `core.js`, a renderer and `bindPage` branch in `app.js`, and entries in `renderers`. Each tool needs sample input, copy/export where appropriate, visible scope/limits, error clearing, keyboard labels, responsive states and tests. Avoid silently keeping stale results after a failed run or after changing a calculation's source.

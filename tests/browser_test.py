@@ -277,6 +277,110 @@ with sync_playwright() as p:
         fill('#sqlformat-input',"select 'unclosed");click('#sqlformat-run')
         equal(v('#sqlformat-output'),'');assert txt('#sqlformat-status')
     check('SQL formatter sample, preserved literals, UTF8 SQL download and stale result clearing',format_sql_flow)
+    # Exercise real menu and modal events. Only the clipboard sink is a test double.
+    flow=context.new_page()
+    flow.set_default_timeout(4000)
+    accept_replacement=lambda dialog:dialog.accept()
+    flow.on('dialog',accept_replacement)
+    flow.set_content(HTML,wait_until='load')
+    locator=flow.locator
+    sql_input=locator('#sqlformat-input')
+    sql_copy=locator('[data-copy-id="sqlformat-output"]')
+    review=locator('#sql-review-preview')
+    confirm_review=locator('#sql-review-confirm')
+    def open_csql_preset(command_id,from_detail=False):
+        locator('#sidebar [data-go="commands"]').click()
+        locator('[data-command-domain="db"]').click()
+        locator('[data-command-search="CSQL"]').click()
+        scope=locator('#command-list')
+        if from_detail:
+            scope.locator(f'[data-command="{command_id}"]').click()
+            scope=locator('#modal')
+        scope.locator(f'[data-open-sql-preset="{command_id}"]').click()
+
+    def record_copies():
+        flow.evaluate("""() => {
+            window.copiedSql = [];
+            Object.defineProperty(navigator,'clipboard',{configurable:true,value:undefined});
+            document.execCommand = () => { window.copiedSql.push(document.activeElement.value); return true; };
+        }""")
+
+    def copy_edited_presets():
+        record_copies()
+        for number,verb in enumerate(['SELECT','INSERT','UPDATE','DELETE'],132):
+            open_csql_preset(f'cmd-{number}',from_detail=verb=='UPDATE')
+            draft=sql_input.input_value()
+            assert draft.startswith(verb) and 'pocket_ops_sample' in draft
+            expect(sql_input).to_be_focused()
+            equal(sql_input.evaluate('el=>el.value.slice(el.selectionStart,el.selectionEnd)'),'pocket_ops_sample')
+            sql_input.press_sequentially('fixture_items')
+            edited=sql_input.input_value().replace('1001','8032')
+            assert 'fixture_items' in edited and 'pocket_ops_sample' not in edited
+            sql_input.fill(edited)
+            sql_copy.click()
+            final_sql=locator('#sqlformat-output').input_value()
+            equal(' '.join(final_sql.split()),' '.join(edited.split()))
+            if verb!='SELECT':
+                expect(review).to_have_value(final_sql)
+                equal(len(flow.evaluate('window.copiedSql')),number-132)
+                confirm_review.click()
+            equal(flow.evaluate('window.copiedSql')[-1],final_sql)
+            expect(locator('#modal')).not_to_be_visible()
+    check('Edited SELECT copies directly; each DML preset reviews the final edited text before copying',copy_edited_presets)
+
+    def review_follows_current_text():
+        record_copies()
+        open_csql_preset('cmd-132')
+        source="/* SELECT is a comment */ UPDATE fixture_items SET item_name='한글' WHERE item_id=8032;"
+        sql_input.fill(source)
+        sql_copy.click()
+        before=review.input_value()
+        contains(before,'WHERE item_id=8032;')
+        locator('#sql-review-edit').click()
+        expect(sql_input).to_be_focused()
+        equal(flow.evaluate('window.copiedSql'),[])
+        edited=source.replace('8032','8040')
+        sql_input.fill(edited)
+        sql_copy.click()
+        # An open review is not authorization to emit a query after its source changes.
+        sql_input.evaluate("""el => {
+            el.value=el.value.replace('8040','8050'); el.dispatchEvent(new Event('input',{bubbles:true}));
+        }""")
+        if confirm_review.is_visible() and confirm_review.is_enabled():
+            confirm_review.click()
+        equal(flow.evaluate('window.copiedSql'),[])
+        if locator('#modal').is_visible(): locator('#modal [data-close]').click()
+        sql_copy.click()
+        actual=review.input_value()
+        contains(actual,'WHERE item_id=8050;')
+        confirm_review.click()
+        equal(flow.evaluate('window.copiedSql'),[actual])
+        locator('[data-download-id="sqlformat-output"]').click()
+        expect(review).to_have_value(actual)
+        with flow.expect_download() as saved: confirm_review.click()
+        equal(saved.value.suggested_filename,'pocket-query.sql')
+        equal(Path(saved.value.path()).read_bytes(),actual.encode('utf-8'))
+    check('Editing SELECT into UPDATE rechecks the current SQL, including on file export',review_follows_current_text)
+
+    def canceled_replacement_and_manual_copy():
+        original=sql_input.input_value()
+        assert original.strip()
+        flow.remove_listener('dialog',accept_replacement)
+        flow.once('dialog',lambda dialog:dialog.dismiss())
+        try:
+            open_csql_preset('cmd-135')
+        finally:
+            flow.on('dialog',accept_replacement)
+        locator('#sidebar [data-go="sqlformat"]').click()
+        expect(sql_input).to_have_value(original)
+        flow.evaluate('document.execCommand=()=>false')
+        sql_copy.click()
+        text=review.input_value()
+        equal(locator('#manual-copy').count(),0)
+        confirm_review.click()
+        expect(locator('#manual-copy')).to_have_value(text)
+    check('Declining a preset preserves the draft; manual clipboard fallback receives only confirmed SQL',canceled_replacement_and_manual_copy)
+    flow.close()
     go('settings')
     go('json');fill('#json-input','{"session":"DO_NOT_PERSIST_INPUT_MARKER"}');go('settings')
     def backup():

@@ -1,7 +1,7 @@
 {
   "environment": "v22.17.0",
-  "total": 108,
-  "passed": 108,
+  "total": 109,
+  "passed": 109,
   "failed": 0,
   "results": [
     {
@@ -210,6 +210,10 @@
     },
     {
       "name": "SQL formatting changes only outer clause and list whitespace for four CRUD verbs",
+      "pass": true
+    },
+    {
+      "name": "SQL review uses the first SQL keyword after comments for the current query",
       "pass": true
     },
     {

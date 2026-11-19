@@ -74,7 +74,29 @@ function card(t){return '<article class="tool-card" data-go="'+t.id+'" tabindex=
 function home(){return '<div class="page-title"><div><div class="eyebrow">OFFLINE FIELD KIT</div><h1>작업 전에, 내 작업실</h1><p>PC와 휴대폰에서 파일 하나로 여는 오프라인 도구와 서버 명령어 참고집.</p></div><span class="offline-pill">'+icon('shield')+'로컬 처리</span></div>'+
  '<section class="start-guide"><div><h2>찾고 → 확인하고 → 복사하세요</h2><p>실행 조건에서 입력 위치를 확인하세요. 셸 명령은 SSH·PowerShell에서, CSQL 세션 명령과 SQL은 해당 DB 클라이언트에서 사용합니다.</p><div class="actions"><button class="btn primary" data-go="commands">'+icon('terminal')+'명령어 포켓 열기</button><button class="btn" data-go="favorites">'+icon('star')+'즐겨찾기</button><button class="text-btn" data-open-palette>빠른 검색 <kbd>Ctrl K</kbd></button></div></div><div class="start-facts"><strong>'+D.tools.length+'개 도구 · '+D.commands.length+'개 명령어</strong><span>설치 없이 · 네트워크 요청 없이</span><span>입력과 파일은 현재 탭 메모리에만</span></div></section>'+
  '<div class="section-head"><h2>환경별 추천 도구</h2><span class="muted small">즐겨찾는 도구가 먼저 표시됩니다.</span></div>'+domainButtons('home','',true)+'<div id="home-domain-guide" class="note compact">공통 도구로 텍스트·JSON·인코딩을 정리하고, 환경을 선택해 관련 명령어를 찾아보세요.</div><div id="home-cards" class="tool-grid section-gap">'+homeCards()+'</div><div class="note compact section-gap">'+icon('lock')+' 메뉴에서 도구 선택 → 샘플 또는 입력 → 실행 → 결과의 복사 / 저장. 명령어를 자동 실행하거나 서버에 접속하지 않습니다.</div>';}
-function commandCard(c){const risk={read:['green','조회 중심'],load:['orange','부하 주의'],change:['red','실제 변경'],custom:['orange','사용자 명령']}[c.risk]||['orange','확인 필요'];return '<article class="command-card"><div class="command-top"><span class="tag '+risk[0]+'">'+risk[1]+'</span><h3>'+E(c.title)+'</h3><button class="icon-btn card-star '+(state.cmdFavs.includes(c.id)?'starred':'')+'" data-cmd-star="'+c.id+'" title="명령어 즐겨찾기" aria-label="명령어 즐겨찾기" aria-pressed="'+state.cmdFavs.includes(c.id)+'">'+icon('star')+'</button></div><pre>'+E(c.command)+'</pre><p>'+E(c.note)+'</p><div class="actions"><div class="chip-row"><span class="tag">'+E(c.group)+'</span><span class="tag '+(c.permission==='limited'?'orange':'')+'">'+(c.permission==='limited'?'권한 확인':'일반 계정')+'</span></div><button class="btn small" data-command="'+c.id+'">'+icon(/\{\{[A-Z_]+\}\}/.test(c.command)?'edit':'copy')+(/\{\{[A-Z_]+\}\}/.test(c.command)?'값 넣기 · 복사':'확인 · 복사')+'</button></div></article>';}
+function sqlPresetButton(command) {
+ if (!command.editorSql) return '';
+ return '<button class="btn small" data-open-sql-preset="' + E(command.id) + '">' +
+  icon('edit') + '쿼리 정렬로 열기</button>';
+}
+function openSqlPreset(id) {
+ const preset = D.commands.find(command => command.id === id);
+ if (!preset?.editorSql) return;
+ const existing = views.get('sqlformat')?.querySelector('#sqlformat-input');
+ if (existing && existing.value.trim() && existing.value !== preset.editorSql &&
+     !confirm('SQL 원문에 작성한 내용이 있습니다. 이 프리셋으로 교체할까요?')) return;
+ if ($('#modal').open) $('#modal').close();
+ go('sqlformat');
+ const input = $('#sqlformat-input');
+ input.value = preset.editorSql;
+ input.dispatchEvent(new Event('input', {bubbles: true}));
+ setStatus('sqlformat-status', '테이블명·값·조건을 수정한 뒤 복사를 누르세요.');
+ input.focus();
+ const sampleTable = 'pocket_ops_sample';
+ const start = input.value.indexOf(sampleTable);
+ if (start >= 0) input.setSelectionRange(start, start + sampleTable.length);
+}
+function commandCard(c){const risk={read:['green','조회 중심'],load:['orange','부하 주의'],change:['red','실제 변경'],custom:['orange','사용자 명령']}[c.risk]||['orange','확인 필요'];return '<article class="command-card"><div class="command-top"><span class="tag '+risk[0]+'">'+risk[1]+'</span><h3>'+E(c.title)+'</h3><button class="icon-btn card-star '+(state.cmdFavs.includes(c.id)?'starred':'')+'" data-cmd-star="'+c.id+'" title="명령어 즐겨찾기" aria-label="명령어 즐겨찾기" aria-pressed="'+state.cmdFavs.includes(c.id)+'">'+icon('star')+'</button></div><pre>'+E(c.command)+'</pre><p>'+E(c.note)+'</p><div class="actions"><div class="chip-row"><span class="tag">'+E(c.group)+'</span><span class="tag '+(c.permission==='limited'?'orange':'')+'">'+(c.permission==='limited'?'권한 확인':'일반 계정')+'</span></div><button class="btn small" data-command="'+c.id+'">'+icon(/\{\{[A-Z_]+\}\}/.test(c.command)?'edit':'copy')+(/\{\{[A-Z_]+\}\}/.test(c.command)?'값 넣기 · 복사':'확인 · 복사')+'</button>'+sqlPresetButton(c)+'</div></article>';}
 function commandsPage(){return pageHead('commands')+domainButtons('command')+'<div class="command-controls"><input id="command-query" placeholder="상황이나 명령어 검색 · 포트, 로그, 한글, JEUS…" aria-label="명령어 검색"><select id="command-group" aria-label="명령어 분류"><option value="">모든 분류</option>'+[...new Set(allCommands().map(c=>c.group))].map(s=>'<option>'+E(s)+'</option>').join('')+'</select><select id="command-permission" aria-label="권한 필터"><option value="">모든 권한</option><option value="user">일반 계정 중심</option><option value="limited">권한 확인 필요</option></select></div><div class="actions spread"><div class="chip-row">'+['포트','로그','권한','JEUS','Tomcat','한글'].map(x=>'<button class="chip" data-command-search="'+x+'">'+x+'</button>').join('')+'</div><button class="btn small" id="add-command">'+icon('plus')+'내 명령어 추가</button></div><div class="note compact" id="command-domain-guide">환경 선택 → 분류 / 검색 → 확인 · 복사. 각 명령의 실행 조건과 대체 명령을 함께 확인하세요. 조회 결과가 없다고 미설치로 판단하지 마세요.</div><div class="section-head"><h2>필요한 명령어 <span class="count" id="command-count"></span></h2>'+check('command-favorites','즐겨찾기만')+'</div><div class="command-list" id="command-list"></div>';
 }
 function matches(text,query){return query.trim().toLowerCase().split(/\s+/).filter(Boolean).every(w=>text.toLowerCase().includes(w));}
@@ -93,7 +115,7 @@ function setCommandDomain(domain){
 }
 function openCommand(id){const c=cmd(id);if(!c)return;const fields=c.risk==='custom'?[]:[...new Set(Array.from(c.command.matchAll(/\{\{([A-Z_]+)\}\}/g),m=>m[1]))];let caution=c.risk==='change'?'변경 작업에 사용하는 명령입니다. 대상과 영향 범위를 먼저 확인하세요.':c.risk==='load'?'조회 중에도 CPU·메모리·디스크 부하 또는 JVM 일시 지연이 발생할 수 있습니다.':c.risk==='custom'?'사용자가 저장하거나 가져온 명령입니다. 안전성을 검증하지 않았습니다. 내용을 확인하세요.':'실행 전 서버·계정·설치 경로를 확인하세요. 이 페이지는 복사만 합니다.';
  const alternatives=(c.alternatives||[]).map(cmd).filter(Boolean);
- modal(c.title,(c.prerequisite?'<div class="note"><b>실행 조건</b> '+E(c.prerequisite)+'</div>':'')+'<p class="muted">'+E(c.note)+'</p><div class="note '+(c.risk!=='read'?'warn':'')+'">'+caution+'</div><div class="form-grid two">'+fields.map(n=>{const p=D.params[n]||{label:n,default:''};const val=c.shell==='powershell'?(p.defaultPowerShell??p.default):p.default;return field('param-'+n,p.label,val);}).join('')+'</div><div class="panel-head"><span class="field-label">'+({powershell:'PowerShell',sql:'DB SQL 편집기 · SQL',csql:'csql> · CSQL 세션 명령',bash:'Linux 셸 · Bash'}[c.shell])+' · 최종 명령어</span><span class="tag">자동 실행 안 함</span></div><textarea id="command-preview" readonly class="short" spellcheck="false" aria-label="생성된 명령어"></textarea><div id="command-status" class="status"></div>'+(c.risk!=='read'?'<div class="actions" style="margin:12px 0">'+check('command-ack','대상과 명령 내용을 확인했습니다.')+'</div>':'')+(alternatives.length?'<div class="alternative-commands"><span class="field-label">사용할 수 없을 때 · 조건을 비교하고 하나씩 선택</span><div class="actions">'+alternatives.map(a=>'<button class="btn small" data-command="'+a.id+'">'+E(a.title)+'</button>').join('')+'</div></div>':'')+'<div class="actions spread"><div>'+(c.risk==='custom'?'<button class="btn small" id="edit-command">'+icon('edit')+'수정</button>':'')+'</div><button class="btn primary" id="copy-command">'+icon('copy')+'명령어 복사</button></div>',()=>{
+ modal(c.title,(c.prerequisite?'<div class="note"><b>실행 조건</b> '+E(c.prerequisite)+'</div>':'')+'<p class="muted">'+E(c.note)+'</p><div class="note '+(c.risk!=='read'?'warn':'')+'">'+caution+'</div><div class="form-grid two">'+fields.map(n=>{const p=D.params[n]||{label:n,default:''};const val=c.shell==='powershell'?(p.defaultPowerShell??p.default):p.default;return field('param-'+n,p.label,val);}).join('')+'</div><div class="panel-head"><span class="field-label">'+({powershell:'PowerShell',sql:'DB SQL 편집기 · SQL',csql:'csql> · CSQL 세션 명령',bash:'Linux 셸 · Bash'}[c.shell])+' · 최종 명령어</span><span class="tag">자동 실행 안 함</span></div><textarea id="command-preview" readonly class="short" spellcheck="false" aria-label="생성된 명령어"></textarea><div id="command-status" class="status"></div>'+(c.risk!=='read'?'<div class="actions" style="margin:12px 0">'+check('command-ack','대상과 명령 내용을 확인했습니다.')+'</div>':'')+(alternatives.length?'<div class="alternative-commands"><span class="field-label">사용할 수 없을 때 · 조건을 비교하고 하나씩 선택</span><div class="actions">'+alternatives.map(a=>'<button class="btn small" data-command="'+a.id+'">'+E(a.title)+'</button>').join('')+'</div></div>':'')+'<div class="actions spread"><div>'+(c.risk==='custom'?'<button class="btn small" id="edit-command">'+icon('edit')+'수정</button>':sqlPresetButton(c))+'</div><button class="btn primary" id="copy-command">'+icon('copy')+'명령어 복사</button></div>',()=>{
   function preview(){try{const vals={};fields.forEach(n=>vals[n]=$('#param-'+n).value);$('#command-preview').value=fields.length?C.fillCommand(c.command,vals,D.params,c.shell):c.command;setStatus('command-status',fields.length?'입력한 셸 인수를 인용했습니다. 대상과 최종 명령을 확인하세요.':'표시된 원문을 복사합니다.');$('#copy-command').disabled=c.risk!=='read'&&!$('#command-ack').checked;}catch(e){$('#command-preview').value='';setStatus('command-status',e.message,'error');$('#copy-command').disabled=true;}}
   fields.forEach(n=>$('#param-'+n).addEventListener('input',()=>{if($('#command-ack'))$('#command-ack').checked=false;preview();}));if($('#command-ack'))$('#command-ack').onchange=preview;$('#copy-command').onclick=()=>copy($('#command-preview').value);if($('#edit-command'))$('#edit-command').onclick=()=>customCommand(c.id);preview();
  });
@@ -170,13 +192,60 @@ function regexJob(pattern, flags, text, signal) {
   } catch (error) { finish(new Error('안전한 별도 실행 환경을 만들 수 없어 중단했습니다: ' + error.message)); }
  });
 }
+function invalidateSqlReview() {
+ copySequence++;
+ const dialog = $('#modal');
+ if (dialog.open && dialog.querySelector('#sql-review-confirm')) dialog.close();
+}
+function handleSqlAction(action) {
+ const input = $('#sqlformat-input');
+ const output = $('#sqlformat-output');
+ if (!input || !output) return;
+ const source = editorValue(input);
+ let result;
+ try {
+  result = C.prepareSql(source);
+ } catch (error) {
+  setEditorValue(output, '');
+  setStatus('sqlformat-status', error.message, 'error');
+  counters();
+  return;
+ }
+ setEditorValue(output, result.sql);
+ setStatus('sqlformat-status', '정렬했습니다. 원문과 결과를 대조하세요.', 'success');
+ counters();
+ if (action === 'format') return;
+ const saveFile = action === 'save';
+ const deliver = () => saveFile ? download('pocket-query.sql', result.sql) : copy(result.sql);
+ if (result.verb === 'SELECT') {
+  deliver();
+  return;
+ }
+ const label = saveFile ? '저장' : '복사';
+ modal(result.verb + ' 최종 쿼리 확인',
+  '<p class="note warn">대상 테이블과 변경할 값·행의 범위를 확인하세요.</p>' +
+  '<label class="field"><span>최종 SQL</span><textarea id="sql-review-preview" readonly spellcheck="false"></textarea></label>' +
+  '<div class="actions"><button class="btn" id="sql-review-edit">수정으로 돌아가기</button>' +
+  '<button class="btn primary" id="sql-review-confirm">확인 후 ' + label + '</button></div>', dialog => {
+   const preview = dialog.querySelector('#sql-review-preview');
+   const confirmButton = dialog.querySelector('#sql-review-confirm');
+   preview.value = result.sql;
+   dialog.querySelector('#sql-review-edit').onclick = () => { dialog.close(); input.focus(); };
+   confirmButton.onclick = () => {
+    if (!dialog.open || !confirmButton.isConnected) return;
+    dialog.close();
+    if (!input.isConnected || editorValue(input) !== source) return;
+    deliver();
+   };
+  });
+}
 function sqlFormatPage() {
  return pageHead('sqlformat') +
   '<div class="panel"><div class="actions spread"><button class="btn primary" id="sqlformat-run">쿼리 정렬</button>' +
   '<button class="text-btn" id="sqlformat-sample">샘플 넣기</button></div><div id="sqlformat-status" class="status" role="status"></div></div>' +
   '<div class="editor-grid">' +
   editor('sqlformat-input','SQL 원문','SELECT, INSERT, UPDATE, DELETE 한 문장을 붙여넣으세요.',false,'tall') +
-  editor('sqlformat-output','정렬된 SQL','원문과 대조한 뒤 복사 또는 저장 버튼으로 pocket-query.sql을 받으세요.',true,'tall') +
+  editor('sqlformat-output','정렬된 SQL','복사·저장을 누르면 현재 원문을 정렬합니다. 변경 SQL은 최종 내용을 확인한 뒤 전달합니다.',true,'tall') +
   '</div><div class="note">CUBRID 기본 SQL의 바깥쪽 절과 쉼표 목록에 줄바꿈을 넣습니다. 입력창의 기존 줄바꿈(LF), 대소문자, 인용문, 주석을 보존합니다. ' +
   '입력 100,000자 · 결과 200,000자. CSQL 세션 명령, 여러 문장, 역슬래시 인용, DB 전용 특수 인용문은 지원 범위 밖입니다. ' +
   '결과 저장 버튼으로 UTF-8 형식의 pocket-query.sql을 받습니다. 실행 전 문법과 변경 범위를 확인하세요.</div>';
@@ -247,12 +316,11 @@ function bindPage(id,root){
  if (id === 'sqlformat') {
   q('#sqlformat-sample').onclick = () => {
    set('sqlformat-input', "SELECT item_id, item_name FROM sample_items WHERE item_name = '검색, 예시' ORDER BY item_id;");
+   q('#sqlformat-input').dispatchEvent(new Event('input', {bubbles: true}));
    counters(root);
   };
-  act('sqlformat-run', 'sqlformat-status', () => {
-   set('sqlformat-output', C.formatSql(value('sqlformat-input')));
-   status('sqlformat-status', '정렬했습니다. 원문과 결과를 대조하세요.', 'success');
-  }, ['sqlformat-output']);
+  q('#sqlformat-input').addEventListener('input', invalidateSqlReview);
+  q('#sqlformat-run').onclick = () => handleSqlAction('format');
  }
  if(id==='unicode'){
   q('#unicode-input').addEventListener('input',()=>{q('#unicode-table').textContent='';q('#unicode-stats').textContent='';status('unicode-status','');});
@@ -306,7 +374,9 @@ function syncStars(){
  $$('[data-cmd-star]').forEach(b=>{const active=state.cmdFavs.includes(b.dataset.cmdStar);b.classList.toggle('starred',active);b.setAttribute('aria-pressed',String(active));});
 }
 function go(id,updateHash=true){
- if(!Object.prototype.hasOwnProperty.call(renderers,id))id='home';current=id;
+ if(!Object.prototype.hasOwnProperty.call(renderers,id))id='home';
+ if(current==='sqlformat' && id!=='sqlformat')invalidateSqlReview();
+ current=id;
  if(['home','favorites','settings'].includes(id))views.delete(id);
  let root=views.get(id),fresh=!root;if(!root){root=document.createElement('section');root.dataset.page=id;root.innerHTML=renderers[id]()+footer();views.set(id,root);}
  $('#view').replaceChildren(root);if(fresh)bindPage(id,root);else if(id==='commands')renderCommands();
@@ -332,15 +402,18 @@ document.addEventListener('click',e=>{
  const b=e.target.closest('button,[data-go],a');if(!b)return;
  if(b.hasAttribute('data-tool-star')){e.stopPropagation();const id=b.dataset.toolStar;state.toolFavs=state.toolFavs.includes(id)?state.toolFavs.filter(x=>x!==id):state.toolFavs.concat(id);save();syncStars();if(current==='favorites')go('favorites');if(current==='home')$('#home-cards').innerHTML=homeCards($('[data-home-domain].active')?.dataset.homeDomain||'');$('[data-tool-star="'+id+'"]')?.focus();return;}
  if(b.hasAttribute('data-cmd-star')){const id=b.dataset.cmdStar;state.cmdFavs=state.cmdFavs.includes(id)?state.cmdFavs.filter(x=>x!==id):state.cmdFavs.concat(id);save();syncStars();if(current==='favorites')go('favorites');if(current==='commands')renderCommands();$('[data-cmd-star="'+id+'"]')?.focus();return;}
- if ((b.dataset.copyId || b.dataset.downloadId) === 'sqlformat-output' && !outputText('sqlformat-output')) {
-  toast('SQL 원문을 입력하고 쿼리 정렬을 먼저 눌러 주세요.');
+ if (b.hasAttribute('data-open-sql-preset')) {
+  openSqlPreset(b.dataset.openSqlPreset);
+  return;
+ }
+ if ((b.dataset.copyId || b.dataset.downloadId) === 'sqlformat-output') {
+  handleSqlAction(b.hasAttribute('data-download-id') ? 'save' : 'copy');
   return;
  }
  if(b.hasAttribute('data-copy-id')){copy(outputText(b.dataset.copyId));return;}
  if (b.hasAttribute('data-download-id')) {
   const id = b.dataset.downloadId;
-  const filename = id === 'sqlformat-output' ? 'pocket-query.sql' : 'pocket-' + id + '.txt';
-  download(filename, outputText(id));
+  download('pocket-' + id + '.txt', outputText(id));
   return;
  }
  if(b.hasAttribute('data-clear-id')){const el=document.getElementById(b.dataset.clearId);el.value='';el.dispatchEvent(new Event('input',{bubbles:true}));el.focus();counters();return;}
