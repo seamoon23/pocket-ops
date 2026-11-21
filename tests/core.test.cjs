@@ -178,7 +178,85 @@ foreach ($sample in $samples) {
    assert.ok(!/--password| -p /.test(result));
    assert.throws(()=>C.fillCommand(entry.command,{...params,DBTARGET:'-x'},D.params,entry.shell));
   }
-  for(const shell of ['sql','csql']) assert.throws(()=>C.fillCommand('sample {{DBUSER}}',params,D.params,shell));
+  for(const shell of ['sql','csql','sqlplus','psql','mariadb']) assert.throws(()=>C.fillCommand('sample {{DBUSER}}',params,D.params,shell));
+ });
+ await test('UPDATE/DELETE without a top-level WHERE are flagged as full-table changes',()=>{
+  for(const [sql,verb] of [['UPDATE t SET a = 1;','UPDATE'],['delete from t','DELETE'],
+                           ['UPDATE t SET a = (SELECT b FROM s WHERE s.id = t.id);','UPDATE'],
+                           ['DELETE FROM t /* WHERE id = 1 */;','DELETE'],["UPDATE t SET note = 'WHERE id = 1';",'UPDATE']]){
+   const r=C.prepareSql(sql);
+   assert.equal(r.verb,verb);assert.equal(r.review,true);
+   assert.equal(r.checks[0].code,'no-where',sql);assert.equal(r.checks[0].level,'danger');
+  }
+  for(const sql of ['UPDATE t SET a = 1 WHERE id = 1;','DELETE FROM t WHERE id IN (SELECT id FROM s);'])
+   assert.ok(!C.prepareSql(sql).checks.some(c=>c.code==='no-where'),sql);
+ });
+ await test('SELECT that writes or locks is reviewed; plain SELECT is not',()=>{
+  const codes=(sql,d)=>C.prepareSql(sql,d).checks.map(c=>c.code);
+  assert.deepEqual(codes("SELECT * FROM t INTO OUTFILE '/tmp/x';",'mariadb'),['select-into']);
+  assert.deepEqual(codes('SELECT * INTO new_t FROM t;','postgresql'),['select-into']);
+  for(const [sql,d] of [['SELECT * FROM t WHERE id = 1 FOR UPDATE;','cubrid'],['SELECT * FROM t FOR NO KEY UPDATE;','postgresql'],
+                        ['SELECT * FROM t FOR KEY SHARE;','postgresql'],['SELECT * FROM t LOCK IN SHARE MODE;','mariadb']]){
+   assert.deepEqual(codes(sql,d),['select-lock'],sql);assert.equal(C.prepareSql(sql,d).review,true);
+  }
+  const plain=C.prepareSql("SELECT 'FOR UPDATE', a FROM t WHERE b IN (SELECT c INTO x FROM y);");
+  assert.equal(plain.review,false);assert.deepEqual(plain.checks,[]);
+ });
+ await test('Sample table left in a preset is reported without blocking',()=>{
+  for(const id of ['cmd-132','cmd-133','cmd-134','cmd-135']){
+   const preset=D.commands.find(c=>c.id===id),r=C.prepareSql(preset.editorSql);
+   assert.ok(r.checks.some(c=>c.code==='sample'),id);
+   assert.equal(r.review,preset.risk==='change');
+  }
+ });
+ await test('DB choice changes lexical rules only where the target client reads text differently',()=>{
+  const portable="SELECT a, b FROM t WHERE x = 'y' -- note\n  AND z = 1 /* c */;";
+  const expected=C.formatSql(portable);
+  for(const d of ['cubrid','mariadb','oracle','postgresql']){assert.equal(C.formatSql(portable,d),expected,d);}
+  assert.throws(()=>C.prepareSql('SELECT 1;','mysql'),/DB 종류/);
+  // Oracle SQL*Plus: blank lines end the buffer and lone / or . lines run or close it.
+  for(const sql of ['UPDATE t SET a = 1\n\nWHERE id = 1;','UPDATE t SET a = 1\r\n  \r\nWHERE id = 1;','UPDATE t SET a = 1 WHERE id = 1\n/','SELECT 1\n.\nFROM dual;',"SELECT 'a\n\nb' FROM dual;"])
+   assert.throws(()=>C.prepareSql(sql,'oracle'),/SQL\*Plus/,JSON.stringify(sql));
+  assert.ok(C.prepareSql('\nSELECT 1 FROM dual;\n\n','oracle'));
+  assert.deepEqual(C.prepareSql("UPDATE t SET a = 'A&B' WHERE id = 1;",'oracle').checks.map(c=>c.code),['oracle-define']);
+  assert.deepEqual(C.prepareSql("UPDATE t SET a = 'A&B' WHERE id = 1;",'cubrid').checks,[]);
+  // MariaDB/MySQL execute /*! */ bodies in every dialect's copy target; "--x" is not a MariaDB comment.
+  for(const d of ['cubrid','mariadb','oracle','postgresql']){
+   assert.throws(()=>C.prepareSql('SELECT 1 /*! , 2 */;',d),/실행하는 주석/);
+   assert.throws(()=>C.prepareSql('SELECT 1 /*M! , 2 */;',d),/실행하는 주석/);
+   assert.ok(C.prepareSql('SELECT /*+ INDEX(t) */ 1 FROM t;',d));
+  }
+  assert.throws(()=>C.prepareSql('DELETE FROM t WHERE id = 5--1\nOR 1 = 1;','mariadb'),/공백/);
+  assert.ok(C.prepareSql('DELETE FROM t WHERE id = 5 -- note\n;','mariadb'));
+  assert.ok(C.prepareSql('DELETE FROM t WHERE id = 5--1\n;','cubrid'));
+  // CUBRID alone treats // as a comment.
+  for(const d of ['mariadb','oracle','postgresql'])assert.throws(()=>C.prepareSql('SELECT a // c\nFROM t;',d),/CUBRID 전용/);
+  assert.equal(C.prepareSql('SELECT a // c\nFROM t;','cubrid').verb,'SELECT');
+  // psql interpolates :name outside quotes; casts and literals are left alone.
+  assert.deepEqual(C.prepareSql('DELETE FROM t WHERE id = :id;','postgresql').checks.map(c=>c.code),['psql-variable']);
+  assert.deepEqual(C.prepareSql("DELETE FROM t WHERE a::text = ':id' AND b = 1;",'postgresql').checks,[]);
+  assert.deepEqual(C.prepareSql("SELECT :'name' FROM t;",'postgresql').checks.map(c=>c.code),['psql-variable']);
+ });
+ await test('Each DB has independent connect, check and finish steps labeled with the paste target',()=>{
+  assert.deepEqual(Object.keys(D.dbs),['cubrid','mariadb','oracle','postgresql']);
+  const prompts={cubrid:'csql>',mariadb:'MariaDB>',oracle:'SQL>',postgresql:'psql =>'};
+  for(const db of Object.keys(D.dbs)){
+   assert.equal(D.dbs[db].prompt,prompts[db]);
+   for(const step of ['connect','check','finish'])assert.ok(D.commands.some(c=>c.db===db&&c.step===step),db+' '+step);
+   for(const c of D.commands.filter(c=>c.db===db&&c.step==='connect')){
+    assert.equal(c.shell,'bash');assert.equal(c.where,'Linux 셸 · $');
+    // Passwords are typed at the client prompt, never placed on the command line.
+    assert.ok(!/(-p\S|--password|PGPASSWORD|\}\}\/|IDENTIFIED)/.test(c.command),c.id);
+    const params=Object.fromEntries(Object.keys(D.params).map(k=>[k,'value_'+k.toLowerCase()]));
+    const filled=C.fillCommand(c.command,params,D.params,c.shell);
+    assert.ok(!/\{\{/.test(filled)&&filled.includes("'value_dbuser'"),c.id);
+    assert.throws(()=>C.fillCommand(c.command,{...params,DBUSER:'-x',DBNAME:'-x',DBTARGET:'-x'},D.params,c.shell),c.id);
+   }
+   for(const c of D.commands.filter(c=>c.db===db&&c.step&&c.step!=='connect'))assert.ok(c.where.startsWith(prompts[db]),c.id+' '+c.where);
+  }
+  for(const c of D.commands){assert.ok(c.where,c.id);if(['sql','csql','sqlplus','psql','mariadb'].includes(c.shell))assert.ok(!/\{\{[A-Z_]+\}\}/.test(c.command),c.id);}
+  // Oracle's default EXIT commits; the catalog's exit step must roll back explicitly.
+  assert.ok(D.commands.some(c=>c.db==='oracle'&&c.step==='finish'&&c.command==='EXIT ROLLBACK'));
  });
  await test('Command catalog unique and supported metadata',()=>{assert.ok(D.commands.length>=93);assert.equal(new Set(D.commands.map(x=>x.id)).size,D.commands.length);for(const c of D.commands){assert.ok(['read','load','change'].includes(c.risk));assert.ok(['user','limited'].includes(c.permission));assert.ok(c.title&&c.note&&c.command);}});
  await test('All command placeholders resolved; Docker Go template retained',()=>{for(const c of D.commands){const params=Object.fromEntries(Object.entries(D.params).map(([k,v])=>[k,v.default||'1234']));const out=C.fillCommand(c.command,params,D.params,c.shell);assert.ok(!/\{\{[A-Z_]+\}\}/.test(out));}assert.ok(D.commands.find(c=>c.id==='cmd-080').command.includes('{{.State.Status}}'));});

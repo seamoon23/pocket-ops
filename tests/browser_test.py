@@ -50,7 +50,16 @@ with sync_playwright() as p:
     for route in ['commands','encoding','codec','json','text','diff','logs','sql','sqlformat','unicode','time','chmod','cron','hash','regex','settings','favorites']:
         check('Route '+route,lambda r=route:(go(r),equal(page.locator('#view h1').count(),1)))
     go('commands')
-    check('135 built-in commands visible',lambda:equal(page.locator('.command-card').count(),135))
+    CATALOG_SIZE=page.evaluate('PocketData.commands.length')
+    check('All built-in commands visible',lambda:(equal(CATALOG_SIZE,157),equal(page.locator('.command-card').count(),CATALOG_SIZE)))
+    def paste_targets():
+        equal(page.locator('#command-list .command-card .where-tag').count(),CATALOG_SIZE)
+        for cid,where in [('cmd-001','Linux 셸 · $'),('cmd-112','Windows PowerShell · PS>'),('cmd-128','csql> · CSQL 세션 명령'),
+                          ('cmd-137','MariaDB> · SQL'),('cmd-144','SQL> · SQL*Plus 명령'),('cmd-152','psql => · 메타 명령')]:
+            card=page.locator('#command-list .command-card').filter(has=page.locator(f'[data-command="{cid}"]'))
+            contains(card.locator('.where-tag').inner_text(),where)
+        click('[data-command="cmd-128"]');contains(txt('#modal .panel-head'),'csql> · CSQL 세션 명령');click('#modal [data-close]')
+    check('Every command card and dialog names where to paste it (Linux shell, PowerShell or DB prompt)',paste_targets)
     def environment_tabs():
         for domain in ['windows','linux','db']:
             click('[data-command-domain="'+domain+'"]')
@@ -61,7 +70,7 @@ with sync_playwright() as p:
     check('Environment tabs match catalog and expose DB editor guidance',environment_tabs)
     def csql_workflow():
         click('[data-command-domain="db"]')
-        click('[data-command-search="CSQL"]')
+        click('[data-command-db="cubrid"]')
         click('[data-command="cmd-123"]')
         assert page.locator('#copy-command').is_disabled()
         fill('#param-DBUSER','reader');fill('#param-DBTARGET','sampledb')
@@ -75,7 +84,13 @@ with sync_playwright() as p:
             expect(page.locator('#copy-command')).to_be_disabled()
             page.locator('#command-ack').check();expect(page.locator('#copy-command')).to_be_enabled()
             click('#modal [data-close]')
+        for db,expected in [('mariadb',{'cmd-136','cmd-142','cmd-132'}),('oracle',{'cmd-143','cmd-149','cmd-135'}),('postgresql',{'cmd-150','cmd-157','cmd-133'})]:
+            click(f'[data-command-db="{db}"]')
+            shown=set(page.locator('#command-list [data-cmd-star]').evaluate_all('els=>els.map(e=>e.dataset.cmdStar)'))
+            assert expected<=shown and 'cmd-123' not in shown,(db,sorted(shown)[:6])
+        click('[data-command-db=""]')
         click('[data-command-domain=""]');fill('#command-query','')
+        expect(page.locator('#command-db-filter')).to_be_hidden()
     check('DB menu separates CSQL login and session commands from guarded SQL changes',csql_workflow)
     def alternative_command():
         command=page.evaluate('PocketData.commands.find(c=>c.alternatives.length)')
@@ -87,6 +102,22 @@ with sync_playwright() as p:
         contains(txt('#modal'),'실행 조건')
         click('#modal [data-close]')
     check('Alternative command opens an independent reviewed choice',alternative_command)
+    def alternative_keeps_values():
+        click('[data-command="cmd-013"]');fill('#param-PATTERN','tomcat-fixture')
+        alt=page.locator('#modal .alt-row').filter(has=page.locator('[data-command="cmd-096"]'))
+        contains(alt.inner_text(),'입력: Linux 셸');contains(alt.inner_text(),'조건:')
+        alt.locator('button').click()
+        equal(v('#command-preview'),"ps -ef | grep -F -- 'tomcat-fixture'");contains(txt('#command-carried'),'PATTERN')
+        fill('#param-PATTERN','tomcat-edited');click('#command-back')
+        equal(txt('#modal h2'),'프로세스 이름으로 PID 찾기');equal(v('#command-preview'),"pgrep -af -- 'tomcat-edited'")
+        click('#modal [data-close]')
+        click('[data-command="cmd-039"]');fill('#param-ARCHIVE','/apps/logs/a.gz');fill('#param-PATTERN','ORA-01555')
+        click('#modal [data-command="cmd-099"]')
+        equal(v('#command-preview'),"gzip -cd -- '/apps/logs/a.gz' | grep -n -F -- 'ORA-01555'")
+        click('#modal [data-close]')
+        click('[data-command="cmd-025"]');fill('#param-FILE',"/apps/a b.txt");click('#modal [data-command="cmd-100"]')
+        equal(v('#command-preview'),"ls -ld -- '/apps/a b.txt'");click('#modal [data-close]')
+    check('Alternative keeps typed values, shows its condition first and returns to the original',alternative_keeps_values)
     def cached_favorites():
         page.locator('#command-favorites').check();before=page.locator('.command-card').count()
         target=page.locator('#command-list [data-cmd-star]').first.get_attribute('data-cmd-star')
@@ -264,7 +295,7 @@ with sync_playwright() as p:
         page.evaluate("delete window.isSecureContext; delete navigator.clipboard")
     check('Clear also removes palette history and cancels late copy fallback (clipboard double)',clear_pending_copy_and_search)
     def format_sql_flow():
-        go('home');click('[data-home-domain="db"]');click('#home-cards [data-go="sqlformat"]')
+        go('home');click('[data-open-sql-db="cubrid"]');expect(page.locator('[data-sql-db="cubrid"]')).to_have_attribute('aria-pressed','true')
         click('#sqlformat-sample');click('#sqlformat-run')
         sample=v('#sqlformat-output');assert sample and '\n' in sample
         fill('#sqlformat-input',"select '한글, FROM', 900719925474099312345 from sample_items where id = 1;")
@@ -291,7 +322,7 @@ with sync_playwright() as p:
     def open_csql_preset(command_id,from_detail=False):
         locator('#sidebar [data-go="commands"]').click()
         locator('[data-command-domain="db"]').click()
-        locator('[data-command-search="CSQL"]').click()
+        locator('[data-command-db="cubrid"]').click()
         scope=locator('#command-list')
         if from_detail:
             scope.locator(f'[data-command="{command_id}"]').click()
@@ -380,6 +411,62 @@ with sync_playwright() as p:
         confirm_review.click()
         expect(locator('#manual-copy')).to_have_value(text)
     check('Declining a preset preserves the draft; manual clipboard fallback receives only confirmed SQL',canceled_replacement_and_manual_copy)
+
+    def dialect_review():
+        if locator('#modal').is_visible(): locator('#modal [data-close]').click()
+        record_copies()
+        status=locator('#sqlformat-status')
+        locator('#sidebar [data-go="commands"]').click()
+        locator('[data-command-domain="db"]').click();locator('[data-command-db="mariadb"]').click()
+        locator('#command-list [data-open-sql-preset="cmd-134"]').click()
+        expect(locator('[data-sql-db="mariadb"]')).to_have_attribute('aria-pressed','true')
+        # Removing the WHERE clause turns the preset into a full-table change.
+        sql_input.fill("UPDATE fixture_items SET item_name = 'ALL';")
+        sql_copy.click()
+        contains(locator('#sql-review-checks').inner_text(),'WHERE 조건이 없습니다')
+        contains(locator('#modal').inner_text(),'MariaDB>');contains(locator('#sql-review-flow').inner_text(),'START TRANSACTION')
+        expect(confirm_review).to_be_disabled()
+        equal(flow.evaluate('window.copiedSql'),[])
+        reviewed=review.input_value()
+        locator('#sql-review-ack').check();expect(confirm_review).to_be_enabled();confirm_review.click()
+        equal(flow.evaluate('window.copiedSql'),[reviewed])
+        # Changing the DB drops output checked under the previous DB's rules.
+        locator('#sqlformat-run').click();assert locator('#sqlformat-output').input_value()
+        locator('[data-sql-db="oracle"]').click()
+        equal(locator('#sqlformat-output').input_value(),'');contains(status.inner_text(),'Oracle')
+        sql_input.fill("UPDATE fixture_items SET item_name = 'A&B'\n\nWHERE item_id = 1;")
+        sql_copy.click()
+        equal(locator('#modal[open]').count(),0);contains(status.inner_text(),'SQL*Plus');equal(locator('#sqlformat-output').input_value(),'')
+        equal(flow.evaluate('window.copiedSql'),[reviewed])
+        sql_input.fill("UPDATE fixture_items SET item_name = 'A&B' WHERE item_id = 1;")
+        locator('[data-download-id="sqlformat-output"]').click()
+        contains(locator('#sql-review-checks').inner_text(),'SET DEFINE OFF');expect(confirm_review).to_be_enabled()
+        saved_sql=review.input_value()
+        with flow.expect_download() as saved: confirm_review.click()
+        equal(Path(saved.value.path()).read_bytes(),saved_sql.encode('utf-8'))
+        # Locking SELECT and psql variables are reviewed instead of copied at once.
+        locator('[data-sql-db="postgresql"]').click()
+        sql_input.fill('SELECT * FROM fixture_items WHERE item_id = :id FOR UPDATE;')
+        sql_copy.click()
+        checks=locator('#sql-review-checks').inner_text();contains(checks,'잠그는');contains(checks,'psql')
+        equal(len(flow.evaluate('window.copiedSql')),1)
+        locator('#sql-review-edit').click()
+        sql_input.fill('SELECT item_id FROM fixture_items WHERE item_id = 1;');sql_copy.click()
+        equal(flow.evaluate('window.copiedSql')[-1],locator('#sqlformat-output').input_value())
+        equal(locator('#modal[open]').count(),0)
+        locator('[data-sql-db="cubrid"]').click()
+        # Cancelling a preset from the MariaDB-filtered list changes neither the draft nor the selected DB.
+        draft=sql_input.input_value()
+        flow.remove_listener('dialog',accept_replacement);flow.once('dialog',lambda dialog:dialog.dismiss())
+        try:
+            locator('#sidebar [data-go="commands"]').click()
+            expect(locator('[data-command-db="mariadb"]')).to_have_attribute('aria-pressed','true')
+            locator('#command-list [data-open-sql-preset="cmd-133"]').click()
+        finally:
+            flow.on('dialog',accept_replacement)
+        locator('#sidebar [data-go="sqlformat"]').click()
+        equal(sql_input.input_value(),draft);expect(locator('[data-sql-db="cubrid"]')).to_have_attribute('aria-pressed','true')
+    check('DB choice drives paste target and checks; WHERE-less change needs explicit acknowledgment and delivers the reviewed text',dialect_review)
     flow.close()
     go('settings')
     go('json');fill('#json-input','{"session":"DO_NOT_PERSIST_INPUT_MARKER"}');go('settings')
@@ -411,16 +498,46 @@ with sync_playwright() as p:
         data={'version':1,'theme':'light','toolFavs':['json'],'cmdFavs':[],'customCommands':[{'id':'custom-safe','title':'가져온 명령','command':'echo hello','note':'test','risk':'read','permission':'user'}]}
         page.locator('#settings-import').set_input_files({'name':'valid.json','mimeType':'application/json','buffer':json.dumps(data).encode()});page.wait_for_selector('#confirm-import');click('#confirm-import');go('commands');fill('#command-query','가져온 명령');click('[data-command="custom-safe"]');assert page.locator('#copy-command').is_disabled();contains(txt('#modal'),'검증하지 않았습니다');click('#modal [data-close]')
     check('Imported commands cannot claim trusted read-only risk',import_valid)
+    def imported_markup_on_dashboard():
+        hostile='<img src=x onerror="window.__owned=1">FAKE_IMPORT_MARKER'
+        data={'version':1,'theme':'light','toolFavs':['json'],'cmdFavs':['custom-markup'],'customCommands':[{'id':'custom-markup','title':hostile,'command':'echo "<script>window.__owned=1</script>"','note':hostile}]}
+        go('settings');page.locator('#settings-import').set_input_files({'name':'markup.json','mimeType':'application/json','buffer':json.dumps(data).encode()})
+        page.wait_for_selector('#confirm-import');click('#confirm-import')
+        go('home');contains(txt('#home-fav-commands'),hostile);equal(page.locator('#view img, #view script').count(),0)
+        click('#home-fav-commands [data-command="custom-markup"]');equal(v('#command-preview'),data['customCommands'][0]['command'])
+        expect(page.locator('#copy-command')).to_be_disabled();equal(page.locator('#modal img').count(),0);click('#modal [data-close]')
+        page.keyboard.press('Control+k');fill('#palette-input','FAKE_IMPORT_MARKER');equal(page.locator('#palette img').count(),0);page.keyboard.press('Escape')
+        equal(page.evaluate('window.__owned||0'),0)
+    check('Imported command markup stays text on the dashboard, dialog and search',imported_markup_on_dashboard)
     go('settings')
     check('Clear inputs preserves settings, clears working text',lambda:(click('#clear-inputs'),go('json'),equal(v('#json-input'),'')))
     # Actual responsive layout in the same browser, no CSS modifications.
     go('home')
-    def recommended_tabs():
-        click('[data-home-domain="db"]');assert page.locator('#home-cards [data-go="sql"]').count()==1
-        click('[data-open-domain="db"]');contains(txt('#command-domain-guide'),'SQL 편집기')
+    def dashboard():
+        # The import test above replaced the favorites; star one command through the normal UI first.
+        go('commands');fill('#command-query','')
+        if page.locator('[data-cmd-star="cmd-001"]').get_attribute('aria-pressed')!='true': click('[data-cmd-star="cmd-001"]')
+        go('home')
+        favs=page.evaluate("[...document.querySelectorAll('#home-fav-commands [data-command]')].map(b=>b.dataset.command)")
+        assert favs, 'dashboard lists favorite commands'
+        for cid in favs: contains(page.locator('#home-fav-commands .dash-row').filter(has=page.locator(f'[data-command="{cid}"]')).inner_text(),'입력:')
+        assert page.locator('#home-fav-tools [data-go]').count()>0
+        assert not page.locator('.all-tools').evaluate('el=>el.open'), 'full tool grid starts folded'
+        page.locator('#home-fav-commands [data-command]').first.click();assert v('#command-preview');click('#modal [data-close]')
+        for domain,label in [('windows','PowerShell'),('linux','SSH')]:
+            go('home');click(f'[data-open-domain="{domain}"]')
+            equal(page.locator('[data-command-domain].active').get_attribute('data-command-domain'),domain);contains(txt('#command-domain-guide'),label)
+        go('home');click('[data-open-domain="db"]');contains(txt('#command-domain-guide'),'csql>')
         page.locator('#command-list [data-cmd-star]').first.click()
         go('favorites');assert page.locator('.tool-card').count()>0;assert page.locator('.command-card').count()>0
-    check('Recommended tools link to matching environment and shared favorites',recommended_tabs)
+        go('home');click('[data-open-sql-db="postgresql"]')
+        expect(page.locator('[data-sql-db="postgresql"]')).to_have_attribute('aria-pressed','true')
+        contains(txt('#sql-db-where'),'psql =>');contains(txt('#sql-steps [data-sql-step="connect"]'),'Linux 셸')
+        contains(txt('#sql-steps [data-sql-step="finish"]'),'psql =>')
+        click('#sql-steps [data-command="cmd-150"]');fill('#param-DBUSER','reader');fill('#param-DBNAME','appdb')
+        equal(v('#command-preview'),"PGOPTIONS='-c default_transaction_read_only=on' psql -h '127.0.0.1' -U 'reader' -d 'appdb'")
+        click('#modal [data-close]');click('[data-sql-db="cubrid"]')
+    check('Dashboard gathers favorites, opens each work environment and starts the SQL workbench per DB',dashboard)
     def large_backup_roundtrip():
         go('settings')
         data={'version':1,'theme':'light','toolFavs':['json'],'cmdFavs':['custom-large-0'],
@@ -541,6 +658,21 @@ with sync_playwright() as p:
             phone.locator('#param-PID').fill('1234;id');expect(phone.locator('#copy-command')).to_be_disabled()
             phone.locator('#modal [data-close]').tap()
         check(f'Touch {width}x{height}: command copy fallback and safety gates (clipboard double)',touch_command_copy)
+        def touch_sql_workbench():
+            phone_go('home')
+            phone.locator('[data-open-sql-db="oracle"]').tap();phone_overflow()
+            phone.locator('#sql-steps [data-open-sql-preset="cmd-135"]').tap()
+            phone.evaluate("document.execCommand=()=>false;Object.defineProperty(navigator,'clipboard',{configurable:true,value:undefined})")
+            phone.locator('[data-copy-id="sqlformat-output"]').tap()
+            contains(phone.locator('#modal').inner_text(),'SQL>');contains(phone.locator('#sql-review-checks').inner_text(),'pocket_ops_sample')
+            box=phone.locator('#sql-review-confirm').bounding_box();assert box['height']>=44
+            reviewed=phone.locator('#sql-review-preview').input_value()
+            phone.locator('#sql-review-confirm').tap()
+            expect(phone.locator('#manual-copy')).to_have_value(reviewed)
+            phone_overflow();phone.locator('#modal [data-close]').tap()
+            phone_go('commands')
+            assert phone.locator('.command-card .where-tag').first.evaluate('el=>parseFloat(getComputedStyle(el).fontSize)')>=13
+        check(f'Touch {width}x{height}: SQL workbench preset, Oracle review and blocked-clipboard manual copy',touch_sql_workbench)
         if width==360:
             phone_go('commands')
             phone.locator('#command-query').fill('포트')
@@ -560,16 +692,17 @@ with sync_playwright() as p:
         def static_reference():
             expect(reference).to_be_visible()
             contains(reference.inner_text(),'읽기 전용 명령어 참고')
-            equal(reference.locator('.reference-command').count(),135)
+            equal(reference.locator('.reference-command').count(),CATALOG_SIZE)
+            equal(reference.locator('.reference-where').count(),CATALOG_SIZE)
             expect(reader.locator('.layout')).to_be_hidden()
             for domain in ['windows','linux','db']:
                 assert reference.locator('#reference-'+domain+' .reference-command').count()>0
             content=reference.text_content()
-            for text in ['cat /etc/os-release','PowerShell','실제 변경','권한','{{PID}}','--no-auto-commit',';autocommit','-- DELETE FROM pocket_ops_sample']:
+            for text in ['cat /etc/os-release','PowerShell','실제 변경','권한','{{PID}}','--no-auto-commit',';autocommit','-- DELETE FROM pocket_ops_sample','입력: csql>','입력: MariaDB>','EXIT ROLLBACK']:
                 contains(content,text)
             # No injected script/evaluate is used in this JS-disabled context.
             equal(reference.locator('button, input, textarea, select').count(),0)
-        check(f'JavaScript disabled {width}px: all 135 commands and risk guidance remain readable',static_reference)
+        check(f'JavaScript disabled {width}px: all {CATALOG_SIZE} commands, paste targets and risk guidance remain readable',static_reference)
         def static_reference_layout():
             for domain in ['windows','linux','db']:
                 reference.locator('nav a[href="#reference-'+domain+'"]').tap()
@@ -583,6 +716,18 @@ with sync_playwright() as p:
                 reader.screenshot(path=str(PREVIEWS/'preview-mobile-nojs.png'),full_page=False,animations='disabled')
         check(f'JavaScript disabled {width}px: native reference fits viewport',static_reference_layout)
         nojs.close()
+    def blocked_script_reference():
+        # A viewer that alters or blocks the inline script must still show the read-only reference.
+        blocked=context.new_page();blocked.set_default_timeout(4000)
+        blocked.set_content(HTML.replace("'use strict';","'use strict'; ",1),wait_until='load')
+        expect(blocked.locator('#offline-reference')).to_be_visible()
+        expect(blocked.locator('.layout')).to_be_hidden()
+        contains(blocked.locator('#offline-reference').inner_text(),'차단')
+        equal(blocked.locator('#offline-reference .reference-command').count(),CATALOG_SIZE)
+        blocked.close()
+        expect(page.locator('#offline-reference')).to_be_hidden()
+        expect(page.locator('.layout')).to_be_visible()
+    check('Blocked inline script shows the read-only reference instead of an empty app',blocked_script_reference)
     # Settings persistence test doubles are separate from real origin tests above.
     normal=context.new_page();normal.set_default_timeout(4000)
     normal.evaluate("""() => { const m=new Map();window.__store=m;Object.defineProperty(window,'localStorage',{configurable:true,value:{getItem:k=>m.get(k)||null,setItem:(k,v)=>m.set(k,String(v)),removeItem:k=>m.delete(k)}}); }""")

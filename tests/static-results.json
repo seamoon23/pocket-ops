@@ -1,6 +1,6 @@
 {
-  "total": 18,
-  "passed": 18,
+  "total": 21,
+  "passed": 21,
   "failed": 0,
   "results": {
     "Only four curated CRUD presets have corresponding editor and reference text": true,
@@ -20,6 +20,9 @@
     "SHA256SUMS covers matching HTML and ZIP": true,
     "No-script reference contains every curated command once": true,
     "No-script reference escapes HTML and retains literal source": true,
-    "No-script reference warns about placeholders and change commands": true
+    "No-script reference warns about placeholders and change commands": true,
+    "Read-only reference shown until the app starts, not only without JavaScript": true,
+    "Every reference entry names its paste target": true,
+    "Release ZIP name follows the catalog version": true
   }
 }
