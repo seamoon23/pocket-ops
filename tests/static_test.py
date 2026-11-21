@@ -25,7 +25,7 @@ with zipfile.ZipFile(release) as archive:
     release_names=archive.namelist()
 sums=dict(line.split('  ',1)[::-1] for line in (ROOT/'SHA256SUMS.txt').read_text().splitlines())
 catalog=json.loads((ROOT/'src/data.js').read_text(encoding='utf-8').split(' = ',1)[1].rstrip().rstrip(';'))
-reference=re.search(r'<noscript>([\s\S]*?)</noscript>',html).group(1)
+reference=re.search(r'<div id="script-fallback">([\s\S]*?)</div><!-- /script-fallback -->',html).group(1)
 hostile='</code></pre></noscript><img src=x onerror="alert(1)"> & \'quoted\''
 fixture=dict(catalog['commands'][0],title=hostile,command=hostile,note=hostile,prerequisite=hostile)
 escaped_reference=render_reference({'commands':[fixture]})
@@ -59,6 +59,16 @@ checks={
     'No-script reference contains every curated command once': reference.count('class="reference-command"')==len(catalog['commands']) and all(reference.count('id="reference-'+item['id']+'"')==1 for item in catalog['commands']),
     'No-script reference escapes HTML and retains literal source': hostile not in escaped_reference and not escaped_parser.eventattrs and '&lt;/noscript&gt;&lt;img' in escaped_reference,
     'No-script reference warns about placeholders and change commands': '자동 치환·검증 없이 그대로 실행하지 마세요' in reference and '실제 변경 · 실행 전 확인' in reference,
+    # A blocked or failing script must not leave an empty page: the reference is outside <noscript>
+    # and is hidden only after the app marks itself ready.
+    'Read-only reference shown until the app starts, not only without JavaScript':
+        '<noscript>' not in html.split('<div id="script-fallback">',1)[0] and html.count('<div id="script-fallback">')==1
+        and 'html.app-ready #script-fallback{display:none!important}' in reference
+        and "classList.add('app-ready')" in script and '<noscript><style>#script-fallback{animation:none!important}</style></noscript>' in html,
+    'Every reference entry names its paste target':
+        reference.count('class="reference-where"')==len(catalog['commands']) and all(item['where'] for item in catalog['commands']),
+    'Release ZIP name follows the catalog version':
+        release.name=='pocket-ops-v'+catalog['version']+'.zip' and recipe['version']==catalog['version'],
 }
 report={'total':len(checks),'passed':sum(checks.values()),'failed':sum(not x for x in checks.values()),'results':checks}
 (ROOT/'tests/static-results.json').write_text(json.dumps(report,indent=2),encoding='utf-8')

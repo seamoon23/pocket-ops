@@ -2,18 +2,46 @@ import json
 import re
 from pathlib import Path
 commands=[]
+# Client prompts never receive interpolated values: SQL, CSQL, SQL*Plus, psql and MariaDB client commands.
+CLIENT_SHELLS=('sql','csql','sqlplus','psql','mariadb')
+SHELLS=('bash','powershell')+CLIENT_SHELLS
+# DB-specific prompts are shown wherever a command is listed so the paste target is explicit.
+dbs={
+    'cubrid':dict(label='CUBRID',client='CSQL',prompt='csql>',
+                  flow='SSH 셸에서 csql -C --no-auto-commit 으로 접속 → csql> 에서 ;autocommit 이 OFF인지 확인 → SQL 붙여넣기 → 영향 행 수 확인 → ;commit 또는 ;rollback'),
+    'mariadb':dict(label='MariaDB',client='mysql · mariadb 클라이언트',prompt='MariaDB>',
+                   flow='mysql 접속 → START TRANSACTION; 먼저 실행 (기본값 autocommit=1이라 바로 확정됨) → SQL 붙여넣기 → 영향 행 수 확인 → COMMIT; 또는 ROLLBACK;'),
+    'oracle':dict(label='Oracle',client='SQL*Plus',prompt='SQL>',
+                  flow='sqlplus 접속 → SHOW AUTOCOMMIT 이 OFF인지 확인 → SQL 붙여넣기 → 처리 행 수 확인 → COMMIT; 또는 ROLLBACK; · EXIT는 기본적으로 커밋하므로 EXIT ROLLBACK 사용'),
+    'postgresql':dict(label='PostgreSQL',client='psql',prompt='psql =>',
+                      flow='psql 접속 → BEGIN; 먼저 실행 (기본값 자동 커밋) → SQL 붙여넣기 → UPDATE n 등 결과 확인 → COMMIT; 또는 ROLLBACK;'),
+}
+def location(shell,db=''):
+    """Human-readable paste target, e.g. 'Linux 셸 · $' or 'MariaDB> · SQL'."""
+    if shell=='bash': return 'Linux 셸 · $'
+    if shell=='powershell': return 'Windows PowerShell · PS>'
+    if shell=='csql': return 'csql> · CSQL 세션 명령'
+    if shell=='sqlplus': return 'SQL> · SQL*Plus 명령'
+    if shell=='psql': return 'psql => · 메타 명령'
+    if shell=='mariadb': return 'MariaDB> · 클라이언트 명령'
+    if db: return dbs[db]['prompt']+' · SQL'
+    return 'DB 클라이언트 · SQL'
 # IDs 001–093 belong to v0.1.0 favorites. Keep this order; append new entries.
-def add(title,group,command,note,tags='',risk='read',permission='user',shell='bash',prerequisite='',domain=None,editor_preset=False):
+def add(title,group,command,note,tags='',risk='read',permission='user',shell='bash',prerequisite='',domain=None,editor_preset=False,db='',step=''):
     if domain is None:
-        domain='windows' if shell=='powershell' else 'db' if group=='DB · 연동' else 'linux'
-    if shell in ('sql', 'csql') and re.search(r'\{\{[A-Z_]+\}\}',command):
-        raise ValueError('SQL and CSQL session examples must be static.')
+        domain='windows' if shell=='powershell' else 'db' if group=='DB · 연동' or db else 'linux'
+    if shell not in SHELLS or (db and db not in dbs):
+        raise ValueError('Unknown shell or DB: '+shell+' '+db)
+    if shell in CLIENT_SHELLS and re.search(r'\{\{[A-Z_]+\}\}',command):
+        raise ValueError('SQL and DB client examples must be static.')
     if not prerequisite:
         prerequisite=('Windows 11 · 기본 Windows PowerShell 5.1 이상' if shell=='powershell' else
                       '기존에 설치·승인된 해당 DB 클라이언트와 접속 권한' if shell=='sql' else
                       'Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인')
     command_id=f'cmd-{len(commands)+1:03}'
     commands.append(dict(id=command_id,title=title,group=group,command=command,note=note,tags=tags,risk=risk,permission=permission,shell=shell,domain=domain,prerequisite=prerequisite,alternatives=[]))
+    if db: commands[-1]['db']=db
+    if step: commands[-1]['step']=step
     if editor_preset:
         if shell != 'sql' or domain != 'db' or risk not in ('read', 'change'):
             raise ValueError('Editable presets require a curated SQL example.')
@@ -148,34 +176,38 @@ add('PostgreSQL 문자셋 · 시간대','DB · 연동',"SELECT name, setting\nFR
 csql_group = 'CUBRID · CSQL'
 shell_path = '승인된 SSH 도구 → 대상 Linux 서버 접속 → 셸 프롬프트 · 설치된 CUBRID CSQL 필요'
 session_path = 'SSH 셸 → CSQL 연결 → csql> 에 한 줄 입력'
-sql_path = 'CUBRID 접속 → csql> 또는 CUBRID SQL 편집기 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인'
-write_path = sql_path + ' · 변경 권한과 현재 세션의 자동 커밋 OFF 확인'
 
 add('CSQL 실행 옵션 확인', csql_group, 'csql',
     'DB 이름을 생략하면 설치된 버전과 옵션 목록을 표시합니다. DB 이름 누락 메시지는 이 확인 과정에서 정상입니다.',
-    '도움말 옵션 버전', prerequisite=shell_path, domain='db')
+    '도움말 옵션 버전', prerequisite=shell_path, domain='db', db='cubrid')
 add('CSQL 조회 전용 접속', csql_group, 'csql -C -r -u {{DBUSER}} {{DBTARGET}}',
     '클라이언트/서버 모드(-C)와 읽기 전용(-r)으로 접속합니다. 계정에 비밀번호가 있으면 CSQL의 비밀번호 프롬프트에 직접 입력하세요.',
-    'SSH 로그인 접속 읽기 전용', prerequisite=shell_path, domain='db')
+    'SSH 로그인 접속 읽기 전용', prerequisite=shell_path, domain='db', db='cubrid', step='connect')
 add('CSQL 변경 작업용 접속', csql_group, 'csql -C --no-auto-commit -u {{DBUSER}} {{DBTARGET}}',
     '변경 작업 전용 세션을 엽니다. 비밀번호는 CSQL 프롬프트에 입력하세요. 접속 후 ;database로 대상을, ;autocommit으로 OFF 표시를 확인합니다.',
-    'SSH 로그인 접속 수동 커밋 트랜잭션', risk='change', permission='limited', prerequisite=shell_path, domain='db')
+    'SSH 로그인 접속 수동 커밋 트랜잭션', risk='change', permission='limited', prerequisite=shell_path, domain='db', db='cubrid', step='connect')
 
-for title, command, note, risk in [
-    ('CSQL 세션 도움말', ';help', '현재 설치 버전이 지원하는 세션 명령을 표시합니다. 맨 앞에 세미콜론을 쓰고 Enter를 누릅니다.', 'read'),
-    ('CSQL 접속 대상 확인', ';database', '현재 연결한 DB 이름과 호스트를 확인합니다. 예상한 대상인지 변경 작업 전에 비교하세요.', 'read'),
-    ('CSQL 테이블 구조 확인', ';schema pocket_ops_sample', '예시 이름을 확인할 테이블명으로 바꿔 입력하세요. 컬럼, 타입, 제약 조건을 보고 SQL에 사용할 키를 확인합니다.', 'read'),
-    ('CSQL 자동 커밋 상태 확인', ';autocommit', '현재 설정을 표시합니다. ON이면 실행한 변경이 즉시 확정될 수 있습니다. 변경 작업은 새 수동 커밋 세션에서 시작하세요.', 'read'),
-    ('CSQL 트랜잭션 확정', ';commit', '현재 트랜잭션의 미확정 변경 전체를 저장합니다. 영향 행 수와 결과를 확인한 후 선택하세요. 확정 뒤에는 ;rollback으로 되돌릴 수 없습니다.', 'change'),
-    ('CSQL 트랜잭션 취소', ';rollback', '현재 트랜잭션의 미확정 변경 전체를 취소합니다. 같은 세션의 다른 작업까지 포함되므로 범위를 확인하세요.', 'change'),
-    ('CSQL 종료', ';exit', '미확정 작업을 먼저 확정하거나 취소한 뒤 종료합니다. 종료 시 나타나는 질문은 읽고 응답하세요.', 'change'),
+for title, command, note, risk, step in [
+    ('CSQL 세션 도움말', ';help', '현재 설치 버전이 지원하는 세션 명령을 표시합니다. 맨 앞에 세미콜론을 쓰고 Enter를 누릅니다.', 'read', ''),
+    ('CSQL 접속 대상 확인', ';database', '현재 연결한 DB 이름과 호스트를 확인합니다. 예상한 대상인지 변경 작업 전에 비교하세요.', 'read', 'check'),
+    ('CSQL 테이블 구조 확인', ';schema pocket_ops_sample', '예시 이름을 확인할 테이블명으로 바꿔 입력하세요. 컬럼, 타입, 제약 조건을 보고 SQL에 사용할 키를 확인합니다.', 'read', 'check'),
+    ('CSQL 자동 커밋 상태 확인', ';autocommit', '현재 설정을 표시합니다. ON이면 실행한 변경이 즉시 확정될 수 있습니다. 변경 작업은 새 수동 커밋 세션에서 시작하세요.', 'read', 'check'),
+    ('CSQL 트랜잭션 확정', ';commit', '현재 트랜잭션의 미확정 변경 전체를 저장합니다. 영향 행 수와 결과를 확인한 후 선택하세요. 확정 뒤에는 ;rollback으로 되돌릴 수 없습니다.', 'change', 'finish'),
+    ('CSQL 트랜잭션 취소', ';rollback', '현재 트랜잭션의 미확정 변경 전체를 취소합니다. 같은 세션의 다른 작업까지 포함되므로 범위를 확인하세요.', 'change', 'finish'),
+    ('CSQL 종료', ';exit', '미확정 작업을 먼저 확정하거나 취소한 뒤 종료합니다. 종료 시 나타나는 질문은 읽고 응답하세요.', 'change', 'finish'),
 ]:
-    add(title, csql_group, command, note, '세션 명령', risk=risk, shell='csql', prerequisite=session_path, domain='db')
+    add(title, csql_group, command, note, '세션 명령', risk=risk, shell='csql', prerequisite=session_path, domain='db', db='cubrid', step=step)
 
-add('SELECT · 키로 대상 행 확인', csql_group,
+# The four CRUD presets are plain SQL accepted by CUBRID, MariaDB, Oracle and PostgreSQL.
+# The SQL workbench applies the selected DB's paste target and lexical checks.
+preset_group = 'SQL · 기본 쿼리 프리셋'
+preset_tags = 'csql cubrid mariadb mysql oracle postgresql psql sqlplus 쿼리 프리셋'
+sql_path = 'DB 클라이언트 접속 → csql> · MariaDB> · SQL> · psql => 프롬프트 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인'
+write_path = sql_path + ' · 변경 권한과 자동 커밋 OFF 또는 트랜잭션 시작 확인'
+add('SELECT · 키로 대상 행 확인', preset_group,
     'SELECT item_id, item_name\nFROM pocket_ops_sample\nWHERE item_id = 1001;',
-    'item_id가 기본 키인 가상 테이블 예시입니다. 실제 키와 조건에 맞게 수정해 조회하고, 변경 전 대상 행과 현재 값을 확인하세요.',
-    '조회 기본 쿼리 프리셋', shell='sql', prerequisite=sql_path, domain='db', editor_preset=True)
+    'item_id가 기본 키인 가상 테이블 예시입니다. 실제 키와 조건에 맞게 수정해 조회하고, 변경 전 대상 행과 현재 값을 확인하세요. SQL 작업대에서 DB를 고르면 붙여넣을 프롬프트와 DB별 주의사항을 함께 표시합니다.',
+    '조회 기본 '+preset_tags, shell='sql', prerequisite=sql_path, domain='db', editor_preset=True)
 for title, statement, note in [
     ('INSERT · 한 행 추가', "INSERT INTO pocket_ops_sample (item_id, item_name)\nVALUES (1001, 'SAMPLE');",
      '대상 키가 비어 있는지, 컬럼 타입과 필수 값이 맞는지 확인하세요.'),
@@ -184,11 +216,99 @@ for title, statement, note in [
     ('DELETE · 키와 기존 값으로 삭제', "DELETE FROM pocket_ops_sample\nWHERE item_id = 1001 AND item_name = 'SAMPLE';",
      '같은 WHERE 조건을 SELECT로 먼저 조회하고 삭제할 행 수와 복구 방법을 확인하세요.'),
 ]:
-    add(title, csql_group, statement,
+    add(title, preset_group, statement,
         note + ' 앱에서 쿼리 정렬로 열어 예시 이름·값을 바꾸고 최종 SQL을 확인하세요. 원문 복사는 모든 줄에 주석을 붙입니다.',
-        '변경 기본 쿼리 프리셋', risk='change', permission='limited', shell='sql', prerequisite=write_path, domain='db', editor_preset=True)
+        '변경 '+preset_tags, risk='change', permission='limited', shell='sql', prerequisite=write_path, domain='db', editor_preset=True)
+
+# v0.6.0: DB-specific session flows. Each step is an independent command, never a script that runs them all.
+connect_path = '승인된 SSH 도구 → 대상 Linux 서버 접속 → 셸 프롬프트 · 이미 설치된 DB 클라이언트 필요'
+maria_group = 'MariaDB · mysql 클라이언트'
+maria_session = 'MariaDB> (mysql/mariadb 클라이언트) 프롬프트에 입력'
+add('MariaDB 접속 · 안전 갱신 모드', maria_group, 'mysql -h {{DBHOST}} -u {{DBUSER}} -p --safe-updates {{DBNAME}}',
+    '-p 뒤에 비밀번호를 붙이지 말고 Enter password 프롬프트에 입력하세요. --safe-updates는 키 조건이 없는 UPDATE·DELETE를 거부하고 SELECT 결과를 기본 1,000행으로 제한합니다. RHEL 7의 MariaDB 5.5는 mysql, Ubuntu 22.04는 mariadb 이름도 사용할 수 있습니다.',
+    'mariadb mysql 접속 로그인 safe-updates', permission='limited', prerequisite=connect_path, db='mariadb', step='connect')
+add('MariaDB 접속 대상 · 자동 커밋 확인', maria_group,
+    'SELECT DATABASE() AS current_db, CURRENT_USER() AS account,\n       @@hostname AS server, @@autocommit AS autocommit;',
+    'autocommit이 1이면 각 변경 문장이 즉시 확정됩니다. 변경 전에 START TRANSACTION;을 먼저 실행하세요.',
+    'mariadb mysql 접속 대상 autocommit 확인', shell='sql', prerequisite=maria_session, db='mariadb', step='check')
+add('MariaDB 테이블 구조 확인', maria_group, 'DESCRIBE pocket_ops_sample;',
+    '예시 이름을 확인할 테이블명으로 바꿔 입력하세요. 키 컬럼과 NULL 허용 여부를 확인합니다.',
+    'mariadb mysql 테이블 컬럼 구조 describe', shell='sql', prerequisite=maria_session, db='mariadb', step='check')
+add('MariaDB 트랜잭션 시작', maria_group, 'START TRANSACTION;',
+    'COMMIT 또는 ROLLBACK 전까지 변경을 확정하지 않습니다. CREATE·ALTER·DROP 같은 DDL은 암시적으로 커밋하므로 섞지 마세요.',
+    'mariadb mysql begin transaction 트랜잭션', shell='sql', prerequisite=maria_session, db='mariadb', step='begin')
+add('MariaDB 변경 확정', maria_group, 'COMMIT;',
+    '영향 행 수와 SELECT 재확인 결과를 본 뒤 실행하세요. 확정 뒤에는 ROLLBACK으로 되돌릴 수 없습니다.',
+    'mariadb mysql commit 확정', risk='change', shell='sql', prerequisite=maria_session, db='mariadb', step='finish')
+add('MariaDB 변경 취소', maria_group, 'ROLLBACK;',
+    '현재 트랜잭션의 미확정 변경 전체를 취소합니다. autocommit=1에서 START TRANSACTION 없이 실행한 문장은 이미 확정되어 취소되지 않습니다.',
+    'mariadb mysql rollback 취소', risk='change', shell='sql', prerequisite=maria_session, db='mariadb', step='finish')
+add('MariaDB 클라이언트 종료', maria_group, 'exit',
+    '연결을 끊으면 미확정 트랜잭션은 롤백됩니다. 먼저 COMMIT; 또는 ROLLBACK;을 명시적으로 실행하세요.',
+    'mariadb mysql 종료 quit', risk='change', shell='mariadb', prerequisite=maria_session, db='mariadb', step='finish')
+
+oracle_group = 'Oracle · SQL*Plus'
+oracle_session = 'SQL> (SQL*Plus) 프롬프트에 입력'
+add('Oracle SQL*Plus 접속', oracle_group, 'sqlplus -L {{DBUSER}}@{{ALIAS}}',
+    '비밀번호는 Enter password 프롬프트에 입력하세요. user/password 형식으로 명령행에 넣으면 프로세스 목록·셸 기록에 남을 수 있습니다. -L은 로그인을 한 번만 시도합니다.',
+    'oracle 오라클 sqlplus 접속 로그인', permission='limited', prerequisite=connect_path+' · 기존 Oracle 클라이언트와 TNS 별칭', db='oracle', step='connect')
+add('Oracle 접속 계정 · 자동 커밋 확인', oracle_group, 'SHOW USER\nSHOW AUTOCOMMIT',
+    'SQL*Plus 기본값은 autocommit OFF입니다. ON으로 표시되면 SET AUTOCOMMIT OFF를 먼저 실행하세요.',
+    'oracle sqlplus 계정 autocommit 확인', shell='sqlplus', prerequisite=oracle_session, db='oracle', step='check')
+add('Oracle 테이블 구조 확인', oracle_group, 'DESC pocket_ops_sample',
+    '예시 이름을 확인할 테이블명으로 바꿔 입력하세요. 스키마가 다르면 소유자.테이블 형식으로 지정합니다.',
+    'oracle sqlplus desc describe 컬럼 구조', shell='sqlplus', prerequisite=oracle_session, db='oracle', step='check')
+add('Oracle 치환 변수 끄기', oracle_group, 'SET DEFINE OFF',
+    '값에 & 문자가 있으면 SQL*Plus가 입력값을 묻고 문장을 바꿉니다. & 가 든 SQL을 붙여넣기 전에 실행하세요.',
+    'oracle sqlplus ampersand define 치환 변수', shell='sqlplus', prerequisite=oracle_session, db='oracle', step='begin')
+add('Oracle 변경 확정', oracle_group, 'COMMIT;',
+    '처리 행 수와 SELECT 재확인 결과를 본 뒤 실행하세요. 확정 뒤에는 ROLLBACK으로 되돌릴 수 없습니다.',
+    'oracle commit 확정', risk='change', shell='sql', prerequisite=oracle_session, db='oracle', step='finish')
+add('Oracle 변경 취소', oracle_group, 'ROLLBACK;',
+    '마지막 COMMIT 이후의 미확정 변경을 취소합니다. DDL은 암시적으로 커밋되어 취소되지 않습니다.',
+    'oracle rollback 취소', risk='change', shell='sql', prerequisite=oracle_session, db='oracle', step='finish')
+add('Oracle 종료 · 미확정 변경 취소', oracle_group, 'EXIT ROLLBACK',
+    'SQL*Plus의 EXIT는 기본적으로 미확정 변경을 커밋합니다. EXIT ROLLBACK은 취소한 뒤 종료합니다.',
+    'oracle sqlplus exit 종료 rollback', risk='change', shell='sqlplus', prerequisite=oracle_session, db='oracle', step='finish')
+
+pg_group = 'PostgreSQL · psql'
+pg_session = 'psql 프롬프트(DB이름=>)에 입력'
+add('PostgreSQL 조회 전용 접속', pg_group,
+    "PGOPTIONS='-c default_transaction_read_only=on' psql -h {{DBHOST}} -U {{DBUSER}} -d {{DBNAME}}",
+    '새 트랜잭션을 읽기 전용으로 시작합니다. 비밀번호는 프롬프트에 입력하세요. 연결 풀러가 시작 옵션을 거부하면 일반 접속 후 SELECT만 사용하세요.',
+    'postgresql postgres psql 접속 로그인 읽기 전용', permission='limited', prerequisite=connect_path, db='postgresql', step='connect')
+add('PostgreSQL 변경 작업용 접속 · 수동 커밋', pg_group,
+    'psql --set=AUTOCOMMIT=off -h {{DBHOST}} -U {{DBUSER}} -d {{DBNAME}}',
+    'AUTOCOMMIT off로 시작하면 첫 문장부터 트랜잭션이 열리고 COMMIT 전까지 확정되지 않습니다. 비밀번호는 프롬프트에 입력하세요.',
+    'postgresql postgres psql 접속 수동 커밋 트랜잭션', risk='change', permission='limited', prerequisite=connect_path, db='postgresql', step='connect')
+add('PostgreSQL 접속 대상 · 자동 커밋 확인', pg_group, '\\conninfo\n\\echo :AUTOCOMMIT',
+    '접속한 DB·사용자·호스트와 psql AUTOCOMMIT 값을 표시합니다. on이면 BEGIN;으로 트랜잭션을 먼저 여세요.',
+    'postgresql psql conninfo autocommit 확인', shell='psql', prerequisite=pg_session, db='postgresql', step='check')
+add('PostgreSQL 테이블 구조 확인', pg_group, '\\d pocket_ops_sample',
+    '예시 이름을 확인할 테이블명으로 바꿔 입력하세요. 스키마가 다르면 스키마.테이블 형식으로 지정합니다.',
+    'postgresql psql describe 컬럼 구조', shell='psql', prerequisite=pg_session, db='postgresql', step='check')
+add('PostgreSQL 트랜잭션 시작', pg_group, 'BEGIN;',
+    '자동 커밋 세션에서 변경 전에 실행합니다. AUTOCOMMIT off 세션은 생략해도 되지만 실행해도 경고만 표시됩니다.',
+    'postgresql psql begin transaction 트랜잭션', shell='sql', prerequisite=pg_session, db='postgresql', step='begin')
+add('PostgreSQL 변경 확정', pg_group, 'COMMIT;',
+    '결과 행 수와 SELECT 재확인 결과를 본 뒤 실행하세요. 트랜잭션 중 오류가 났다면 COMMIT도 ROLLBACK으로 처리됩니다.',
+    'postgresql commit 확정', risk='change', shell='sql', prerequisite=pg_session, db='postgresql', step='finish')
+add('PostgreSQL 변경 취소', pg_group, 'ROLLBACK;',
+    '현재 트랜잭션의 미확정 변경 전체를 취소합니다.',
+    'postgresql rollback 취소', risk='change', shell='sql', prerequisite=pg_session, db='postgresql', step='finish')
+add('PostgreSQL psql 종료', pg_group, '\\q',
+    '연결을 끊으면 미확정 트랜잭션은 롤백됩니다. 먼저 COMMIT; 또는 ROLLBACK;을 명시적으로 실행하세요.',
+    'postgresql psql 종료 quit', risk='change', shell='psql', prerequisite=pg_session, db='postgresql', step='finish')
 
 commands_by_id={entry['id']:entry for entry in commands}
+# Existing DB entries keep their IDs; only the DB field is added so filters and the workbench can find them.
+for db_name,ids in {'oracle':['cmd-082','cmd-083','cmd-087','cmd-116','cmd-117'],
+                    'cubrid':['cmd-084','cmd-085'],
+                    'mariadb':['cmd-086','cmd-118','cmd-119'],
+                    'postgresql':['cmd-120','cmd-121']}.items():
+    for command_id in ids: commands_by_id[command_id]['db']=db_name
+for entry in commands:
+    entry['where']=location(entry['shell'],entry.get('db',''))
 for original,alternative in [
     ('cmd-010',memory_fallback),('cmd-009',load_fallback),('cmd-013',process_fallback),
     ('cmd-043','cmd-046'),('cmd-043',tcp_fallback),('cmd-046',tcp_fallback),
@@ -238,11 +358,14 @@ params={
 'START':{'label':'시작 줄번호','default':'1','kind':'positive'},
 'END':{'label':'마지막 줄번호','default':'100','kind':'positive'},
 'CONTAINER':{'label':'컨테이너 이름 / ID','default':'my-container','kind':'identifier'},
-'ALIAS':{'label':'TNS 별칭','default':'MYDB','kind':'identifier'},
+'ALIAS':{'label':'TNS 별칭 또는 host:port/service','default':'MYDB','kind':'identifier'},
+'DBHOST':{'label':'DB 서버 호스트 / IP','default':'127.0.0.1','kind':'identifier'},
+'DBNAME':{'label':'대상 DB 이름','default':'','kind':'identifier'},
 'SERVICE':{'label':'서비스 unit 이름 · Ubuntu SSH는 ssh.service','default':'sshd.service','kind':'identifier'},
 }
 tools=[
 ('commands','명령어 포켓','상황으로 찾고, 내 환경에 맞춰 복사하세요.','terminal','accent','서버 운영','LINUX · WAS','리눅스 linux 명령어 사전 포트 로그 tomcat jeus webtob docker jboss 서버'),
+('sqlformat','SQL 작업대','DB를 고르고 접속 → 확인 → 쿼리 → 확정 순서로 복사해요.','database','green','서버 운영','CUBRID · MARIADB · ORACLE · PG','CUBRID CSQL MariaDB MySQL Oracle SQL*Plus PostgreSQL psql SELECT INSERT UPDATE DELETE 포맷 SQL 쿼리 정렬 작업대 트랜잭션'),
 ('encoding','한글 · 인코딩 진료소','깨진 한글과 파일의 문자셋을 함께 살펴봐요.','language','orange','변환 도구','UTF-8 · EUC-KR','인코딩 깨짐 한글 cp949 latin1 mojibake 복구 파일 변환'),
 ('json','JSON 정리함','검증, 보기 좋게 정렬, 공백 압축까지.','braces','green','데이터 작업','FORMAT · VALIDATE','json 포맷 format minify 데이터 api 응답 큰 숫자'),
 ('codec','인코딩 변환기','URL, Base64, HEX, 유니코드를 한곳에서.','arrows','accent','변환 도구','ENCODE · DECODE','url base64 hex properties unicode html escape 자바'),
@@ -250,7 +373,6 @@ tools=[
 ('diff','변경점 비교','두 설정 파일 사이의 차이를 한눈에.','diff','rose','데이터 작업','BEFORE · AFTER','diff 비교 변경 설정 config 차이'),
 ('logs','로그 돋보기','포함·제외 검색과 오류 주변 문맥을 모아요.','search','orange','서버 운영','FILTER · CONTEXT','log 로그 오류 에러 exception error warn info 필터 grep'),
 ('sql','SQL IN 도우미','목록을 안전한 따옴표와 분할 조건으로.','database','accent','데이터 작업','QUOTE · CHUNK','sql in oracle 오라클 1000 db 쿼리 리스트'),
-('sqlformat','SQL 쿼리 정렬','SQL 절을 줄별로 나누어 읽고 복사하세요.','database','green','데이터 작업','SQL FORMAT','CUBRID CSQL SELECT INSERT UPDATE DELETE 포맷 SQL 쿼리 정렬'),
 ('unicode','문자 · ASCII 검사기','눈에 안 보이는 공백과 문자 코드를 확인해요.','scan','rose','변환 도구','ASCII · UNICODE','아스키 ascii 문자 코드 16진수 decimal 한글 utf8 바이트 invisible'),
 ('time','시간 번역기','Unix 타임스탬프를 KST·UTC로 나란히.','clock','green','서버 운영','UNIX · KST · UTC','시간 날짜 타임스탬프 timestamp epoch kst utc 초 밀리초'),
 ('chmod','권한 계산기','rwx 체크로 숫자 권한과 명령어를 확인해요.','lock','orange','서버 운영','RWX · OCTAL','chmod 권한 퍼미션 755 644 640 777 계산'),
@@ -259,5 +381,6 @@ tools=[
 ('regex','정규식 실험실','매치와 캡처를 확인하는 작은 테스트 공간.','regex','rose','데이터 작업','MATCH · CAPTURE','regex 정규식 regexp 검색 패턴 매칭')
 ]
 tool_data=[dict(zip(['id','title','desc','icon','color','group','tag','keywords'],x)) for x in tools]
-Path(__file__).resolve().parent.joinpath('src/data.js').write_text('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.5.0',commands=commands,params=params,tools=tool_data),ensure_ascii=False,indent=2)+';\n',encoding='utf-8')
+# Write LF bytes on every OS so a regenerated catalog matches the committed source exactly.
+Path(__file__).resolve().parent.joinpath('src/data.js').write_bytes(('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.6.0',commands=commands,params=params,tools=tool_data,dbs=dbs),ensure_ascii=False,indent=2)+';\n').encode('utf-8'))
 print('Commands:',len(commands),'Tools:',len(tools))

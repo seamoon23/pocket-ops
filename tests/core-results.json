@@ -1,7 +1,7 @@
 {
   "environment": "v22.17.0",
-  "total": 109,
-  "passed": 109,
+  "total": 114,
+  "passed": 114,
   "failed": 0,
   "results": [
     {
@@ -430,6 +430,26 @@
     },
     {
       "name": "CSQL shell templates require a target and user, and never embed a password",
+      "pass": true
+    },
+    {
+      "name": "UPDATE/DELETE without a top-level WHERE are flagged as full-table changes",
+      "pass": true
+    },
+    {
+      "name": "SELECT that writes or locks is reviewed; plain SELECT is not",
+      "pass": true
+    },
+    {
+      "name": "Sample table left in a preset is reported without blocking",
+      "pass": true
+    },
+    {
+      "name": "DB choice changes lexical rules only where the target client reads text differently",
+      "pass": true
+    },
+    {
+      "name": "Each DB has independent connect, check and finish steps labeled with the paste target",
       "pass": true
     },
     {

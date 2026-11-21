@@ -1,6 +1,6 @@
 /* Curated offline reference data. Never auto-executed. */
 window.PocketData = {
-  "version": "0.5.0",
+  "version": "0.6.0",
   "commands": [
     {
       "id": "cmd-001",
@@ -14,7 +14,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-002",
@@ -28,7 +29,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-003",
@@ -42,7 +44,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-004",
@@ -56,7 +59,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-005",
@@ -70,7 +74,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-006",
@@ -84,7 +89,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-007",
@@ -98,7 +104,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-008",
@@ -112,7 +119,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 crontab 도구 · Cronie 또는 cron 패키지",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-009",
@@ -128,7 +136,8 @@ window.PocketData = {
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
       "alternatives": [
         "cmd-095"
-      ]
+      ],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-010",
@@ -144,7 +153,8 @@ window.PocketData = {
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
       "alternatives": [
         "cmd-094"
-      ]
+      ],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-011",
@@ -158,7 +168,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-012",
@@ -172,7 +183,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-013",
@@ -188,7 +200,8 @@ window.PocketData = {
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
       "alternatives": [
         "cmd-096"
-      ]
+      ],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-014",
@@ -202,7 +215,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-015",
@@ -216,7 +230,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-016",
@@ -230,7 +245,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-017",
@@ -244,7 +260,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-018",
@@ -258,7 +275,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-019",
@@ -272,7 +290,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-020",
@@ -286,7 +305,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-021",
@@ -300,7 +320,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-022",
@@ -314,7 +335,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-023",
@@ -328,7 +350,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-024",
@@ -342,7 +365,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-025",
@@ -358,7 +382,8 @@ window.PocketData = {
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
       "alternatives": [
         "cmd-100"
-      ]
+      ],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-026",
@@ -372,7 +397,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-027",
@@ -386,7 +412,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Linux의 기존 GNU tar 및 gzip · 로컬 파일 읽기 권한",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-028",
@@ -400,7 +427,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-029",
@@ -416,7 +444,8 @@ window.PocketData = {
       "prerequisite": "기존 file 도구 · 없으면 od로 헤더만 확인 가능",
       "alternatives": [
         "cmd-030"
-      ]
+      ],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-030",
@@ -430,7 +459,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-031",
@@ -444,7 +474,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 iconv · 지원 인코딩 목록은 설치 버전에 따라 다름",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-032",
@@ -458,7 +489,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-033",
@@ -472,7 +504,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-034",
@@ -486,7 +519,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-035",
@@ -500,7 +534,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-036",
@@ -514,7 +549,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-037",
@@ -528,7 +564,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-038",
@@ -542,7 +579,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-039",
@@ -558,7 +596,8 @@ window.PocketData = {
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
       "alternatives": [
         "cmd-099"
-      ]
+      ],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-040",
@@ -572,7 +611,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-041",
@@ -586,7 +626,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-042",
@@ -600,7 +641,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-043",
@@ -617,7 +659,8 @@ window.PocketData = {
       "alternatives": [
         "cmd-046",
         "cmd-097"
-      ]
+      ],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-044",
@@ -631,7 +674,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-045",
@@ -645,7 +689,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-046",
@@ -661,7 +706,8 @@ window.PocketData = {
       "prerequisite": "기존 net-tools의 netstat · 신규 설치를 전제로 하지 않음",
       "alternatives": [
         "cmd-097"
-      ]
+      ],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-047",
@@ -675,7 +721,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-048",
@@ -691,7 +738,8 @@ window.PocketData = {
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
       "alternatives": [
         "cmd-098"
-      ]
+      ],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-049",
@@ -705,7 +753,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-050",
@@ -719,7 +768,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 curl 7.21.0 이상 · 승인된 내부 HTTP(S) 대상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-051",
@@ -733,7 +783,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 curl 7.21.0 이상 · 승인된 내부 HTTP(S) 대상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-052",
@@ -747,7 +798,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Bash /dev/tcp 지원 + 기존 GNU timeout · 승인된 내부 대상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-053",
@@ -763,7 +815,8 @@ window.PocketData = {
       "prerequisite": "기존 util-linux의 namei",
       "alternatives": [
         "cmd-100"
-      ]
+      ],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-054",
@@ -777,7 +830,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-055",
@@ -791,7 +845,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-056",
@@ -807,7 +862,8 @@ window.PocketData = {
       "prerequisite": "기존 acl 패키지의 getfacl · 기본 ls만으로 ACL 전체를 확인할 수 없음",
       "alternatives": [
         "cmd-100"
-      ]
+      ],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-057",
@@ -821,7 +877,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-058",
@@ -835,7 +892,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-059",
@@ -849,7 +907,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-060",
@@ -863,7 +922,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-061",
@@ -877,7 +937,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-062",
@@ -893,7 +954,8 @@ window.PocketData = {
       "prerequisite": "기존 호환 JDK의 jps · JRE만 있으면 사용 불가",
       "alternatives": [
         "cmd-060"
-      ]
+      ],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-063",
@@ -907,7 +969,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 호환 JDK의 jstat · 대상 JVM과 동일 사용자 권한",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-064",
@@ -921,7 +984,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 호환 JDK의 jstack · Attach 허용과 작업 시점 승인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-065",
@@ -935,7 +999,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 호환 JDK 8+의 jcmd · 동일 계정·Attach 허용",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-066",
@@ -949,7 +1014,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-067",
@@ -963,7 +1029,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-068",
@@ -977,7 +1044,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-069",
@@ -991,7 +1059,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-070",
@@ -1005,7 +1074,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-071",
@@ -1019,7 +1089,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 JDK의 jar · 설치된 경우만",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-072",
@@ -1033,7 +1104,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "RHEL 7 · RPM 패키지 조회",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-073",
@@ -1047,7 +1119,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 · dpkg 패키지 조회",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-074",
@@ -1061,7 +1134,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 Docker CLI·데몬과 승인된 조회 권한 · 추가 설치 없이 설치된 경우만",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-075",
@@ -1075,7 +1149,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 Docker CLI·데몬과 승인된 조회 권한 · 추가 설치 없이 설치된 경우만",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-076",
@@ -1089,7 +1164,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 Docker CLI·데몬과 승인된 조회 권한 · 추가 설치 없이 설치된 경우만",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-077",
@@ -1103,7 +1179,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 Docker CLI·데몬과 승인된 조회 권한 · 추가 설치 없이 설치된 경우만",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-078",
@@ -1117,7 +1194,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 Docker CLI·데몬과 승인된 조회 권한 · 추가 설치 없이 설치된 경우만",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-079",
@@ -1131,7 +1209,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 Docker CLI·데몬과 승인된 조회 권한 · 추가 설치 없이 설치된 경우만",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-080",
@@ -1145,7 +1224,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 Docker CLI·데몬과 승인된 조회 권한 · 추가 설치 없이 설치된 경우만",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-081",
@@ -1159,7 +1239,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "기존 Docker CLI·데몬과 승인된 조회 권한 · 추가 설치 없이 설치된 경우만",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-082",
@@ -1173,7 +1254,9 @@ window.PocketData = {
       "shell": "bash",
       "domain": "db",
       "prerequisite": "Linux의 기존 DB 도구·계정 환경 필요 · 미설치 상태에는 OS 수준 점검만 가능",
-      "alternatives": []
+      "alternatives": [],
+      "db": "oracle",
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-083",
@@ -1187,7 +1270,9 @@ window.PocketData = {
       "shell": "bash",
       "domain": "db",
       "prerequisite": "Linux의 기존 DB 도구·계정 환경 필요 · 미설치 상태에는 OS 수준 점검만 가능",
-      "alternatives": []
+      "alternatives": [],
+      "db": "oracle",
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-084",
@@ -1201,7 +1286,9 @@ window.PocketData = {
       "shell": "bash",
       "domain": "db",
       "prerequisite": "Linux의 기존 DB 도구·계정 환경 필요 · 미설치 상태에는 OS 수준 점검만 가능",
-      "alternatives": []
+      "alternatives": [],
+      "db": "cubrid",
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-085",
@@ -1215,7 +1302,9 @@ window.PocketData = {
       "shell": "bash",
       "domain": "db",
       "prerequisite": "Linux의 기존 DB 도구·계정 환경 필요 · 미설치 상태에는 OS 수준 점검만 가능",
-      "alternatives": []
+      "alternatives": [],
+      "db": "cubrid",
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-086",
@@ -1229,7 +1318,9 @@ window.PocketData = {
       "shell": "bash",
       "domain": "db",
       "prerequisite": "Linux의 기존 DB 도구·계정 환경 필요 · 미설치 상태에는 OS 수준 점검만 가능",
-      "alternatives": []
+      "alternatives": [],
+      "db": "mariadb",
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-087",
@@ -1243,7 +1334,9 @@ window.PocketData = {
       "shell": "bash",
       "domain": "db",
       "prerequisite": "Linux의 기존 iproute2 · 로컬 Oracle 기본 포트 가정",
-      "alternatives": []
+      "alternatives": [],
+      "db": "oracle",
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-088",
@@ -1257,7 +1350,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-089",
@@ -1271,7 +1365,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-090",
@@ -1287,7 +1382,8 @@ window.PocketData = {
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
       "alternatives": [
         "cmd-108"
-      ]
+      ],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-091",
@@ -1301,7 +1397,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-092",
@@ -1315,7 +1412,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-093",
@@ -1329,7 +1427,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-094",
@@ -1343,7 +1442,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-095",
@@ -1357,7 +1457,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-096",
@@ -1371,7 +1472,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-097",
@@ -1385,7 +1487,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-098",
@@ -1399,7 +1502,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-099",
@@ -1413,7 +1517,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-100",
@@ -1427,7 +1532,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 대상 · 설치된 도구와 계정 권한 확인",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-101",
@@ -1441,7 +1547,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 · systemd로 구동 중인 호스트",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-102",
@@ -1455,7 +1562,8 @@ window.PocketData = {
       "shell": "bash",
       "domain": "linux",
       "prerequisite": "Ubuntu 22.04 / RHEL 7 · systemd journal 조회 권한",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-103",
@@ -1469,7 +1577,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-104",
@@ -1483,7 +1592,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-105",
@@ -1497,7 +1607,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-106",
@@ -1511,7 +1622,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 NetTCPIP 모듈",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-107",
@@ -1525,7 +1637,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 DnsClient 모듈",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-108",
@@ -1539,7 +1652,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-109",
@@ -1553,7 +1667,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-110",
@@ -1567,7 +1682,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-111",
@@ -1581,7 +1697,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-112",
@@ -1595,7 +1712,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-113",
@@ -1609,7 +1727,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-114",
@@ -1623,7 +1742,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-115",
@@ -1637,7 +1757,8 @@ window.PocketData = {
       "shell": "powershell",
       "domain": "windows",
       "prerequisite": "Windows 11 · 기본 Windows PowerShell 5.1 이상",
-      "alternatives": []
+      "alternatives": [],
+      "where": "Windows PowerShell · PS>"
     },
     {
       "id": "cmd-116",
@@ -1651,7 +1772,9 @@ window.PocketData = {
       "shell": "sql",
       "domain": "db",
       "prerequisite": "기존에 설치·승인된 해당 DB 클라이언트와 접속 권한",
-      "alternatives": []
+      "alternatives": [],
+      "db": "oracle",
+      "where": "SQL> · SQL"
     },
     {
       "id": "cmd-117",
@@ -1665,7 +1788,9 @@ window.PocketData = {
       "shell": "sql",
       "domain": "db",
       "prerequisite": "기존에 설치·승인된 해당 DB 클라이언트와 접속 권한",
-      "alternatives": []
+      "alternatives": [],
+      "db": "oracle",
+      "where": "SQL> · SQL"
     },
     {
       "id": "cmd-118",
@@ -1679,7 +1804,9 @@ window.PocketData = {
       "shell": "sql",
       "domain": "db",
       "prerequisite": "기존에 설치·승인된 해당 DB 클라이언트와 접속 권한",
-      "alternatives": []
+      "alternatives": [],
+      "db": "mariadb",
+      "where": "MariaDB> · SQL"
     },
     {
       "id": "cmd-119",
@@ -1693,7 +1820,9 @@ window.PocketData = {
       "shell": "sql",
       "domain": "db",
       "prerequisite": "기존에 설치·승인된 해당 DB 클라이언트와 접속 권한",
-      "alternatives": []
+      "alternatives": [],
+      "db": "mariadb",
+      "where": "MariaDB> · SQL"
     },
     {
       "id": "cmd-120",
@@ -1707,7 +1836,9 @@ window.PocketData = {
       "shell": "sql",
       "domain": "db",
       "prerequisite": "기존에 설치·승인된 해당 DB 클라이언트와 접속 권한",
-      "alternatives": []
+      "alternatives": [],
+      "db": "postgresql",
+      "where": "psql => · SQL"
     },
     {
       "id": "cmd-121",
@@ -1721,7 +1852,9 @@ window.PocketData = {
       "shell": "sql",
       "domain": "db",
       "prerequisite": "기존에 설치·승인된 해당 DB 클라이언트와 접속 권한",
-      "alternatives": []
+      "alternatives": [],
+      "db": "postgresql",
+      "where": "psql => · SQL"
     },
     {
       "id": "cmd-122",
@@ -1735,7 +1868,9 @@ window.PocketData = {
       "shell": "bash",
       "domain": "db",
       "prerequisite": "승인된 SSH 도구 → 대상 Linux 서버 접속 → 셸 프롬프트 · 설치된 CUBRID CSQL 필요",
-      "alternatives": []
+      "alternatives": [],
+      "db": "cubrid",
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-123",
@@ -1749,7 +1884,10 @@ window.PocketData = {
       "shell": "bash",
       "domain": "db",
       "prerequisite": "승인된 SSH 도구 → 대상 Linux 서버 접속 → 셸 프롬프트 · 설치된 CUBRID CSQL 필요",
-      "alternatives": []
+      "alternatives": [],
+      "db": "cubrid",
+      "step": "connect",
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-124",
@@ -1763,7 +1901,10 @@ window.PocketData = {
       "shell": "bash",
       "domain": "db",
       "prerequisite": "승인된 SSH 도구 → 대상 Linux 서버 접속 → 셸 프롬프트 · 설치된 CUBRID CSQL 필요",
-      "alternatives": []
+      "alternatives": [],
+      "db": "cubrid",
+      "step": "connect",
+      "where": "Linux 셸 · $"
     },
     {
       "id": "cmd-125",
@@ -1777,7 +1918,9 @@ window.PocketData = {
       "shell": "csql",
       "domain": "db",
       "prerequisite": "SSH 셸 → CSQL 연결 → csql> 에 한 줄 입력",
-      "alternatives": []
+      "alternatives": [],
+      "db": "cubrid",
+      "where": "csql> · CSQL 세션 명령"
     },
     {
       "id": "cmd-126",
@@ -1791,7 +1934,10 @@ window.PocketData = {
       "shell": "csql",
       "domain": "db",
       "prerequisite": "SSH 셸 → CSQL 연결 → csql> 에 한 줄 입력",
-      "alternatives": []
+      "alternatives": [],
+      "db": "cubrid",
+      "step": "check",
+      "where": "csql> · CSQL 세션 명령"
     },
     {
       "id": "cmd-127",
@@ -1805,7 +1951,10 @@ window.PocketData = {
       "shell": "csql",
       "domain": "db",
       "prerequisite": "SSH 셸 → CSQL 연결 → csql> 에 한 줄 입력",
-      "alternatives": []
+      "alternatives": [],
+      "db": "cubrid",
+      "step": "check",
+      "where": "csql> · CSQL 세션 명령"
     },
     {
       "id": "cmd-128",
@@ -1819,7 +1968,10 @@ window.PocketData = {
       "shell": "csql",
       "domain": "db",
       "prerequisite": "SSH 셸 → CSQL 연결 → csql> 에 한 줄 입력",
-      "alternatives": []
+      "alternatives": [],
+      "db": "cubrid",
+      "step": "check",
+      "where": "csql> · CSQL 세션 명령"
     },
     {
       "id": "cmd-129",
@@ -1833,7 +1985,10 @@ window.PocketData = {
       "shell": "csql",
       "domain": "db",
       "prerequisite": "SSH 셸 → CSQL 연결 → csql> 에 한 줄 입력",
-      "alternatives": []
+      "alternatives": [],
+      "db": "cubrid",
+      "step": "finish",
+      "where": "csql> · CSQL 세션 명령"
     },
     {
       "id": "cmd-130",
@@ -1847,7 +2002,10 @@ window.PocketData = {
       "shell": "csql",
       "domain": "db",
       "prerequisite": "SSH 셸 → CSQL 연결 → csql> 에 한 줄 입력",
-      "alternatives": []
+      "alternatives": [],
+      "db": "cubrid",
+      "step": "finish",
+      "where": "csql> · CSQL 세션 명령"
     },
     {
       "id": "cmd-131",
@@ -1861,67 +2019,448 @@ window.PocketData = {
       "shell": "csql",
       "domain": "db",
       "prerequisite": "SSH 셸 → CSQL 연결 → csql> 에 한 줄 입력",
-      "alternatives": []
+      "alternatives": [],
+      "db": "cubrid",
+      "step": "finish",
+      "where": "csql> · CSQL 세션 명령"
     },
     {
       "id": "cmd-132",
       "title": "SELECT · 키로 대상 행 확인",
-      "group": "CUBRID · CSQL",
+      "group": "SQL · 기본 쿼리 프리셋",
       "command": "SELECT item_id, item_name\nFROM pocket_ops_sample\nWHERE item_id = 1001;",
-      "note": "item_id가 기본 키인 가상 테이블 예시입니다. 실제 키와 조건에 맞게 수정해 조회하고, 변경 전 대상 행과 현재 값을 확인하세요.",
-      "tags": "조회 기본 쿼리 프리셋",
+      "note": "item_id가 기본 키인 가상 테이블 예시입니다. 실제 키와 조건에 맞게 수정해 조회하고, 변경 전 대상 행과 현재 값을 확인하세요. SQL 작업대에서 DB를 고르면 붙여넣을 프롬프트와 DB별 주의사항을 함께 표시합니다.",
+      "tags": "조회 기본 csql cubrid mariadb mysql oracle postgresql psql sqlplus 쿼리 프리셋",
       "risk": "read",
       "permission": "user",
       "shell": "sql",
       "domain": "db",
-      "prerequisite": "CUBRID 접속 → csql> 또는 CUBRID SQL 편집기 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인",
+      "prerequisite": "DB 클라이언트 접속 → csql> · MariaDB> · SQL> · psql => 프롬프트 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인",
       "alternatives": [],
-      "editorSql": "SELECT item_id, item_name\nFROM pocket_ops_sample\nWHERE item_id = 1001;"
+      "editorSql": "SELECT item_id, item_name\nFROM pocket_ops_sample\nWHERE item_id = 1001;",
+      "where": "DB 클라이언트 · SQL"
     },
     {
       "id": "cmd-133",
       "title": "INSERT · 한 행 추가",
-      "group": "CUBRID · CSQL",
+      "group": "SQL · 기본 쿼리 프리셋",
       "command": "-- INSERT INTO pocket_ops_sample (item_id, item_name)\n-- VALUES (1001, 'SAMPLE');",
       "note": "대상 키가 비어 있는지, 컬럼 타입과 필수 값이 맞는지 확인하세요. 앱에서 쿼리 정렬로 열어 예시 이름·값을 바꾸고 최종 SQL을 확인하세요. 원문 복사는 모든 줄에 주석을 붙입니다.",
-      "tags": "변경 기본 쿼리 프리셋",
+      "tags": "변경 csql cubrid mariadb mysql oracle postgresql psql sqlplus 쿼리 프리셋",
       "risk": "change",
       "permission": "limited",
       "shell": "sql",
       "domain": "db",
-      "prerequisite": "CUBRID 접속 → csql> 또는 CUBRID SQL 편집기 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인 · 변경 권한과 현재 세션의 자동 커밋 OFF 확인",
+      "prerequisite": "DB 클라이언트 접속 → csql> · MariaDB> · SQL> · psql => 프롬프트 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인 · 변경 권한과 자동 커밋 OFF 또는 트랜잭션 시작 확인",
       "alternatives": [],
-      "editorSql": "INSERT INTO pocket_ops_sample (item_id, item_name)\nVALUES (1001, 'SAMPLE');"
+      "editorSql": "INSERT INTO pocket_ops_sample (item_id, item_name)\nVALUES (1001, 'SAMPLE');",
+      "where": "DB 클라이언트 · SQL"
     },
     {
       "id": "cmd-134",
       "title": "UPDATE · 키와 기존 값으로 수정",
-      "group": "CUBRID · CSQL",
+      "group": "SQL · 기본 쿼리 프리셋",
       "command": "-- UPDATE pocket_ops_sample\n-- SET item_name = 'UPDATED'\n-- WHERE item_id = 1001 AND item_name = 'SAMPLE';",
       "note": "같은 WHERE 조건을 SELECT로 먼저 조회하고 변경할 행 수와 기존 값을 확인하세요. 앱에서 쿼리 정렬로 열어 예시 이름·값을 바꾸고 최종 SQL을 확인하세요. 원문 복사는 모든 줄에 주석을 붙입니다.",
-      "tags": "변경 기본 쿼리 프리셋",
+      "tags": "변경 csql cubrid mariadb mysql oracle postgresql psql sqlplus 쿼리 프리셋",
       "risk": "change",
       "permission": "limited",
       "shell": "sql",
       "domain": "db",
-      "prerequisite": "CUBRID 접속 → csql> 또는 CUBRID SQL 편집기 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인 · 변경 권한과 현재 세션의 자동 커밋 OFF 확인",
+      "prerequisite": "DB 클라이언트 접속 → csql> · MariaDB> · SQL> · psql => 프롬프트 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인 · 변경 권한과 자동 커밋 OFF 또는 트랜잭션 시작 확인",
       "alternatives": [],
-      "editorSql": "UPDATE pocket_ops_sample\nSET item_name = 'UPDATED'\nWHERE item_id = 1001 AND item_name = 'SAMPLE';"
+      "editorSql": "UPDATE pocket_ops_sample\nSET item_name = 'UPDATED'\nWHERE item_id = 1001 AND item_name = 'SAMPLE';",
+      "where": "DB 클라이언트 · SQL"
     },
     {
       "id": "cmd-135",
       "title": "DELETE · 키와 기존 값으로 삭제",
-      "group": "CUBRID · CSQL",
+      "group": "SQL · 기본 쿼리 프리셋",
       "command": "-- DELETE FROM pocket_ops_sample\n-- WHERE item_id = 1001 AND item_name = 'SAMPLE';",
       "note": "같은 WHERE 조건을 SELECT로 먼저 조회하고 삭제할 행 수와 복구 방법을 확인하세요. 앱에서 쿼리 정렬로 열어 예시 이름·값을 바꾸고 최종 SQL을 확인하세요. 원문 복사는 모든 줄에 주석을 붙입니다.",
-      "tags": "변경 기본 쿼리 프리셋",
+      "tags": "변경 csql cubrid mariadb mysql oracle postgresql psql sqlplus 쿼리 프리셋",
       "risk": "change",
       "permission": "limited",
       "shell": "sql",
       "domain": "db",
-      "prerequisite": "CUBRID 접속 → csql> 또는 CUBRID SQL 편집기 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인 · 변경 권한과 현재 세션의 자동 커밋 OFF 확인",
+      "prerequisite": "DB 클라이언트 접속 → csql> · MariaDB> · SQL> · psql => 프롬프트 · 예시 테이블 pocket_ops_sample의 이름·컬럼을 확인 · 변경 권한과 자동 커밋 OFF 또는 트랜잭션 시작 확인",
       "alternatives": [],
-      "editorSql": "DELETE FROM pocket_ops_sample\nWHERE item_id = 1001 AND item_name = 'SAMPLE';"
+      "editorSql": "DELETE FROM pocket_ops_sample\nWHERE item_id = 1001 AND item_name = 'SAMPLE';",
+      "where": "DB 클라이언트 · SQL"
+    },
+    {
+      "id": "cmd-136",
+      "title": "MariaDB 접속 · 안전 갱신 모드",
+      "group": "MariaDB · mysql 클라이언트",
+      "command": "mysql -h {{DBHOST}} -u {{DBUSER}} -p --safe-updates {{DBNAME}}",
+      "note": "-p 뒤에 비밀번호를 붙이지 말고 Enter password 프롬프트에 입력하세요. --safe-updates는 키 조건이 없는 UPDATE·DELETE를 거부하고 SELECT 결과를 기본 1,000행으로 제한합니다. RHEL 7의 MariaDB 5.5는 mysql, Ubuntu 22.04는 mariadb 이름도 사용할 수 있습니다.",
+      "tags": "mariadb mysql 접속 로그인 safe-updates",
+      "risk": "read",
+      "permission": "limited",
+      "shell": "bash",
+      "domain": "db",
+      "prerequisite": "승인된 SSH 도구 → 대상 Linux 서버 접속 → 셸 프롬프트 · 이미 설치된 DB 클라이언트 필요",
+      "alternatives": [],
+      "db": "mariadb",
+      "step": "connect",
+      "where": "Linux 셸 · $"
+    },
+    {
+      "id": "cmd-137",
+      "title": "MariaDB 접속 대상 · 자동 커밋 확인",
+      "group": "MariaDB · mysql 클라이언트",
+      "command": "SELECT DATABASE() AS current_db, CURRENT_USER() AS account,\n       @@hostname AS server, @@autocommit AS autocommit;",
+      "note": "autocommit이 1이면 각 변경 문장이 즉시 확정됩니다. 변경 전에 START TRANSACTION;을 먼저 실행하세요.",
+      "tags": "mariadb mysql 접속 대상 autocommit 확인",
+      "risk": "read",
+      "permission": "user",
+      "shell": "sql",
+      "domain": "db",
+      "prerequisite": "MariaDB> (mysql/mariadb 클라이언트) 프롬프트에 입력",
+      "alternatives": [],
+      "db": "mariadb",
+      "step": "check",
+      "where": "MariaDB> · SQL"
+    },
+    {
+      "id": "cmd-138",
+      "title": "MariaDB 테이블 구조 확인",
+      "group": "MariaDB · mysql 클라이언트",
+      "command": "DESCRIBE pocket_ops_sample;",
+      "note": "예시 이름을 확인할 테이블명으로 바꿔 입력하세요. 키 컬럼과 NULL 허용 여부를 확인합니다.",
+      "tags": "mariadb mysql 테이블 컬럼 구조 describe",
+      "risk": "read",
+      "permission": "user",
+      "shell": "sql",
+      "domain": "db",
+      "prerequisite": "MariaDB> (mysql/mariadb 클라이언트) 프롬프트에 입력",
+      "alternatives": [],
+      "db": "mariadb",
+      "step": "check",
+      "where": "MariaDB> · SQL"
+    },
+    {
+      "id": "cmd-139",
+      "title": "MariaDB 트랜잭션 시작",
+      "group": "MariaDB · mysql 클라이언트",
+      "command": "START TRANSACTION;",
+      "note": "COMMIT 또는 ROLLBACK 전까지 변경을 확정하지 않습니다. CREATE·ALTER·DROP 같은 DDL은 암시적으로 커밋하므로 섞지 마세요.",
+      "tags": "mariadb mysql begin transaction 트랜잭션",
+      "risk": "read",
+      "permission": "user",
+      "shell": "sql",
+      "domain": "db",
+      "prerequisite": "MariaDB> (mysql/mariadb 클라이언트) 프롬프트에 입력",
+      "alternatives": [],
+      "db": "mariadb",
+      "step": "begin",
+      "where": "MariaDB> · SQL"
+    },
+    {
+      "id": "cmd-140",
+      "title": "MariaDB 변경 확정",
+      "group": "MariaDB · mysql 클라이언트",
+      "command": "COMMIT;",
+      "note": "영향 행 수와 SELECT 재확인 결과를 본 뒤 실행하세요. 확정 뒤에는 ROLLBACK으로 되돌릴 수 없습니다.",
+      "tags": "mariadb mysql commit 확정",
+      "risk": "change",
+      "permission": "user",
+      "shell": "sql",
+      "domain": "db",
+      "prerequisite": "MariaDB> (mysql/mariadb 클라이언트) 프롬프트에 입력",
+      "alternatives": [],
+      "db": "mariadb",
+      "step": "finish",
+      "where": "MariaDB> · SQL"
+    },
+    {
+      "id": "cmd-141",
+      "title": "MariaDB 변경 취소",
+      "group": "MariaDB · mysql 클라이언트",
+      "command": "ROLLBACK;",
+      "note": "현재 트랜잭션의 미확정 변경 전체를 취소합니다. autocommit=1에서 START TRANSACTION 없이 실행한 문장은 이미 확정되어 취소되지 않습니다.",
+      "tags": "mariadb mysql rollback 취소",
+      "risk": "change",
+      "permission": "user",
+      "shell": "sql",
+      "domain": "db",
+      "prerequisite": "MariaDB> (mysql/mariadb 클라이언트) 프롬프트에 입력",
+      "alternatives": [],
+      "db": "mariadb",
+      "step": "finish",
+      "where": "MariaDB> · SQL"
+    },
+    {
+      "id": "cmd-142",
+      "title": "MariaDB 클라이언트 종료",
+      "group": "MariaDB · mysql 클라이언트",
+      "command": "exit",
+      "note": "연결을 끊으면 미확정 트랜잭션은 롤백됩니다. 먼저 COMMIT; 또는 ROLLBACK;을 명시적으로 실행하세요.",
+      "tags": "mariadb mysql 종료 quit",
+      "risk": "change",
+      "permission": "user",
+      "shell": "mariadb",
+      "domain": "db",
+      "prerequisite": "MariaDB> (mysql/mariadb 클라이언트) 프롬프트에 입력",
+      "alternatives": [],
+      "db": "mariadb",
+      "step": "finish",
+      "where": "MariaDB> · 클라이언트 명령"
+    },
+    {
+      "id": "cmd-143",
+      "title": "Oracle SQL*Plus 접속",
+      "group": "Oracle · SQL*Plus",
+      "command": "sqlplus -L {{DBUSER}}@{{ALIAS}}",
+      "note": "비밀번호는 Enter password 프롬프트에 입력하세요. user/password 형식으로 명령행에 넣으면 프로세스 목록·셸 기록에 남을 수 있습니다. -L은 로그인을 한 번만 시도합니다.",
+      "tags": "oracle 오라클 sqlplus 접속 로그인",
+      "risk": "read",
+      "permission": "limited",
+      "shell": "bash",
+      "domain": "db",
+      "prerequisite": "승인된 SSH 도구 → 대상 Linux 서버 접속 → 셸 프롬프트 · 이미 설치된 DB 클라이언트 필요 · 기존 Oracle 클라이언트와 TNS 별칭",
+      "alternatives": [],
+      "db": "oracle",
+      "step": "connect",
+      "where": "Linux 셸 · $"
+    },
+    {
+      "id": "cmd-144",
+      "title": "Oracle 접속 계정 · 자동 커밋 확인",
+      "group": "Oracle · SQL*Plus",
+      "command": "SHOW USER\nSHOW AUTOCOMMIT",
+      "note": "SQL*Plus 기본값은 autocommit OFF입니다. ON으로 표시되면 SET AUTOCOMMIT OFF를 먼저 실행하세요.",
+      "tags": "oracle sqlplus 계정 autocommit 확인",
+      "risk": "read",
+      "permission": "user",
+      "shell": "sqlplus",
+      "domain": "db",
+      "prerequisite": "SQL> (SQL*Plus) 프롬프트에 입력",
+      "alternatives": [],
+      "db": "oracle",
+      "step": "check",
+      "where": "SQL> · SQL*Plus 명령"
+    },
+    {
+      "id": "cmd-145",
+      "title": "Oracle 테이블 구조 확인",
+      "group": "Oracle · SQL*Plus",
+      "command": "DESC pocket_ops_sample",
+      "note": "예시 이름을 확인할 테이블명으로 바꿔 입력하세요. 스키마가 다르면 소유자.테이블 형식으로 지정합니다.",
+      "tags": "oracle sqlplus desc describe 컬럼 구조",
+      "risk": "read",
+      "permission": "user",
+      "shell": "sqlplus",
+      "domain": "db",
+      "prerequisite": "SQL> (SQL*Plus) 프롬프트에 입력",
+      "alternatives": [],
+      "db": "oracle",
+      "step": "check",
+      "where": "SQL> · SQL*Plus 명령"
+    },
+    {
+      "id": "cmd-146",
+      "title": "Oracle 치환 변수 끄기",
+      "group": "Oracle · SQL*Plus",
+      "command": "SET DEFINE OFF",
+      "note": "값에 & 문자가 있으면 SQL*Plus가 입력값을 묻고 문장을 바꿉니다. & 가 든 SQL을 붙여넣기 전에 실행하세요.",
+      "tags": "oracle sqlplus ampersand define 치환 변수",
+      "risk": "read",
+      "permission": "user",
+      "shell": "sqlplus",
+      "domain": "db",
+      "prerequisite": "SQL> (SQL*Plus) 프롬프트에 입력",
+      "alternatives": [],
+      "db": "oracle",
+      "step": "begin",
+      "where": "SQL> · SQL*Plus 명령"
+    },
+    {
+      "id": "cmd-147",
+      "title": "Oracle 변경 확정",
+      "group": "Oracle · SQL*Plus",
+      "command": "COMMIT;",
+      "note": "처리 행 수와 SELECT 재확인 결과를 본 뒤 실행하세요. 확정 뒤에는 ROLLBACK으로 되돌릴 수 없습니다.",
+      "tags": "oracle commit 확정",
+      "risk": "change",
+      "permission": "user",
+      "shell": "sql",
+      "domain": "db",
+      "prerequisite": "SQL> (SQL*Plus) 프롬프트에 입력",
+      "alternatives": [],
+      "db": "oracle",
+      "step": "finish",
+      "where": "SQL> · SQL"
+    },
+    {
+      "id": "cmd-148",
+      "title": "Oracle 변경 취소",
+      "group": "Oracle · SQL*Plus",
+      "command": "ROLLBACK;",
+      "note": "마지막 COMMIT 이후의 미확정 변경을 취소합니다. DDL은 암시적으로 커밋되어 취소되지 않습니다.",
+      "tags": "oracle rollback 취소",
+      "risk": "change",
+      "permission": "user",
+      "shell": "sql",
+      "domain": "db",
+      "prerequisite": "SQL> (SQL*Plus) 프롬프트에 입력",
+      "alternatives": [],
+      "db": "oracle",
+      "step": "finish",
+      "where": "SQL> · SQL"
+    },
+    {
+      "id": "cmd-149",
+      "title": "Oracle 종료 · 미확정 변경 취소",
+      "group": "Oracle · SQL*Plus",
+      "command": "EXIT ROLLBACK",
+      "note": "SQL*Plus의 EXIT는 기본적으로 미확정 변경을 커밋합니다. EXIT ROLLBACK은 취소한 뒤 종료합니다.",
+      "tags": "oracle sqlplus exit 종료 rollback",
+      "risk": "change",
+      "permission": "user",
+      "shell": "sqlplus",
+      "domain": "db",
+      "prerequisite": "SQL> (SQL*Plus) 프롬프트에 입력",
+      "alternatives": [],
+      "db": "oracle",
+      "step": "finish",
+      "where": "SQL> · SQL*Plus 명령"
+    },
+    {
+      "id": "cmd-150",
+      "title": "PostgreSQL 조회 전용 접속",
+      "group": "PostgreSQL · psql",
+      "command": "PGOPTIONS='-c default_transaction_read_only=on' psql -h {{DBHOST}} -U {{DBUSER}} -d {{DBNAME}}",
+      "note": "새 트랜잭션을 읽기 전용으로 시작합니다. 비밀번호는 프롬프트에 입력하세요. 연결 풀러가 시작 옵션을 거부하면 일반 접속 후 SELECT만 사용하세요.",
+      "tags": "postgresql postgres psql 접속 로그인 읽기 전용",
+      "risk": "read",
+      "permission": "limited",
+      "shell": "bash",
+      "domain": "db",
+      "prerequisite": "승인된 SSH 도구 → 대상 Linux 서버 접속 → 셸 프롬프트 · 이미 설치된 DB 클라이언트 필요",
+      "alternatives": [],
+      "db": "postgresql",
+      "step": "connect",
+      "where": "Linux 셸 · $"
+    },
+    {
+      "id": "cmd-151",
+      "title": "PostgreSQL 변경 작업용 접속 · 수동 커밋",
+      "group": "PostgreSQL · psql",
+      "command": "psql --set=AUTOCOMMIT=off -h {{DBHOST}} -U {{DBUSER}} -d {{DBNAME}}",
+      "note": "AUTOCOMMIT off로 시작하면 첫 문장부터 트랜잭션이 열리고 COMMIT 전까지 확정되지 않습니다. 비밀번호는 프롬프트에 입력하세요.",
+      "tags": "postgresql postgres psql 접속 수동 커밋 트랜잭션",
+      "risk": "change",
+      "permission": "limited",
+      "shell": "bash",
+      "domain": "db",
+      "prerequisite": "승인된 SSH 도구 → 대상 Linux 서버 접속 → 셸 프롬프트 · 이미 설치된 DB 클라이언트 필요",
+      "alternatives": [],
+      "db": "postgresql",
+      "step": "connect",
+      "where": "Linux 셸 · $"
+    },
+    {
+      "id": "cmd-152",
+      "title": "PostgreSQL 접속 대상 · 자동 커밋 확인",
+      "group": "PostgreSQL · psql",
+      "command": "\\conninfo\n\\echo :AUTOCOMMIT",
+      "note": "접속한 DB·사용자·호스트와 psql AUTOCOMMIT 값을 표시합니다. on이면 BEGIN;으로 트랜잭션을 먼저 여세요.",
+      "tags": "postgresql psql conninfo autocommit 확인",
+      "risk": "read",
+      "permission": "user",
+      "shell": "psql",
+      "domain": "db",
+      "prerequisite": "psql 프롬프트(DB이름=>)에 입력",
+      "alternatives": [],
+      "db": "postgresql",
+      "step": "check",
+      "where": "psql => · 메타 명령"
+    },
+    {
+      "id": "cmd-153",
+      "title": "PostgreSQL 테이블 구조 확인",
+      "group": "PostgreSQL · psql",
+      "command": "\\d pocket_ops_sample",
+      "note": "예시 이름을 확인할 테이블명으로 바꿔 입력하세요. 스키마가 다르면 스키마.테이블 형식으로 지정합니다.",
+      "tags": "postgresql psql describe 컬럼 구조",
+      "risk": "read",
+      "permission": "user",
+      "shell": "psql",
+      "domain": "db",
+      "prerequisite": "psql 프롬프트(DB이름=>)에 입력",
+      "alternatives": [],
+      "db": "postgresql",
+      "step": "check",
+      "where": "psql => · 메타 명령"
+    },
+    {
+      "id": "cmd-154",
+      "title": "PostgreSQL 트랜잭션 시작",
+      "group": "PostgreSQL · psql",
+      "command": "BEGIN;",
+      "note": "자동 커밋 세션에서 변경 전에 실행합니다. AUTOCOMMIT off 세션은 생략해도 되지만 실행해도 경고만 표시됩니다.",
+      "tags": "postgresql psql begin transaction 트랜잭션",
+      "risk": "read",
+      "permission": "user",
+      "shell": "sql",
+      "domain": "db",
+      "prerequisite": "psql 프롬프트(DB이름=>)에 입력",
+      "alternatives": [],
+      "db": "postgresql",
+      "step": "begin",
+      "where": "psql => · SQL"
+    },
+    {
+      "id": "cmd-155",
+      "title": "PostgreSQL 변경 확정",
+      "group": "PostgreSQL · psql",
+      "command": "COMMIT;",
+      "note": "결과 행 수와 SELECT 재확인 결과를 본 뒤 실행하세요. 트랜잭션 중 오류가 났다면 COMMIT도 ROLLBACK으로 처리됩니다.",
+      "tags": "postgresql commit 확정",
+      "risk": "change",
+      "permission": "user",
+      "shell": "sql",
+      "domain": "db",
+      "prerequisite": "psql 프롬프트(DB이름=>)에 입력",
+      "alternatives": [],
+      "db": "postgresql",
+      "step": "finish",
+      "where": "psql => · SQL"
+    },
+    {
+      "id": "cmd-156",
+      "title": "PostgreSQL 변경 취소",
+      "group": "PostgreSQL · psql",
+      "command": "ROLLBACK;",
+      "note": "현재 트랜잭션의 미확정 변경 전체를 취소합니다.",
+      "tags": "postgresql rollback 취소",
+      "risk": "change",
+      "permission": "user",
+      "shell": "sql",
+      "domain": "db",
+      "prerequisite": "psql 프롬프트(DB이름=>)에 입력",
+      "alternatives": [],
+      "db": "postgresql",
+      "step": "finish",
+      "where": "psql => · SQL"
+    },
+    {
+      "id": "cmd-157",
+      "title": "PostgreSQL psql 종료",
+      "group": "PostgreSQL · psql",
+      "command": "\\q",
+      "note": "연결을 끊으면 미확정 트랜잭션은 롤백됩니다. 먼저 COMMIT; 또는 ROLLBACK;을 명시적으로 실행하세요.",
+      "tags": "postgresql psql 종료 quit",
+      "risk": "change",
+      "permission": "user",
+      "shell": "psql",
+      "domain": "db",
+      "prerequisite": "psql 프롬프트(DB이름=>)에 입력",
+      "alternatives": [],
+      "db": "postgresql",
+      "step": "finish",
+      "where": "psql => · 메타 명령"
     }
   ],
   "params": {
@@ -2010,8 +2549,18 @@ window.PocketData = {
       "kind": "identifier"
     },
     "ALIAS": {
-      "label": "TNS 별칭",
+      "label": "TNS 별칭 또는 host:port/service",
       "default": "MYDB",
+      "kind": "identifier"
+    },
+    "DBHOST": {
+      "label": "DB 서버 호스트 / IP",
+      "default": "127.0.0.1",
+      "kind": "identifier"
+    },
+    "DBNAME": {
+      "label": "대상 DB 이름",
+      "default": "",
       "kind": "identifier"
     },
     "SERVICE": {
@@ -2030,6 +2579,16 @@ window.PocketData = {
       "group": "서버 운영",
       "tag": "LINUX · WAS",
       "keywords": "리눅스 linux 명령어 사전 포트 로그 tomcat jeus webtob docker jboss 서버"
+    },
+    {
+      "id": "sqlformat",
+      "title": "SQL 작업대",
+      "desc": "DB를 고르고 접속 → 확인 → 쿼리 → 확정 순서로 복사해요.",
+      "icon": "database",
+      "color": "green",
+      "group": "서버 운영",
+      "tag": "CUBRID · MARIADB · ORACLE · PG",
+      "keywords": "CUBRID CSQL MariaDB MySQL Oracle SQL*Plus PostgreSQL psql SELECT INSERT UPDATE DELETE 포맷 SQL 쿼리 정렬 작업대 트랜잭션"
     },
     {
       "id": "encoding",
@@ -2102,16 +2661,6 @@ window.PocketData = {
       "keywords": "sql in oracle 오라클 1000 db 쿼리 리스트"
     },
     {
-      "id": "sqlformat",
-      "title": "SQL 쿼리 정렬",
-      "desc": "SQL 절을 줄별로 나누어 읽고 복사하세요.",
-      "icon": "database",
-      "color": "green",
-      "group": "데이터 작업",
-      "tag": "SQL FORMAT",
-      "keywords": "CUBRID CSQL SELECT INSERT UPDATE DELETE 포맷 SQL 쿼리 정렬"
-    },
-    {
       "id": "unicode",
       "title": "문자 · ASCII 검사기",
       "desc": "눈에 안 보이는 공백과 문자 코드를 확인해요.",
@@ -2171,5 +2720,31 @@ window.PocketData = {
       "tag": "MATCH · CAPTURE",
       "keywords": "regex 정규식 regexp 검색 패턴 매칭"
     }
-  ]
+  ],
+  "dbs": {
+    "cubrid": {
+      "label": "CUBRID",
+      "client": "CSQL",
+      "prompt": "csql>",
+      "flow": "SSH 셸에서 csql -C --no-auto-commit 으로 접속 → csql> 에서 ;autocommit 이 OFF인지 확인 → SQL 붙여넣기 → 영향 행 수 확인 → ;commit 또는 ;rollback"
+    },
+    "mariadb": {
+      "label": "MariaDB",
+      "client": "mysql · mariadb 클라이언트",
+      "prompt": "MariaDB>",
+      "flow": "mysql 접속 → START TRANSACTION; 먼저 실행 (기본값 autocommit=1이라 바로 확정됨) → SQL 붙여넣기 → 영향 행 수 확인 → COMMIT; 또는 ROLLBACK;"
+    },
+    "oracle": {
+      "label": "Oracle",
+      "client": "SQL*Plus",
+      "prompt": "SQL>",
+      "flow": "sqlplus 접속 → SHOW AUTOCOMMIT 이 OFF인지 확인 → SQL 붙여넣기 → 처리 행 수 확인 → COMMIT; 또는 ROLLBACK; · EXIT는 기본적으로 커밋하므로 EXIT ROLLBACK 사용"
+    },
+    "postgresql": {
+      "label": "PostgreSQL",
+      "client": "psql",
+      "prompt": "psql =>",
+      "flow": "psql 접속 → BEGIN; 먼저 실행 (기본값 자동 커밋) → SQL 붙여넣기 → UPDATE n 등 결과 확인 → COMMIT; 또는 ROLLBACK;"
+    }
+  }
 };
