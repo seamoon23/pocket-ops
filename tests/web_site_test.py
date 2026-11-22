@@ -68,6 +68,21 @@ def verify(browser, origin, width, height, mobile):
         page.goto(origin + '/guides/')
         page.get_by_role('link',name=a['title'],exact=False).click()
         fits()
+        if a['tool'] == 'commands':
+            article_url = page.url
+            for command_id in a['commands']:
+                c = next(c for c in catalog['commands'] if c['id'] == command_id)
+                page.get_by_role('link', name=c['title']+' 열기', exact=True).click()
+                expect(page.locator('#modal h2')).to_have_text(c['title'])
+                expect(page.locator('#modal')).to_contain_text(c['where'])
+                expected = c['command'].replace('{{SERVICE}}', "'sshd.service'")
+                expect(page.locator('#command-preview')).to_have_value(expected)
+                page.locator('#copy-command').click()
+                page.wait_for_function("async text => (await navigator.clipboard.readText()).replaceAll('\\r','')===text",arg=expected)
+                fits()
+                page.go_back()
+                assert page.url == article_url
+            continue
         page.locator('article a.btn').click()
         key = a['tool']
         example = catalog['guides'][key]['example']
@@ -99,7 +114,7 @@ def verify(browser, origin, width, height, mobile):
     expect(page.locator('#view > section')).to_have_attribute('data-page','json')
     assert not errors and not external, (errors, external)
     ctx.close()
-    print(f'{width}x{height}: 15 direct routes, 3 guides, 4 DB clipboard checks, navigation and layout passed', flush=True)
+    print(f'{width}x{height}: {len(catalog["tools"])} routes, {len(guides)} guides, clipboard and layout passed', flush=True)
 
 
 if __name__ == '__main__':

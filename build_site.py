@@ -23,6 +23,14 @@ go(webRoute(),false);
 if(location.search==='?example' && D.guides[current]?.example?.fill){
  history.replaceState(null,'',location.pathname);
  runGuideExample(current);
+}else if(current==='commands'){
+ const id=new URLSearchParams(location.search).get('command');
+ const entry=D.commands.find(c=>c.id===id && c.risk==='read');
+ if(entry){
+  setCommandDomain(entry.domain);
+  if(entry.db)setCommandDb(entry.db);
+  openCommand(entry.id);
+ }
 }
 """,
     'navigate': """
@@ -67,7 +75,15 @@ def build_site():
                         for t in tools.values() if t['group'] == group)
         groups.append(f'<div class="group"><h3>{escape(group)}</h3><div class="rows">{links}</div></div>')
 
-    articles = ''.join(row('/guides/' + a['slug'] + '/', a['title'], a['topic']) for a in guides)
+    def guide_link(a):
+        return row('/guides/' + a['slug'] + '/', a['title'], a['intro'])
+
+    by_topic = {}
+    for article in guides:
+        by_topic.setdefault(article['topic'], []).append(article)
+    index = ''.join(f'<section><h2>{escape(topic)}</h2>' + ''.join(guide_link(a) for a in items)
+                    + '</section>' for topic, items in by_topic.items())
+    commands = {entry['id']: entry for entry in catalog['commands']}
     downloads = """<section id="downloads" class="downloads"><h2>폐쇄망용 다운로드</h2>
 <p>갤럭시에 미리 보관하려면 단일 HTML을 받으세요. 망간전송용 ZIP에는 같은 HTML과 사용 안내가 들어 있습니다.</p>
 <div class="actions"><a class="btn" href="/pocket-ops.html">HTML 받기 ↓</a><a class="btn" href="/pocket-ops.zip">ZIP 받기 ↓</a>
@@ -79,19 +95,33 @@ def build_site():
 <a class="btn alt" href="/tools/sqlformat/">SQL 작업대 열기</a></div></div></div>
 <main class="wrap" id="main"><section id="tools"><h2>도구 바로 열기</h2><div class="groups">""" +
          ''.join(groups) + '</div></section><section><h2>실무 가이드</h2><div class="guides">' +
-         articles + '</div></section>' + downloads + '</main>')
-    page('/guides/', '실무 가이드', '샘플 데이터로 따라 하는 SQL, 로그, JSON 작업 절차.',
+         ''.join(guide_link(items[0]) for items in list(by_topic.values())[:3]) + '</div><p><a href="/guides/">실무 가이드 전체 보기 (' +
+         str(len(guides)) + '편)</a></p></section>' + downloads + '</main>')
+    page('/guides/', '실무 가이드', 'Windows PowerShell, Ubuntu 22.04, RHEL 7 및 DB별 점검과 예제.',
          '<main class="wrap" id="main"><article class="paper"><h1>실무 가이드</h1>'
-         '<p>예제와 예상 결과를 읽고 같은 데이터를 도구에서 직접 확인하세요.</p>' + articles + '</article></main>')
+         '<p>작업 환경을 고르면 예시 결과와 확인할 항목, 해당 도구를 함께 볼 수 있습니다.</p>' + index + '</article></main>')
     for a in guides:
         tool = a['tool']
-        example = catalog['guides'][tool]['example']
+        if tool == 'commands':
+            actions = []
+            for command_id in a['commands']:
+                entry = commands[command_id]
+                if entry['risk'] != 'read':
+                    raise ValueError(f'{command_id} is not a read-only check')
+                actions.append(f'<p><a class="btn" href="/tools/commands/?command={command_id}">{escape(entry["title"])} 열기</a>'
+                               f'<br><small>입력 위치 · {escape(entry["where"])}</small></p>')
+            exercise = (f'<h2>결과 읽기 · 가상 예시</h2><pre>{escape(a["sample"])}</pre>'
+                        f'<p>{escape(a["interpretation"])}</p><h2>명령어 포켓에서 확인 · 복사</h2>' + ''.join(actions)
+                        + f'<p><a href="{escape(a["source"])}">공식 문서 보기</a></p>')
+        else:
+            example = catalog['guides'][tool]['example']
+            exercise = (f'<h2>연습용 입력</h2><pre>{escape(example["input"])}</pre>'
+                        f'<h2>예상 결과</h2><pre>{escape(example["output"])}</pre>'
+                        f'<a class="btn" href="/tools/{tool}/?example">{escape(tools[tool]["title"])}에서 예제로 열기</a>')
         sections = ''.join(f'<h2>{escape(h)}</h2><p>{escape(p)}</p>' for h, p in a['sections'])
         content = (f'<main class="wrap" id="main"><article class="paper"><a href="/guides/">← 실무 가이드</a>'
                    f'<p class="kicker">{escape(a["topic"])}</p><h1>{escape(a["title"])}</h1>'
-                   f'<p>{escape(a["intro"])}</p>{sections}<h2>연습용 입력</h2><pre>{escape(example["input"])}</pre>'
-                   f'<h2>예상 결과</h2><pre>{escape(example["output"])}</pre>'
-                   f'<a class="btn" href="/tools/{tool}/?example">{escape(tools[tool]["title"])}에서 예제로 열기</a>'
+                   f'<p>{escape(a["intro"])}</p>{sections}{exercise}'
                    '</article><!-- Approved editorial placements belong outside the article. --></main>')
         page('/guides/' + a['slug'] + '/', a['title'], a['intro'], content)
 
