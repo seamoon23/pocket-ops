@@ -2,7 +2,9 @@
 
 Windows 작업 PC와 휴대폰에서 보는 한국어 오프라인 공구함입니다. **`pocket-ops.html` 파일 하나**, 도구 15개, 명령어 157개. 별도 폴더·설치·서버·인터넷·로그인 없이 사용합니다.
 
-**[v0.6.1 단일 HTML 받기](https://github.com/seamoon23/pocket-ops/releases/download/v0.6.1/pocket-ops.html)** · [안내문 포함 ZIP](https://github.com/seamoon23/pocket-ops/releases/download/v0.6.1/pocket-ops-v0.6.1.zip) · [상세 사용법](README_KO.md) · [보안 검토](SECURITY_REVIEW.md) · [검증 결과](TEST_REPORT.md)
+**[Pocket Ops 다운로드](https://ops.jjunybox.com/)** · [최신 단일 HTML](https://ops.jjunybox.com/pocket-ops.html) · [망간전송용 ZIP](https://ops.jjunybox.com/pocket-ops.zip) · [SHA-256](https://ops.jjunybox.com/SHA256SUMS.txt)
+
+버전이 바뀌어도 위 주소로 최신 정식 릴리스의 파일을 받을 수 있습니다. [GitHub 릴리스](https://github.com/seamoon23/pocket-ops/releases/latest) · [상세 사용법](README_KO.md) · [보안 검토](SECURITY_REVIEW.md) · [검증 결과](TEST_REPORT.md)
 
 1. 위 **단일 HTML 받기**로 파일을 저장합니다. ZIP은 안내문을 함께 받을 때만 필요합니다.
 2. PC: 탐색기 → `pocket-ops.html` 우클릭 → **연결 프로그램 → 허용된 Edge/Chrome**. 기관 반입은 승인된 절차를 따릅니다.

@@ -38,6 +38,8 @@ jobs:
         run: git diff --exit-code -- src/data.js pocket-ops.html 'pocket-ops-v*.zip' SHA256SUMS.txt
       - name: Core and PowerShell parsing checks
         run: node tests/core.test.cjs
+      - name: Stable download addresses
+        run: node --test tests/download-site.test.mjs
       - name: CSP and release integrity checks
         run: python tests/static_test.py
       - name: Install development-only browser tests

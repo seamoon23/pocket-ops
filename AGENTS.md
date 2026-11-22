@@ -20,6 +20,8 @@ Maintain a small, attractive Korean-language offline utility pocket for an opera
 
 ## Build
 
+The public download site is maintained separately in `download-site/`. Deploy only that directory to the Pocket Ops Cloudflare Pages project. Its permanent HTML and checksum URLs use GitHub Releases' latest asset links. The ZIP route looks up the latest published tag and redirects to `pocket-ops-v<version>.zip` for that same tag. Publishing a new release with the existing naming convention updates the downloads without a site redeploy. Test with `node --test tests/download-site.test.mjs`.
+
 On an approved development machine with Python 3:
 
 ```text
