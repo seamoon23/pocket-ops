@@ -42,7 +42,8 @@ def offline_guides(articles, catalog, commands):
                 db_attr = f' data-field-db="{escape(dialect)}"'
             body.append(f'<h4>연습용 입력</h4><pre>{escape(example["input"])}</pre>'
                         f'<h4>예상 결과</h4><pre>{escape(example["output"])}</pre>'
-                        f'<button class="btn" data-field-example="{escape(key)}"{db_attr}>도구에서 예제로 열기</button>')
+                        f'<template><button class="btn" data-field-example="{escape(key)}"{db_attr}>'
+                        '도구에서 예제로 열기</button></template>')
         item = (f'<details data-field-article="{e("slug")}"><summary>{e("title")}</summary>'
                 + ''.join(body) + '</details>')
         topics.setdefault(article['topic'], []).append(item)

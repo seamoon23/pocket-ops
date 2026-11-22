@@ -411,6 +411,7 @@ function editorValue(element){
 }
 function bindPage(id,root){
  const q=s=>root.querySelector(s),qa=s=>Array.from(root.querySelectorAll(s)),value=id=>editorValue(q('#'+id));
+ if(id==='home')qa('#field-guides template').forEach(t=>t.replaceWith(t.content));
  const set=(id,v)=>setEditorValue(q('#'+id),v);
  root.addEventListener('input',e=>exactEditorValues.delete(e.target),true);
  const status=(id,msg,kind='')=>{const el=q('#'+id);el.className='status '+kind;el.textContent=msg;};

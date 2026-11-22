@@ -226,4 +226,3 @@ ol.guide-steps{list-style:none;padding:0;margin:14px 0}
 .field-library h4{margin:15px 0 4px}.field-library p{margin:4px 0 10px}
 .field-library pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);padding:12px;border:1px solid var(--line);border-radius:8px}
 .field-library a.btn{display:inline-flex;align-items:center;min-height:44px;white-space:normal}
-#field-reference [data-field-example]{display:none}
