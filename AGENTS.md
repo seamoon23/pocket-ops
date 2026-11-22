@@ -20,6 +20,10 @@ Maintain a small, attractive Korean-language offline utility pocket for an opera
 
 ## Build
 
+The public site shares the catalog, UI and core with the offline release. `python build_site.py` builds `.test-artifacts/pocket-ops-web-site.zip` for Cloudflare dashboard → Workers & Pages → jjunybox-pocket-ops → Create deployment → Production → upload ZIP → Save and Deploy. Use the generated ZIP for the website. The root release ZIP is for offline users. Website deployment and GitHub release publication are independent. Rebuild and deploy the website after shared tool changes.
+
+Keep the four marked platform bindings in `src/app.js` in sync with `platform_app` and `build_site.py`. The standalone artifact uses the default bindings byte-for-byte. Public tools use same-origin static assets, a CSP-hashed script and real paths under `/tools/`. Editorial content lives in `download-site/guides.json`. Future approved ads belong exclusively in guide articles. Review the guide-specific CSP, consent and isolation from the tools' origin storage before enabling any third-party code. Keep the tool CSP and the offline build independent. Run `python tests/web_site_test.py` to verify the public build locally, or pass the deployed HTTPS origin for a live check.
+
 The public download site is maintained separately in `download-site/`. Deploy only that directory to the Pocket Ops Cloudflare Pages project. Its permanent HTML and checksum URLs use GitHub Releases' latest asset links. The ZIP route looks up the latest published tag and redirects to `pocket-ops-v<version>.zip` for that same tag. Publishing a new release with the existing naming convention updates the downloads without a site redeploy. Test with `node --test tests/download-site.test.mjs`.
 
 On an approved development machine with Python 3:

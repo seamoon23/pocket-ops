@@ -530,7 +530,7 @@ function go(id,updateHash=true){
  document.title=(id==='home'?'작지만 든든한 내 작업실':$('#page-crumb').textContent)+' · Pocket Ops';
  $$('.nav-btn').forEach(b=>{const active=b.dataset.go===id;b.classList.toggle('active',active);if(active)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
  setMenu(false);syncStars();counters(root);window.scrollTo(0,0);
- if(updateHash&&location.hash!=='#'+id){try{history.replaceState(null,'','#'+id);}catch(_){location.hash=id;}}
+ /*@platform navigate*/if(updateHash&&location.hash!=='#'+id){try{history.replaceState(null,'','#'+id);}catch(_){location.hash=id;}}/*@end*/
 }
 function clearInputs(){if(!confirm('열린 모든 도구의 입력·선택한 파일·결과를 비울까요? 즐겨찾기와 저장한 명령어는 유지됩니다.'))return;
  copySequence++;
@@ -591,7 +591,7 @@ document.addEventListener('keydown',e=>{
  if($('#palette').open){if(e.target!==$('#palette-input'))return;if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(!paletteItems.length)return;paletteIndex=(paletteIndex+(e.key==='ArrowDown'?1:-1)+paletteItems.length)%paletteItems.length;$$('.palette-item').forEach((el,i)=>{el.classList.toggle('selected',i===paletteIndex);el.setAttribute('aria-selected',String(i===paletteIndex));});$('#palette-input').setAttribute('aria-activedescendant','palette-item-'+paletteIndex);$('#palette-item-'+paletteIndex).scrollIntoView({block:'nearest'});}if(e.key==='Enter'){e.preventDefault();selectPalette(paletteIndex);}return;}
  if(!editable&&e.target.classList.contains('tool-card')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();e.target.click();}
 });
-window.addEventListener('hashchange',()=>{const id=location.hash.slice(1);if(id!==current)go(id,false);});
+/*@platform listen*/window.addEventListener('hashchange',()=>{const id=location.hash.slice(1);if(id!==current)go(id,false);});/*@end*/
 $('#palette-input').addEventListener('input',renderPalette);
 $('#palette-close').onclick=()=>$('#palette').close();
 $('#theme-toggle').onclick=()=>{state.theme=state.theme==='light'?'dark':'light';save();applyTheme();};
@@ -600,8 +600,8 @@ $('#mobile-close').onclick=()=>setMenu(false);
 $('#menu-scrim').onclick=()=>setMenu(false);
 mobileLayout.addEventListener('change',()=>setMenu(false));
 $('#clear-all-button').onclick=clearInputs;
-$('#release-download').onclick=async()=>{const b=$('#release-download');b.disabled=true;try{if(!window.PocketRelease)throw new Error('배포 파일이 포함되지 않은 빌드입니다.');await window.PocketRelease.download();toast('현재 열린 버전 '+(window.PocketBuild?.version||D.version)+'의 배포 ZIP을 저장합니다.');}catch(e){toast('배포 파일 저장 실패: '+e.message);}finally{b.disabled=false;}};
+/*@platform download*/$('#release-download').onclick=async()=>{const b=$('#release-download');b.disabled=true;try{if(!window.PocketRelease)throw new Error('배포 파일이 포함되지 않은 빌드입니다.');await window.PocketRelease.download();toast('현재 열린 버전 '+(window.PocketBuild?.version||D.version)+'의 배포 ZIP을 저장합니다.');}catch(e){toast('배포 파일 저장 실패: '+e.message);}finally{b.disabled=false;}};/*@end*/
 // The read-only reference stays visible until the interactive app has started, so a blocked or
 // unsupported script never leaves an empty page.
-try{nav();$('#brand-icon').innerHTML=icon('pocket');$('#mobile-menu').innerHTML=icon('menu');$('#top-search-icon').innerHTML=icon('search');$('#clear-all-button').innerHTML=icon('trash');$('#settings-icon').innerHTML=icon('settings');$('#palette-icon').innerHTML=icon('search');applyTheme();refreshStorage();go(location.hash.slice(1)||'home',false);document.documentElement.classList.add('app-ready');}catch(e){$('#view').innerHTML='<div class="note error">시작하지 못했습니다: '+E(e.message)+'<br>허용된 최신 Chromium 기반 브라우저에서 다시 열어 주세요.</div>';console.error(e);}
+try{nav();$('#brand-icon').innerHTML=icon('pocket');$('#mobile-menu').innerHTML=icon('menu');$('#top-search-icon').innerHTML=icon('search');$('#clear-all-button').innerHTML=icon('trash');$('#settings-icon').innerHTML=icon('settings');$('#palette-icon').innerHTML=icon('search');applyTheme();refreshStorage();/*@platform start*/go(location.hash.slice(1)||'home',false);/*@end*/document.documentElement.classList.add('app-ready');}catch(e){$('#view').innerHTML='<div class="note error">시작하지 못했습니다: '+E(e.message)+'<br>허용된 최신 Chromium 기반 브라우저에서 다시 열어 주세요.</div>';console.error(e);}
 })();

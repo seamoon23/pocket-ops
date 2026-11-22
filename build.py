@@ -60,13 +60,24 @@ html.app-ready #script-fallback{display:none!important}
     return '\n'.join(parts)
 
 
+def platform_app(overrides=None):
+    """Shared UI with four platform-specific navigation and download bindings."""
+    overrides = overrides or {}
+    source = (SRC / 'app.js').read_text(encoding='utf-8')
+    pattern = r'/\*@platform (\w+)\*/(.*?)/\*@end\*/'
+    keys = [key for key, _ in re.findall(pattern, source, re.S)]
+    assert sorted(keys) == ['download', 'listen', 'navigate', 'start']
+    assert not overrides or set(overrides) == set(keys)
+    return re.sub(pattern, lambda m: overrides.get(m[1], m[2]), source, flags=re.S)
+
+
 def build():
     data = (SRC / 'data.js').read_text(encoding='utf-8')
     catalog = json.loads(data.split(' = ', 1)[1].rstrip().rstrip(';'))
     version = catalog['version']
     styles = (SRC / 'styles.css').read_text(encoding='utf-8')
-    script = '\n'.join((SRC / name).read_text(encoding='utf-8')
-                       for name in ('data.js', 'core.js', 'release.js', 'app.js'))
+    script = '\n'.join([(SRC / name).read_text(encoding='utf-8')
+                        for name in ('data.js', 'core.js', 'release.js')] + [platform_app()])
     # Never let an embedded JS example terminate the HTML script element.
     script = script.replace('</script', '<\\/script')
     script = re.sub(r'</script', lambda match: '<\\/' + match.group()[2:], script, flags=re.I)
