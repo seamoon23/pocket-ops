@@ -25,15 +25,13 @@ OUT = ROOT / 'evidence' / ('v' + VERSION)
 SHOTS, DOWNLOADS = OUT / 'shots', OUT / 'downloads'
 for d in (SHOTS, DOWNLOADS):
     d.mkdir(parents=True, exist_ok=True)
-    for old in d.iterdir():
-        old.unlink()
 MARK = {'sql': 'EVID-SQL-5Z8', 'log': 'EVID-LOG-5Z8', 'cmd': 'EVID-CMD-5Z8', 'json': 'EVID-JSON-5Z8'}
 # What the walkthrough found that the automated suites with test doubles did not show.
 FINDINGS = [
     {'title': '복사 완료 알림이 열린 창의 흐린 배경 뒤에 가려짐', 'status': '수정함',
      'detail': '명령 창 · SQL 확인 창 · 가져오기 창에서 복사하면 "클립보드에 복사했어요." 알림이 대화상자 배경(블러) 아래에 그려져 읽을 수 없었습니다. '
                '알림을 최상위 레이어(manual popover)로 띄우도록 바꿨고, 브라우저 회귀 테스트를 추가했습니다. 수정 후 화면은 2번 시나리오의 명령 창 스크린샷입니다.',
-     'before': 'findings/toast-under-dialog-before.jpg'},
+     'before': '../v0.6.0/findings/toast-under-dialog-before.jpg'},
     {'title': 'Windows 클립보드는 줄바꿈을 CRLF로 보관', 'status': '기록(앱 문제 아님)',
      'detail': '앱은 확인 창과 같은 LF 텍스트를 넘기지만 Windows의 Chromium 클립보드는 여러 줄 텍스트를 CRLF로 저장합니다. 글자 단위 비교는 줄바꿈 정규화 후 일치했고, '
                '저장 파일(pocket-query.sql)은 LF 그대로입니다. SSH 터미널은 붙여넣을 때 줄바꿈을 변환하므로 csql> · SQL> 입력에는 영향이 없지만 바이트 비교 시 참고하세요.'},
@@ -91,15 +89,17 @@ def os_clipboard_raw():
     # Bytes mode keeps CRLF exactly as Windows holds it; no BOM and no added trailing newline.
     r = subprocess.run(['powershell', '-NoProfile', '-Command',
                         '[Console]::OutputEncoding=[Text.UTF8Encoding]::new($false); $t=Get-Clipboard -Raw; if($null -ne $t){[Console]::Out.Write($t)}'],
-                       capture_output=True)
-    return r.stdout.decode('utf-8').lstrip('﻿')
+                       capture_output=True, check=True)
+    return r.stdout.decode('utf-8')
 
 def os_clipboard_text():
     return os_clipboard_raw().replace('\r\n', '\n')
 
 def set_os_clipboard(text):
-    subprocess.run(['powershell', '-NoProfile', '-Command', 'Set-Clipboard -Value $env:POCKET_OPS_CLIP_RESTORE'],
-                   env=dict(os.environ, POCKET_OPS_CLIP_RESTORE=text), capture_output=True)
+    script=("[Console]::InputEncoding=[Text.UTF8Encoding]::new($false); "
+            "Add-Type -AssemblyName System.Windows.Forms; $t=[Console]::In.ReadToEnd(); "
+            "if ($t.Length) {[Windows.Forms.Clipboard]::SetText($t)} else {[Windows.Forms.Clipboard]::Clear()}")
+    subprocess.run(['powershell','-NoProfile','-STA','-Command',script], input=text.encode('utf-8'), capture_output=True, check=True)
 
 def nav(page, route):
     if page.locator('#modal[open]').count():
@@ -649,11 +649,12 @@ def main(argv):
 def os_clipboard_phase(p):
     case('OS 클립보드(실제 창)', '보이는 Chromium 창에서 복사 버튼 → Windows 클립보드 읽기', 'Get-Clipboard 값이 화면의 최종 명령·SQL과 같다', device='PC · 보이는 Chromium 창')
     probe = subprocess.run(['powershell', '-NoProfile', '-Command', 'Add-Type -AssemblyName System.Windows.Forms; $d=[System.Windows.Forms.Clipboard]::GetDataObject(); if($d){$d.GetFormats() -join ","}'],
-                           capture_output=True, text=True, encoding='utf-8').stdout.strip()
+                           capture_output=True, text=True, encoding='utf-8', check=True).stdout.strip()
     if probe and not set(probe.split(',')) <= {'System.String', 'UnicodeText', 'Text', 'Locale', 'OEMText', 'Chromium internal source RFH token', 'Chromium internal source URL'}:
-        check('기존 클립보드에 텍스트 외 형식이 있어 건너뜀(복원 불가 방지)', probe, ok=True)
+        step('기존 클립보드에 복원할 수 없는 형식이 있어 OS 검사를 건너뜀')
         return
     saved = os_clipboard_raw()
+    own_texts={'ss -lnt "( sport = :8443 )"'}
     try:
         browser = p.chromium.launch(executable_path=os.environ.get('CHROMIUM_PATH', '/usr/bin/chromium'), headless=False, args=['--window-position=40,40'])
         ctx = browser.new_context(viewport={'width': 1280, 'height': 800}, locale='ko-KR')
@@ -671,19 +672,24 @@ def os_clipboard_phase(p):
         page.locator('#copy-command').click()
         page.wait_for_timeout(500)
         step('명령어 포켓 → 특정 포트 리스닝 확인 → 포트 8443 → 명령어 복사 → PowerShell Get-Clipboard')
-        check('Windows 클립보드 = 최종 명령', os_clipboard_text(), 'ss -lnt "( sport = :8443 )"')
+        check('Windows 클립보드 = 최종 명령', os_clipboard_text() in own_texts, True)
         shot(page, 'os-clipboard-command', '보이는 창에서 복사한 명령')
         nav(page, 'sqlformat')
-        page.locator('[data-open-sql-preset="cmd-134"]').click()
-        page.locator('[data-copy-id="sqlformat-output"]').click()
-        reviewed = page.locator('#sql-review-preview').input_value()
-        page.locator('#sql-review-confirm').click()
-        page.wait_for_timeout(500)
-        step('SQL 작업대 → UPDATE 프리셋 → 복사 → 확인 후 복사 → Get-Clipboard')
-        check('Windows 클립보드 = 확인 창의 SQL(줄바꿈 포함 비교)', os_clipboard_text(), reviewed)
+        for db in ['cubrid','mariadb','oracle','postgresql']:
+            page.locator(f'[data-sql-db="{db}"]').click()
+            page.locator('#sql-steps [data-open-sql-preset="cmd-134"]').click()
+            expected=f"UPDATE qa_{db}\nSET note='한글  😀'\nWHERE id=17;"
+            page.locator('#sqlformat-input').fill(expected.replace('\n',' '))
+            page.locator('[data-copy-id="sqlformat-output"]').click()
+            reviewed=page.locator('#sql-review-preview').input_value()
+            check(db+' 최종 확인 = 편집한 UPDATE',reviewed,expected)
+            own_texts.add(reviewed)
+            page.locator('#sql-review-confirm').click()
+            page.wait_for_timeout(500)
+            check(db+' Windows 클립보드 = 최종 SQL',os_clipboard_text()==expected,True)
         browser.close()
     finally:
-        if saved:
+        if os_clipboard_text() in own_texts:
             set_os_clipboard(saved)
         check('작업 전 클립보드 텍스트 복원(내용은 기록하지 않음)', os_clipboard_raw() == saved, True)
 
@@ -732,7 +738,7 @@ code{{font-family:Consolas,'D2Coding',monospace;background:var(--code);border-ra
 <div class="totals"><span><b>{len(CASES)}</b>시나리오</span><span><b>{total}</b>확인 항목</span><span class="{'bad' if failed else 'ok'}"><b>{failed}</b>실패</span><span><b>{shot_no}</b>스크린샷</span><span><b>{len(env.get('external_requests', []))}</b>외부 요청</span></div>
 <div class="env"><dl><dt>브라우저</dt><dd>{e(env['browser'])}</dd><dt>OS</dt><dd>{e(env['os'])}</dd><dt>대상 파일</dt><dd>{e(env['html'])} · {env['html_bytes']:,} bytes · SHA-256 {e(env['html_sha256'])}</dd><dt>시작 · 종료</dt><dd>{e(env['started'])} → {e(env.get('finished', ''))}</dd><dt>페이지 오류</dt><dd>{len(env.get('page_errors', []))}건</dd></dl></div>
 <h2>발견 사항</h2>{findings}<h2>확인 범위와 한계</h2><ul class="limits">{limits}</ul><nav><h2>목차</h2><ol>{toc}</ol></nav>{''.join(rows)}</main></body></html>"""
-    (OUT / 'index.html').write_text(page, encoding='utf-8')
+    (OUT / 'index.html').write_bytes(page.replace('\r\n','\n').replace('\r','\n').encode('utf-8'))
     md = [f'# Pocket Ops {VERSION} · 전체 메뉴 사용 증적', '',
           f"- 브라우저: {env['browser']} · OS: {env['os']}",
           f"- 대상: `pocket-ops.html` ({env['html_bytes']:,} bytes, SHA-256 `{env['html_sha256']}`), file:// 로 열기",

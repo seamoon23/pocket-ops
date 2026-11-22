@@ -52,14 +52,14 @@ SET item_name = &#x27;EVID-SQL-5Z8&#x27;</code></td></tr><tr class="ok"><td>통�
 한글 테스트: 안녕하세요.
 확장 한글: 갂 똠
 이 파일에는 실제 업무 자료가 없습니다.
-</code></td></tr><tr class="ok"><td>통과</td><td>UTF-8로 저장한 파일 = 원문(CRLF 유지)</td><td><code>Pocket Ops 인코딩 샘플
-한글 테스트: 안녕하세요.
-확장 한글: 갂 똠
-이 파일에는 실제 업무 자료가 없습니다.
-</code></td><td><code>Pocket Ops 인코딩 샘플
-한글 테스트: 안녕하세요.
-확장 한글: 갂 똠
-이 파일에는 실제 업무 자료가 없습니다.
+</code></td></tr><tr class="ok"><td>통과</td><td>UTF-8로 저장한 파일 = 원문(CRLF 유지)</td><td><code>Pocket Ops 인코딩 샘플
+한글 테스트: 안녕하세요.
+확장 한글: 갂 똠
+이 파일에는 실제 업무 자료가 없습니다.
+</code></td><td><code>Pocket Ops 인코딩 샘플
+한글 테스트: 안녕하세요.
+확장 한글: 갂 똠
+이 파일에는 실제 업무 자료가 없습니다.
 </code></td></tr></tbody></table>
 <div class="shots"><figure><a href="shots/018-encoding-guide.jpg"><img loading="lazy" src="shots/018-encoding-guide.jpg" alt="한글 · 인코딩 진료소 사용 예시 창"></a><figcaption>한글 · 인코딩 진료소 사용 예시 창</figcaption></figure><figure><a href="shots/019-encoding-example.jpg"><img loading="lazy" src="shots/019-encoding-example.jpg" alt="이 예시로 해보기 결과"></a><figcaption>이 예시로 해보기 결과</figcaption></figure><figure><a href="shots/020-encoding-file.jpg"><img loading="lazy" src="shots/020-encoding-file.jpg" alt="CP949 파일을 EUC-KR로 다시 읽은 결과"></a><figcaption>CP949 파일을 EUC-KR로 다시 읽은 결과</figcaption></figure></div></section><section class="case" id="case-6"><header><span class="badge ok">통과</span><h2>6. JSON 정리함</h2><p class="meta">PC 1366×900</p></header>
 <p class="scenario"><b>시나리오</b> 큰 숫자 보존 정리, 문법 오류, 압축 후 복사</p><p class="scenario"><b>기대 결과</b> 숫자 표기를 바꾸지 않고, 오류는 결과를 비우고 원인을 표시한다</p>
@@ -186,8 +186,8 @@ ISO 8601   2023-11-14T22:13:20.000Z</code></td></tr><tr class="ok"><td>통과</t
 <div class="shots"><figure><a href="shots/064-theme-dark.jpg"><img loading="lazy" src="shots/064-theme-dark.jpg" alt="어두운 테마의 내 작업실"></a><figcaption>어두운 테마의 내 작업실</figcaption></figure></div></section><section class="case" id="case-21"><header><span class="badge ok">통과</span><h2>21. 휴대폰 화면(에뮬레이션)</h2><p class="meta">360×780 터치 에뮬레이션</p></header>
 <p class="scenario"><b>시나리오</b> 360px 터치 화면에서 메뉴 → 명령 찾기 → 값 입력 → 복사, 사용 예시</p><p class="scenario"><b>기대 결과</b> 가로 넘침 없이 첫 화면에 사용 예시와 첫 명령이 보이고, 값이 복사된다</p>
 <details open><summary>조작 순서 4단계</summary><ol><li>왼쪽 위 메뉴 버튼</li><li>명령어 포켓 → Linux → ‘포트’ 검색</li><li>특정 포트 리스닝 확인 → 포트 9090 → 명령어 복사</li><li>SQL 작업대 → DELETE 프리셋 → 복사</li></ol></details>
-<table><thead><tr><th>판정</th><th>확인 항목</th><th>실제 값</th><th>기대 값</th></tr></thead><tbody><tr class="ok"><td>통과</td><td>가로 넘침 없음</td><td><code>true</code></td><td><code>true</code></td></tr><tr class="ok"><td>통과</td><td>첫 명령 카드가 첫 화면 안에서 시작</td><td><code>y=688px</code></td><td><span class="muted">조건 판정</span></td></tr><tr class="ok"><td>통과</td><td>복사된 명령(브라우저 Clipboard API)</td><td><code>ss -lnt &quot;( sport = :9090 )&quot;</code></td><td><code>ss -lnt &quot;( sport = :9090 )&quot;</code></td></tr><tr class="ok"><td>통과</td><td>확인한 DELETE가 복사됨</td><td><code>DELETE FROM pocket_ops_sample
-WHERE item_id = 1001
+<table><thead><tr><th>판정</th><th>확인 항목</th><th>실제 값</th><th>기대 값</th></tr></thead><tbody><tr class="ok"><td>통과</td><td>가로 넘침 없음</td><td><code>true</code></td><td><code>true</code></td></tr><tr class="ok"><td>통과</td><td>첫 명령 카드가 첫 화면 안에서 시작</td><td><code>y=688px</code></td><td><span class="muted">조건 판정</span></td></tr><tr class="ok"><td>통과</td><td>복사된 명령(브라우저 Clipboard API)</td><td><code>ss -lnt &quot;( sport = :9090 )&quot;</code></td><td><code>ss -lnt &quot;( sport = :9090 )&quot;</code></td></tr><tr class="ok"><td>통과</td><td>확인한 DELETE가 복사됨</td><td><code>DELETE FROM pocket_ops_sample
+WHERE item_id = 1001
   AND item_name = &#x27;SAMPLE&#x27;;</code></td><td><code>DELETE FROM pocket_ops_sample
 WHERE item_id = 1001
   AND item_name = &#x27;SAMPLE&#x27;;</code></td></tr></tbody></table>

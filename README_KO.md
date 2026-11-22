@@ -1,6 +1,6 @@
 # Pocket Ops · 폐쇄망 미니 공구함
 
-**v0.6.0 / 2026-11-21**
+**v0.6.1 / 2026-11-22**
 
 명령어가 기억나지 않을 때, 한글이 깨졌을 때, 로그와 목록을 정리할 때 꺼내 쓰는 로컬 HTML 작업실입니다. **실행 파일은 `pocket-ops.html` 한 개**입니다. JavaScript, CSS, 명령어 데이터, 아이콘과 읽기 전용 참고 내용을 파일 안에 포함했습니다. 별도 실행 폴더는 필요하지 않으며 PC와 휴대폰에 같은 파일을 저장합니다.
 
@@ -56,12 +56,12 @@ RHEL 7·JEUS 6 서버 위에 설치하는 제품이 아닙니다. 작업 PC의 �
 - **명령어와 대안:** 왼쪽 `명령어 포켓` → 환경 탭 → 분류/검색 → `값 넣기 · 복사`. 카드의 `입력:`이 Linux 셸(`$`), Windows PowerShell(`PS>`), `csql>`, `MariaDB>`, `SQL>`, `psql =>` 중 어디인지 확인합니다. 도구가 없으면 창 아래 `사용할 수 없을 때`에서 각 대안의 입력 위치·조건을 비교해 하나를 고릅니다. 입력한 값은 대안으로 이어지고 `← 원래 명령으로`로 돌아갈 수 있습니다. 대안은 기능 범위가 다를 수 있으며 자동으로 연속 실행하지 않습니다.
 - **즐겨찾기:** 도구 또는 명령어의 별표 → 왼쪽 `즐겨찾기`. 두 종류를 한곳에서 볼 수 있습니다.
 - **사용 예시:** 모든 화면 제목 줄의 `사용 예시` → 이럴 때 · 순서 · 입력 예 · 결과 예 · 주의. `이 예시로 해보기`는 예시 값을 그 화면 입력칸에 넣고 같은 버튼을 누릅니다. 직접 입력한 내용이 있으면 바뀔 칸을 먼저 알려 주며, 창을 닫으면 아무것도 바뀌지 않습니다.
-- **ZIP 배포:** 상단 `배포하기` → `pocket-ops-v0.6.0.zip` 저장. HTML 원본과 사용안내·변경 기록만 포함하며 작업 입력, 불러온 파일, 개인 명령어와 설정은 제외합니다. 기본 Windows ZIP 풀기와 호환되는 무압축 저장 방식입니다.
+- **ZIP 배포:** 상단 `배포하기` → `pocket-ops-v0.6.1.zip` 저장. HTML 원본과 사용안내·변경 기록만 포함하며 작업 입력, 불러온 파일, 개인 명령어와 설정은 제외합니다. 기본 Windows ZIP 풀기와 호환되는 무압축 저장 방식입니다.
 - **업데이트:** 연결 가능한 개발 PC → [GitHub 저장소](https://github.com/seamoon23/pocket-ops) → 최신 버전 ZIP → 승인된 망간전송 → 탐색기에서 `모두 압축 풀기` → `pocket-ops.html` 열기. `배포하기`는 현재 열어 둔 버전을 다시 포장하며 온라인 최신 버전 확인은 하지 않습니다.
 
 Windows 예제는 Windows 11의 Windows PowerShell 5.1을 기준으로 합니다. Linux는 Ubuntu 22.04/RHEL 7의 기본 명령을 우선하고 `ss`, `ip`, `systemctl`, JDK·WAS·Docker 등 설치에 따른 차이는 항목에 표시합니다. DB 명령은 접속 명령만 Linux 셸에 입력하고, 그 뒤의 세션 명령과 SQL은 각 DB 클라이언트 프롬프트(`csql>`, `MariaDB>`, `SQL>`, `psql =>`)에 입력합니다.
 
-업데이트 전 `내 포켓 관리 → 설정 백업`을 저장하고, 새 파일은 별도 폴더에서 샘플로 시험한 뒤 `설정 가져오기`로 옮기세요. 저장소는 파일 경로에 따라 분리될 수 있습니다. 내려받은 ZIP/HTML의 파일 지문은 저장소의 `SHA256SUMS.txt`와 비교할 수 있습니다. Windows 시작 메뉴 → Windows PowerShell → 파일이 있는 폴더에서 `Get-FileHash -Algorithm SHA256 -LiteralPath .\pocket-ops-v0.6.0.zip`을 실행합니다. 체크섬은 손상 비교용이며 디지털 서명이나 보안 인증은 아닙니다.
+업데이트 전 `내 포켓 관리 → 설정 백업`을 저장하고, 새 파일은 별도 폴더에서 샘플로 시험한 뒤 `설정 가져오기`로 옮기세요. 저장소는 파일 경로에 따라 분리될 수 있습니다. 내려받은 ZIP/HTML의 파일 지문은 저장소의 `SHA256SUMS.txt`와 비교할 수 있습니다. Windows 시작 메뉴 → Windows PowerShell → 파일이 있는 폴더에서 `Get-FileHash -Algorithm SHA256 -LiteralPath .\pocket-ops-v0.6.1.zip`을 실행합니다. 체크섬은 손상 비교용이며 디지털 서명이나 보안 인증은 아닙니다.
 
 ## SSH에서 DB 작업하기 (CUBRID · MariaDB · Oracle · PostgreSQL)
 
@@ -69,9 +69,11 @@ Windows 예제는 Windows 11의 Windows PowerShell 5.1을 기준으로 합니다
 
 1. **접속 · Linux 셸:** 조회 전용 또는 변경 작업용 접속을 눌러 계정·DB를 입력하고 복사해 SSH 터미널의 셸(`$`)에 붙여넣습니다. 비밀번호는 명령행에 넣지 않고 클라이언트의 비밀번호 프롬프트에 입력합니다. CUBRID `csql -C -r`(읽기 전용)·`--no-auto-commit`, MariaDB `mysql -p --safe-updates`, Oracle `sqlplus -L 사용자@별칭`, PostgreSQL 읽기 전용(`default_transaction_read_only`)·수동 커밋(`AUTOCOMMIT=off`) 접속을 제공합니다.
 2. **대상 · 자동 커밋 확인 · 클라이언트 프롬프트:** `;database`/`;autocommit`(CUBRID), `SELECT DATABASE() … @@autocommit`(MariaDB), `SHOW USER`/`SHOW AUTOCOMMIT`(Oracle), `\conninfo`/`\echo :AUTOCOMMIT`(PostgreSQL)로 대상과 자동 커밋을 확인합니다. 테이블 구조 확인으로 키 컬럼을 확인합니다.
-3. **트랜잭션 시작:** MariaDB는 기본 autocommit=1이므로 `START TRANSACTION;`, PostgreSQL 자동 커밋 세션은 `BEGIN;`을 먼저 실행합니다. Oracle은 값에 `&`가 있으면 `SET DEFINE OFF`를 먼저 실행합니다. CUBRID 변경 작업용 접속은 별도 명령이 없습니다.
+3. **트랜잭션 시작:** MariaDB는 트랜잭션 지원 테이블과 새 변경 세션을 확인한 뒤 `START TRANSACTION;`, PostgreSQL 자동 커밋 세션은 `BEGIN;`을 먼저 실행합니다. Oracle은 값에 `&`가 있으면 `SET DEFINE OFF`를 먼저 실행합니다. CUBRID 변경 작업용 접속은 별도 명령이 없습니다.
 4. **쿼리 작성:** SELECT/INSERT/UPDATE/DELETE 프리셋을 누르면 아래 SQL 원문에 예시가 들어가고 예시 테이블명이 선택됩니다. 테이블명·값·WHERE 조건을 바꾸고 **복사** 또는 결과 저장을 누릅니다. INSERT·UPDATE·DELETE와 결과를 기록하거나 행을 잠그는 SELECT(INTO, FOR UPDATE 등)는 확인 창에서 붙여넣을 곳, DB별 순서, 점검 결과와 **그대로 복사될 최종 SQL**을 보여 줍니다. WHERE가 없는 UPDATE·DELETE는 위험 확인 체크 전까지 복사·저장 버튼이 잠깁니다. 예시 테이블 `pocket_ops_sample`이 남아 있으면 경고합니다.
 5. **확정 · 취소 · 종료:** 영향 행 수가 예상과 같을 때만 확정합니다. Oracle SQL*Plus의 `EXIT`는 기본적으로 커밋하므로 `EXIT ROLLBACK`을 제공합니다. MariaDB·PostgreSQL은 연결을 끊으면 미확정 변경이 롤백됩니다.
+
+명령어 포켓 → DB → 원하는 DB → SQL 작업대에서 순서대로 보기를 누르면 선택한 DB가 이어집니다. Oracle 치환 문자와 psql 변수가 있는 SELECT, 하위 쿼리에서 행을 잠그는 SELECT도 복사·저장 전에 확인합니다. MariaDB에서 트랜잭션을 다시 시작하면 기존 변경이 확정됩니다.
 
 DB별 점검: Oracle은 SQL*Plus가 빈 줄에서 문장을 끊고 `/`·`.`만 있는 줄을 실행·종료로 읽으므로 이런 SQL을 정렬하지 않습니다. PostgreSQL은 `:이름`이 psql 변수로 바뀐다고 경고합니다. MariaDB·MySQL이 실행하는 `/*! */` 주석과 공백 없는 `--`는 거부합니다. `//` 주석은 CUBRID에서만 허용합니다. 예제의 `pocket_ops_sample`, `item_id`, `item_name`은 가상의 이름입니다. 다른 프리셋을 열 때 기존 편집 내용이 있으면 교체 여부를 묻고, 취소하면 원문과 선택한 DB를 그대로 둡니다. DB를 바꾸면 이전 DB 기준의 정렬 결과를 지웁니다.
 

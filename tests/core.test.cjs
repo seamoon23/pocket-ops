@@ -209,6 +209,26 @@ foreach ($sample in $samples) {
    assert.equal(r.review,preset.risk==='change');
   }
  });
+ await test('Subquery locks and client substitution require reviewing SELECT before delivery',()=>{
+  for (const [db,sql,code] of [
+   ['postgresql','SELECT id FROM (SELECT id FROM jobs FOR UPDATE) q;','select-lock'],
+   ['postgresql','SELECT arr[:slot] FROM jobs;','psql-variable'],
+   ['oracle',"SELECT 'A&B' FROM dual;",'oracle-define']
+  ]) {
+   const result=C.prepareSql(sql,db);
+   assert.ok(result.review && result.checks.some(c=>c.code===code),sql);
+  }
+  assert.equal(C.prepareSql("SELECT arr[1], ':slot' FROM jobs;",'postgresql').review,false);
+ });
+ await test('Clipboard and UTF-8 SQL cannot silently truncate or replace hidden characters',()=>{
+  for (const db of Object.keys(D.dbs)) {
+   for (const value of ['\x00','\u001b','\ud800','\udfff']) {
+    assert.throws(()=>C.prepareSql("UPDATE jobs SET note='x"+value+"y' WHERE id=1;",db),/제어 문자/);
+    assert.throws(()=>C.prepareSql('SELECT 1 /*'+value+'*/;',db),/제어 문자/);
+   }
+   assert.ok(C.prepareSql("SELECT '한글 😀';",db).sql.includes('한글 😀'));
+  }
+ });
  await test('DB choice changes lexical rules only where the target client reads text differently',()=>{
   const portable="SELECT a, b FROM t WHERE x = 'y' -- note\n  AND z = 1 /* c */;";
   const expected=C.formatSql(portable);

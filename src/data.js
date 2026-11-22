@@ -1,6 +1,6 @@
 /* Curated offline reference data. Never auto-executed. */
 window.PocketData = {
-  "version": "0.6.0",
+  "version": "0.6.1",
   "commands": [
     {
       "id": "cmd-001",
@@ -2144,9 +2144,9 @@ window.PocketData = {
       "title": "MariaDB 트랜잭션 시작",
       "group": "MariaDB · mysql 클라이언트",
       "command": "START TRANSACTION;",
-      "note": "COMMIT 또는 ROLLBACK 전까지 변경을 확정하지 않습니다. CREATE·ALTER·DROP 같은 DDL은 암시적으로 커밋하므로 섞지 마세요.",
+      "note": "새 변경 세션에서만 시작하세요. 진행 중인 트랜잭션에서 다시 실행하면 이전 변경이 커밋됩니다. 대상 테이블이 InnoDB 등 트랜잭션 지원 엔진인지 확인하고 DDL은 분리하세요.",
       "tags": "mariadb mysql begin transaction 트랜잭션",
-      "risk": "read",
+      "risk": "change",
       "permission": "user",
       "shell": "sql",
       "domain": "db",
@@ -2732,7 +2732,7 @@ window.PocketData = {
       "label": "MariaDB",
       "client": "mysql · mariadb 클라이언트",
       "prompt": "MariaDB>",
-      "flow": "mysql 접속 → START TRANSACTION; 먼저 실행 (기본값 autocommit=1이라 바로 확정됨) → SQL 붙여넣기 → 영향 행 수 확인 → COMMIT; 또는 ROLLBACK;"
+      "flow": "새 변경 세션에서 트랜잭션 지원 테이블인지 확인 → START TRANSACTION; 한 번만 실행 → SQL 붙여넣기 → 영향 행 수 확인 → COMMIT; 또는 ROLLBACK;. 진행 중에 다시 시작하면 앞선 변경이 커밋됩니다."
     },
     "oracle": {
       "label": "Oracle",

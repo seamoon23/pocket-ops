@@ -1,5 +1,5 @@
 {
-  "browser": "156.0.8078.4",
+  "browser": "158.0.8127.36",
   "capabilities": {
     "secureContext": false,
     "webCrypto": false,
@@ -21,8 +21,8 @@
   "storage_clipboard": "Main persistence and clipboard payload checks use explicitly labeled doubles. File smoke storage, when available, uses real origin and reload, not OS clipboard or browser restart.",
   "external_http_requests": [],
   "pageerrors": [],
-  "total": 136,
-  "passed": 136,
+  "total": 140,
+  "passed": 140,
   "failed": 0,
   "results": [
     {
@@ -555,6 +555,22 @@
     },
     {
       "name": "Missing Crypto does not prevent settings and backup access",
+      "pass": true
+    },
+    {
+      "name": "Local file cubrid: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download",
+      "pass": true
+    },
+    {
+      "name": "Local file mariadb: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download",
+      "pass": true
+    },
+    {
+      "name": "Local file oracle: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download",
+      "pass": true
+    },
+    {
+      "name": "Local file postgresql: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download",
       "pass": true
     },
     {

@@ -1,7 +1,7 @@
 {
   "environment": "v22.17.0",
-  "total": 115,
-  "passed": 115,
+  "total": 117,
+  "passed": 117,
   "failed": 0,
   "results": [
     {
@@ -442,6 +442,14 @@
     },
     {
       "name": "Sample table left in a preset is reported without blocking",
+      "pass": true
+    },
+    {
+      "name": "Subquery locks and client substitution require reviewing SELECT before delivery",
+      "pass": true
+    },
+    {
+      "name": "Clipboard and UTF-8 SQL cannot silently truncate or replace hidden characters",
       "pass": true
     },
     {

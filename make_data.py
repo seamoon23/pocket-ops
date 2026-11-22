@@ -10,7 +10,7 @@ dbs={
     'cubrid':dict(label='CUBRID',client='CSQL',prompt='csql>',
                   flow='SSH 셸에서 csql -C --no-auto-commit 으로 접속 → csql> 에서 ;autocommit 이 OFF인지 확인 → SQL 붙여넣기 → 영향 행 수 확인 → ;commit 또는 ;rollback'),
     'mariadb':dict(label='MariaDB',client='mysql · mariadb 클라이언트',prompt='MariaDB>',
-                   flow='mysql 접속 → START TRANSACTION; 먼저 실행 (기본값 autocommit=1이라 바로 확정됨) → SQL 붙여넣기 → 영향 행 수 확인 → COMMIT; 또는 ROLLBACK;'),
+                   flow='새 변경 세션에서 트랜잭션 지원 테이블인지 확인 → START TRANSACTION; 한 번만 실행 → SQL 붙여넣기 → 영향 행 수 확인 → COMMIT; 또는 ROLLBACK;. 진행 중에 다시 시작하면 앞선 변경이 커밋됩니다.'),
     'oracle':dict(label='Oracle',client='SQL*Plus',prompt='SQL>',
                   flow='sqlplus 접속 → SHOW AUTOCOMMIT 이 OFF인지 확인 → SQL 붙여넣기 → 처리 행 수 확인 → COMMIT; 또는 ROLLBACK; · EXIT는 기본적으로 커밋하므로 EXIT ROLLBACK 사용'),
     'postgresql':dict(label='PostgreSQL',client='psql',prompt='psql =>',
@@ -235,8 +235,8 @@ add('MariaDB 테이블 구조 확인', maria_group, 'DESCRIBE pocket_ops_sample;
     '예시 이름을 확인할 테이블명으로 바꿔 입력하세요. 키 컬럼과 NULL 허용 여부를 확인합니다.',
     'mariadb mysql 테이블 컬럼 구조 describe', shell='sql', prerequisite=maria_session, db='mariadb', step='check')
 add('MariaDB 트랜잭션 시작', maria_group, 'START TRANSACTION;',
-    'COMMIT 또는 ROLLBACK 전까지 변경을 확정하지 않습니다. CREATE·ALTER·DROP 같은 DDL은 암시적으로 커밋하므로 섞지 마세요.',
-    'mariadb mysql begin transaction 트랜잭션', shell='sql', prerequisite=maria_session, db='mariadb', step='begin')
+    '새 변경 세션에서만 시작하세요. 진행 중인 트랜잭션에서 다시 실행하면 이전 변경이 커밋됩니다. 대상 테이블이 InnoDB 등 트랜잭션 지원 엔진인지 확인하고 DDL은 분리하세요.',
+    'mariadb mysql begin transaction 트랜잭션', risk='change', shell='sql', prerequisite=maria_session, db='mariadb', step='begin')
 add('MariaDB 변경 확정', maria_group, 'COMMIT;',
     '영향 행 수와 SELECT 재확인 결과를 본 뒤 실행하세요. 확정 뒤에는 ROLLBACK으로 되돌릴 수 없습니다.',
     'mariadb mysql commit 확정', risk='change', shell='sql', prerequisite=maria_session, db='mariadb', step='finish')
@@ -545,5 +545,5 @@ for key, g in guides.items():
     if ex and ('fill' in ex or 'click' in ex):
         assert isinstance(ex.get('click'), list) and all(isinstance(v, (str, bool)) for v in ex.get('fill', {}).values()), key
 # Write LF bytes on every OS so a regenerated catalog matches the committed source exactly.
-Path(__file__).resolve().parent.joinpath('src/data.js').write_bytes(('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.6.0',commands=commands,params=params,tools=tool_data,dbs=dbs,guides={k:guides[k] for k in GUIDE_ROUTES}),ensure_ascii=False,indent=2)+';\n').encode('utf-8'))
+Path(__file__).resolve().parent.joinpath('src/data.js').write_bytes(('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.6.1',commands=commands,params=params,tools=tool_data,dbs=dbs,guides={k:guides[k] for k in GUIDE_ROUTES}),ensure_ascii=False,indent=2)+';\n').encode('utf-8'))
 print('Commands:',len(commands),'Tools:',len(tools))

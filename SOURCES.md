@@ -97,3 +97,7 @@ GNU tar는 콜론이 포함된 아카이브 이름을 원격 경로로 해석할
 - 삼성 공식 [다운로드 파일과 내 파일 위치](https://www.samsung.com/uk/support/mobile-devices/where-can-i-find-downloaded-files-on-my-samsung-galaxy-smartphone/): 앱스에서 내 파일 검색, 다운로드 분류, 앱별 저장 위치 차이를 확인했습니다(2026-10-24). 이 문서는 임의 로컬 HTML의 JavaScript·클립보드 지원을 보증하지 않습니다.
 
 CSQL 대화형 입력이 따옴표나 주석 안의 줄 시작 세션 명령도 인식하는 경우를 고려하여, SQL 정렬기는 이 형태를 감지하면 원문을 유지하고 출력을 중단합니다. [CUBRID CSQL 매뉴얼 원문 · Session Commands](https://github.com/CUBRID/cubrid-manual/blob/develop/en/csql.rst#session-commands)
+
+MariaDB 작업 순서는 이미 열린 트랜잭션에서 다시 시작하면 기존 변경이 확정되는 동작을 반영합니다. [MariaDB START TRANSACTION](https://mariadb.com/docs/server/reference/sql-statements/transactions/start-transaction)
+
+PostgreSQL 하위 SELECT의 잠금 절도 대상 행을 잠글 수 있어 최종 확인에 표시합니다. [PostgreSQL SELECT](https://www.postgresql.org/docs/current/sql-select.html#SQL-FOR-UPDATE-SHARE)

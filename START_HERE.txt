@@ -1,6 +1,6 @@
 Pocket Ops · 오프라인 작업 공구함
 
-v0.6.0 · PC/갤럭시 공통 · 실행에 필요한 파일은 pocket-ops.html 하나입니다.
+v0.6.1 · PC/갤럭시 공통 · 실행에 필요한 파일은 pocket-ops.html 하나입니다.
 별도 폴더·설치가 필요하지 않습니다. ZIP의 나머지 세 파일은 안내문입니다.
 
 1. GitHub 저장소 → Releases → 최신 버전 → Assets → pocket-ops.html 받기.
@@ -25,9 +25,9 @@ DB 작업 순서 (CUBRID · MariaDB · Oracle · PostgreSQL)
 첫 화면 → DB · SQL 작업대 → DB 선택 (또는 메뉴 → 서버 운영 → SQL 작업대).
 1 접속: Linux 셸에 접속 명령을 붙여넣고 비밀번호는 클라이언트 프롬프트에 입력합니다.
 2 확인: csql> / MariaDB> / SQL> / psql => 에서 접속 대상과 자동 커밋 상태를 확인합니다.
-3 시작: MariaDB는 START TRANSACTION;, PostgreSQL은 BEGIN;을 먼저 실행합니다.
+3 시작: MariaDB는 새 세션과 트랜잭션 지원 테이블에서 START TRANSACTION;을 한 번만 실행합니다. 다시 시작하면 기존 변경이 확정됩니다. PostgreSQL은 BEGIN;을 먼저 실행합니다.
 4 쿼리: SELECT/INSERT/UPDATE/DELETE 프리셋 → 테이블명·값·WHERE 수정 → 복사.
-  변경 SQL은 확인 창의 최종 SQL을 읽고 복사합니다. WHERE가 없으면 위험 확인 체크가 필요합니다.
+  변경 SQL과 행 잠금·치환 변수 경고가 있는 SELECT는 확인 창에서 최종 SQL을 읽고 복사합니다. WHERE가 없으면 위험 확인 체크가 필요합니다.
 5 확정: 영향 행 수가 예상과 다르면 확정하지 말고 ROLLBACK 하세요.
   Oracle SQL*Plus의 EXIT는 기본적으로 커밋합니다. EXIT ROLLBACK을 사용하세요.
 

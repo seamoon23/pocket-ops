@@ -23,6 +23,53 @@ def equal(a,b):
 def contains(text, part):
     assert part in text, f'{part!r} not in {text[:150]!r}'
 
+def verify_db_clipboard(page, db, prompt):
+    """Compare the real browser clipboard and ZIP-independent SQL export to hand-written expectations."""
+    page.locator('#sidebar [data-go="commands"]').click()
+    page.locator('[data-command-domain="db"]').click()
+    page.locator(f'[data-command-db="{db}"]').click()
+    page.locator('#command-db-filter [data-open-sql-db]').click()
+    expect(page.locator(f'[data-sql-db="{db}"]')).to_have_attribute('aria-pressed','true')
+    contains(page.locator('#sql-db-where').inner_text(),prompt)
+    table='qa_'+db
+    literal="'한글  😀  O''Brien, WHERE'"
+    cases=[
+        ('cmd-132',f'SELECT item_id FROM {table} WHERE id = 17;',
+         f'SELECT item_id\nFROM {table}\nWHERE id = 17;'),
+        ('cmd-133',f'INSERT INTO {table} (id, note) VALUES (17, {literal});',
+         f'INSERT INTO {table} (id, note)\nVALUES (17, {literal});'),
+        ('cmd-134',f'UPDATE {table} SET note = {literal} WHERE id = 17;',
+         f'UPDATE {table}\nSET note = {literal}\nWHERE id = 17;'),
+        ('cmd-135',f'DELETE FROM {table} WHERE id = 17 AND note = {literal};',
+         f'DELETE FROM {table}\nWHERE id = 17\n  AND note = {literal};'),
+    ]
+    for preset, edited, expected in cases:
+        page.locator(f'#sql-steps [data-open-sql-preset="{preset}"]').click()
+        source=page.locator('#sqlformat-input')
+        assert 'pocket_ops_sample' in source.input_value()
+        source.fill(edited)
+        page.evaluate("navigator.clipboard.writeText('before-review')")
+        page.locator('[data-copy-id="sqlformat-output"]').click()
+        equal(source.input_value(),edited)
+        equal(page.locator('#sqlformat-output').input_value(),expected)
+        confirm=page.locator('#sql-review-confirm')
+        if preset!='cmd-132':
+            equal(page.locator('#sql-review-preview').input_value(),expected)
+            contains(page.locator('#modal').inner_text(),prompt)
+            equal(page.evaluate('navigator.clipboard.readText()'),'before-review')
+            confirm.click()
+        for _ in range(40):
+            copied=page.evaluate('navigator.clipboard.readText()').replace('\r\n','\n')
+            if copied!='before-review': break
+            page.wait_for_timeout(50)
+        equal(copied,expected)
+        with page.expect_download() as saved:
+            page.locator('[data-download-id="sqlformat-output"]').click()
+            if preset!='cmd-132':
+                equal(page.locator('#sql-review-preview').input_value(),expected)
+                confirm.click()
+        equal(Path(saved.value.path()).read_bytes(),expected.encode('utf-8'))
+
 with sync_playwright() as p:
     browser=p.chromium.launch(executable_path=os.environ.get('CHROMIUM_PATH','/usr/bin/chromium'),headless=True,args=['--disable-dev-shm-usage'])
     context=browser.new_context(viewport={'width':1440,'height':1050},device_scale_factor=1,offline=True,accept_downloads=True)
@@ -841,6 +888,11 @@ with sync_playwright() as p:
         file_smoke={'status':'blocked_by_policy','reason':str(e).splitlines()[0]}
     else:
         file_smoke={'status':'opened','capabilities':local.evaluate('({secureContext:isSecureContext,webCrypto:!!crypto.subtle,worker:!!window.Worker,protocol:location.protocol})')}
+        context.grant_permissions(['clipboard-read','clipboard-write'])
+        local.on('dialog',lambda dialog:dialog.accept())
+        for db,prompt in [('cubrid','csql>'),('mariadb','MariaDB>'),('oracle','SQL>'),('postgresql','psql')]:
+            check(f'Local file {db}: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download',
+                  lambda db=db,prompt=prompt:verify_db_clipboard(local,db,prompt))
         def local_file_flow():
             local.locator('#sidebar [data-go="hash"]').click()
             local.locator('#hash-input').fill('abc');local.locator('#hash-text').click()

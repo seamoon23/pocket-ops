@@ -149,6 +149,8 @@ function matches(text,query){return query.trim().toLowerCase().split(/\s+/).filt
 function renderCommands(){if(!$('#command-list'))return;const q=$('#command-query').value,group=$('#command-group').value,perm=$('#command-permission').value,fav=$('#command-favorites').checked,domain=$('[data-command-domain].active')?.dataset.commandDomain||'',db=domain==='db'?commandDb:'';const results=allCommands().filter(c=>(!domain||commandDomain(c)===domain)&&(!db||!c.db||c.db===db)&&(!group||c.group===group)&&(!perm||c.permission===perm)&&(!fav||state.cmdFavs.includes(c.id))&&matches([c.title,c.group,c.command,c.note,c.tags,c.prerequisite,c.where||''].join(' '),q)).sort((a,b)=>Number(state.cmdFavs.includes(b.id))-Number(state.cmdFavs.includes(a.id)));$('#command-count').textContent=results.length+' / '+allCommands().length;$('#command-list').innerHTML=results.length?results.map(commandCard).join(''):'<div class="empty">'+icon('search')+'<p>일치하는 명령어가 없어요. 다른 단어나 분류를 사용해 보세요.</p></div>';}
 function setCommandDb(db){
  commandDb=DBS[db]?db:'';
+ const workbench=$('#command-db-filter [data-open-sql-db]');
+ if(workbench)workbench.dataset.openSqlDb=commandDb;
  $$('[data-command-db]').forEach(b=>{const active=b.dataset.commandDb===commandDb;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
  renderCommands();
 }
@@ -160,7 +162,7 @@ function setCommandDomain(domain){
  guide.classList.toggle('show',Boolean(domain));guide.textContent=({windows:'Windows 11: 시작 → Windows PowerShell → 열기. 카드에 “입력: Windows PowerShell”로 표시된 명령만 이곳에 붙여넣으세요. 권한 확인이 표시되면 승인된 계정 권한을 확인하세요.',linux:'Ubuntu 22 / RHEL 7: 승인된 SSH 도구 → 대상 서버 접속 → 셸($)에 붙여넣기. 패키지·서비스 이름과 설치 조건은 명령마다 확인하세요.',db:'DB 고르기 → 1 접속(Linux 셸) → 2 대상·자동 커밋 확인 → 3 쿼리 → 4 확정 순서입니다. 카드의 “입력:”이 Linux 셸인지 csql> · MariaDB> · SQL> · psql => 프롬프트인지 확인하세요.'})[domain]||'환경 선택 → 분류 / 검색 → 확인 · 복사. 카드의 “입력:”이 붙여넣을 곳입니다. 실행 조건과 대체 명령을 함께 확인하세요. 조회 결과가 없다고 미설치로 판단하지 마세요.';
  const filter=$('#command-db-filter');
  filter.hidden=domain!=='db';
- filter.innerHTML=domain==='db'?dbChips('command',commandDb,true)+'<button class="btn small primary" data-go="sqlformat">'+icon('database')+'SQL 작업대에서 순서대로 보기</button>':'';
+ filter.innerHTML=domain==='db'?dbChips('command',commandDb,true)+'<button class="btn small primary" data-open-sql-db="'+commandDb+'">'+icon('database')+'SQL 작업대에서 순서대로 보기</button>':'';
  renderCommands();
 }
 // Same-name values follow the user into an alternative; FILE/PATH style fields are treated as one location.

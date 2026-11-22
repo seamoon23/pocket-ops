@@ -145,6 +145,8 @@ const SQL_DIALECTS = ['cubrid', 'mariadb', 'oracle', 'postgresql'];
 function prepareSql(source, dialect = 'cubrid') {
  limit(source, 100_000);
  if (!SQL_DIALECTS.includes(dialect)) fail('지원하지 않는 DB 종류입니다.');
+ // Clipboard and UTF-8 export must be able to represent every character shown for review.
+ if (/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\uD800-\uDFFF]/u.test(source)) fail('SQL에 제어 문자 또는 깨진 유니코드 문자가 있습니다. 해당 문자를 고친 뒤 다시 시도하세요.');
  // Interactive CSQL can process a line as a session command even inside an SQL literal or comment.
  if (/^[ \t]*;[ \t]*[a-z.!]/im.test(source)) {
   fail('줄 첫머리에 CSQL 세션 명령으로 읽힐 수 있는 내용이 있습니다. 문자열·주석 안에서도 인식될 수 있으므로 원문을 확인하세요.');
@@ -184,7 +186,7 @@ function prepareSql(source, dialect = 'cubrid') {
    if (end < 0 || source.slice(tokens.lastIndex, end).includes('/*')) fail('닫히지 않았거나 중첩된 블록 주석이 있습니다.');
    tokens.lastIndex = end + 2;
    token = source.slice(start, tokens.lastIndex);
-  } else if (['\'', '"', '`', '['].includes(token)) {
+  } else if (['\'', '"', '`'].includes(token) || token === '[' && dialect !== 'postgresql') {
    if (!gap && /^(n?q)$/i.test(previous) && token === '\'') fail('Oracle 대체 인용문은 지원하지 않습니다.');
    const close = token === '[' ? ']' : token;
    let cursor = tokens.lastIndex;
@@ -198,7 +200,7 @@ function prepareSql(source, dialect = 'cubrid') {
    tokens.lastIndex = cursor;
    token = source.slice(start, cursor);
    if (token.includes('\\')) fail('역슬래시의 해석은 DB 설정에 따라 달라 정렬을 중단했습니다.');
-  } else if (/^[\\$#{}\x00-\x08\x0B\x0C\x0E-\x1F]$/.test(token)) {
+  } else if (/^[\\$#{}]$/.test(token)) {
    fail('지원 범위 밖의 특수 구문이 있습니다. 기본 SQL 한 문장을 입력하세요.');
   } else if (token === ':' && dialect === 'postgresql' && source[start - 1] !== ':' && /^[A-Za-z_'"]/.test(source[start + 1] || '')) {
    flag('warn', 'psql-variable', ':이름 형식은 psql이 변수 값으로 바꿉니다. 문자 그대로의 값이면 작은따옴표 문자열로 쓰세요.');
@@ -213,9 +215,9 @@ function prepareSql(source, dialect = 'cubrid') {
    if (depth === 0) {
     if (upper === 'WHERE') hasWhere = true;
     if (verb === 'SELECT' && upper === 'INTO') flag('danger', 'select-into', 'SELECT … INTO는 결과를 파일·새 테이블·변수에 기록할 수 있습니다. 조회만 하는 문장인지 확인하세요.');
-    if (verb === 'SELECT' && (upper === 'LOCK' || /^(UPDATE|SHARE)$/.test(upper) && /^(FOR|KEY)$/.test(word))) {
-     flag('warn', 'select-lock', '행을 잠그는 SELECT입니다(FOR UPDATE 등). 트랜잭션을 끝낼 때까지 다른 작업이 기다릴 수 있습니다.');
-    }
+   }
+   if (verb === 'SELECT' && (upper === 'LOCK' || /^(UPDATE|SHARE)$/.test(upper) && /^(FOR|KEY)$/.test(word))) {
+    flag('warn', 'select-lock', '행을 잠그는 SELECT입니다(FOR UPDATE 등). 트랜잭션을 끝낼 때까지 다른 작업이 기다릴 수 있습니다.');
    }
    if (upper === 'POCKET_OPS_SAMPLE') flag('warn', 'sample', '예시 테이블 pocket_ops_sample이 그대로 있습니다. 실제 테이블명과 키 값으로 바꿨는지 확인하세요.');
    word = upper;
@@ -245,7 +247,7 @@ function prepareSql(source, dialect = 'cubrid') {
  }
  checks.sort((a, b) => (a.level === 'danger' ? 0 : 1) - (b.level === 'danger' ? 0 : 1));
  // Changes and side-effecting SELECTs are delivered only after the exact final text is reviewed.
- const review = verb !== 'SELECT' || checks.some(check => check.code.startsWith('select-'));
+ const review = verb !== 'SELECT' || checks.some(check => check.code !== 'sample');
  return {sql: output + gap, verb, dialect, checks, review};
 }
 
