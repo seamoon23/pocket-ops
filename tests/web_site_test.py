@@ -53,7 +53,9 @@ def verify(browser, origin, width, height, mobile):
             urlsplit(req.url).scheme in ('http','https') and not req.url.startswith(origin + '/') else None)
     def fits():
         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'), page.url
-    page.goto(origin)
+    response = page.goto(origin)
+    assert 'no-transform' in response.headers['cache-control']
+    expect(page.locator('script[src]')).to_have_count(0)
     expect(page.locator('#tools .row')).to_have_count(len(catalog['tools']))
     fits()
     page.screenshot(path=str(ROOT / '.test-artifacts' / f'web-home-{width}.png'))
