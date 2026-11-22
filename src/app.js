@@ -82,6 +82,7 @@ function pageHead(id){const t=tool(id);return '<div class="page-title"><div><div
 function footer(){return '<footer class="footer"><span>'+icon('shield')+'이 페이지는 입력을 외부로 전송하지 않습니다.</span><span>POCKET OPS '+(window.PocketBuild?.version||D.version)+' · OFFLINE FIELD KIT</span></footer>';}
 function nav(){
  let html='<button class="nav-btn active" data-go="home">'+icon('home')+'내 작업실</button><button class="nav-btn" data-go="favorites">'+icon('star')+'즐겨찾기</button>';
+ if($('#field-reference'))html+='<button class="nav-btn" data-open-field-guides>'+icon('book')+'실무 가이드</button>';
  for(const group of ['서버 운영','변환 도구','데이터 작업']){html+='<div class="nav-label">'+group+'</div>';for(const t of D.tools.filter(t=>t.group===group))html+='<button class="nav-btn" data-go="'+t.id+'">'+icon(t.icon)+t.title+'</button>';}
  $('#nav').innerHTML=html;
 }
@@ -93,6 +94,7 @@ function home(){
  const count=domain=>D.commands.filter(c=>commandDomain(c)===domain).length;
  return '<div class="page-title"><div><div class="eyebrow">DASHBOARD · OFFLINE FIELD KIT</div><h1>내 작업실</h1><p>자주 쓰는 명령과 도구를 한 화면에 모았습니다. 입력과 결과는 이 탭 메모리에만 있습니다.</p></div><div class="actions">'+guideButton('home')+'<span class="offline-pill">'+icon('shield')+'로컬 처리</span></div></div>'+
  '<button class="dash-search" data-open-palette>'+icon('search')+'<span>명령어 · 도구 검색<small>포트, 로그, 한글, autocommit, 커밋…</small></span><kbd>Ctrl K</kbd></button>'+
+ ($('#field-reference')?'<details class="field-library panel" id="field-guides">'+$('#field-reference').innerHTML+'</details>':'')+
  '<div class="env-grid">'+
   '<section class="env-card"><h2>'+icon('terminal')+'Windows PowerShell</h2><p>작업 PC의 로그·포트·해시·서비스 확인 · '+count('windows')+'개</p><button class="btn" data-open-domain="windows">PowerShell 명령 보기</button></section>'+
   '<section class="env-card"><h2>'+icon('terminal')+'Linux 셸 · SSH</h2><p>Ubuntu 22.04 · RHEL 7 · WAS · 로그 · '+count('linux')+'개</p><button class="btn" data-open-domain="linux">Linux 명령 보기</button></section>'+
@@ -195,7 +197,7 @@ function guideOverwrites(id){
  return Object.entries(ex.fill).map(([name,value])=>{const el=root.querySelector('#'+name);return el&&(el.tagName==='TEXTAREA'||el.type==='text')&&el.value.trim()&&el.value!==el.defaultValue&&el.value!==String(value)?el:null;})
   .filter(Boolean).map(el=>((el.closest('label')||el.closest('.panel'))?.querySelector('span,h2')?.textContent)||el.id);
 }
-function openGuide(id){
+function openGuide(id,dialect){
  const g=D.guides&&D.guides[id];if(!g)return;
  const ex=g.example,runnable=Boolean(ex&&(ex.fill||ex.click)),overwrite=runnable?guideOverwrites(id):[];
  modal('사용 예시 · '+pageName(id),'<div class="guide" data-guide-id="'+id+'">'+
@@ -209,14 +211,15 @@ function openGuide(id){
   '<label class="field guide-switch"><span>다른 화면의 사용 예시</span><select id="guide-switch">'+GUIDE_ORDER.map(k=>'<option value="'+k+'"'+(k===id?' selected':'')+'>'+E(pageName(k))+'</option>').join('')+'</select></label></div>',d=>{
   d.querySelector('#guide-switch').onchange=e=>{openGuide(e.target.value);$('#guide-switch')?.focus();};
   const open=d.querySelector('#guide-open');if(open)open.onclick=()=>{d.close();go(id);};
-  const tryButton=d.querySelector('#guide-try');if(tryButton)tryButton.onclick=()=>runGuideExample(id);
+  const tryButton=d.querySelector('#guide-try');if(tryButton)tryButton.onclick=()=>runGuideExample(id,dialect);
  });
 }
 // Puts the guide's example into that screen's own fields and presses its own buttons, so the result
 // comes from the same code path as manual use. Values come from the catalog, never from imports.
-function runGuideExample(id){
+function runGuideExample(id,dialect){
  const ex=D.guides[id]?.example;if(!ex)return;
  if($('#modal').open)$('#modal').close();
+ if(dialect)setSqlDialect(dialect);
  if(current!==id)go(id);
  const root=views.get(id);if(!root)return;
  for(const [name,value] of Object.entries(ex.fill||{})){
@@ -546,6 +549,20 @@ function selectPalette(index){const item=paletteItems[index];if(!item)return;$('
 function outputText(id){const el=document.getElementById(id);return el.value!==undefined?editorValue(el):el.textContent;}
 document.addEventListener('click',e=>{
  const b=e.target.closest('button,[data-go],a');if(!b)return;
+ if(b.hasAttribute('data-open-field-guides')){
+  if(current!=='home')go('home');
+  setMenu(false);
+  const library=$('#field-guides');library.open=true;library.querySelector('summary').focus();library.scrollIntoView({block:'start'});return;
+ }
+ if(b.hasAttribute('data-field-command')&&b.closest('#field-guides')){
+  e.preventDefault();openCommand(b.dataset.fieldCommand);return;
+ }
+ if(b.hasAttribute('data-field-example')){
+  const id=b.dataset.fieldExample;
+  const dialect=b.dataset.fieldDb;
+  if(guideOverwrites(id).length)openGuide(id,dialect);else runGuideExample(id,dialect);
+  return;
+ }
  if(b.hasAttribute('data-tool-star')){e.stopPropagation();const id=b.dataset.toolStar;state.toolFavs=state.toolFavs.includes(id)?state.toolFavs.filter(x=>x!==id):state.toolFavs.concat(id);save();syncStars();if(current==='favorites')go('favorites');if(current==='home'){$('#home-cards').innerHTML=homeCards();$('#home-fav-tools').innerHTML=dashFavTools();}$('[data-tool-star="'+id+'"]')?.focus();return;}
  if(b.hasAttribute('data-cmd-star')){const id=b.dataset.cmdStar;state.cmdFavs=state.cmdFavs.includes(id)?state.cmdFavs.filter(x=>x!==id):state.cmdFavs.concat(id);save();syncStars();if(current==='favorites')go('favorites');if(current==='commands')renderCommands();$('[data-cmd-star="'+id+'"]')?.focus();return;}
  if (b.hasAttribute('data-open-sql-preset')) {

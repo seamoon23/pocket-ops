@@ -14,7 +14,43 @@ SRC = ROOT / 'src'
 PAYLOAD_MARKER = '__RELEASE_PAYLOAD__'
 
 
-def render_reference(catalog):
+def offline_guides(articles, catalog, commands):
+    topics = {}
+    for article in articles:
+        e = lambda key: escape(article[key])
+        body = [f'<p>{e("intro")}</p>']
+        for heading, paragraph in article['sections']:
+            body.append(f'<h4>{escape(heading)}</h4><p>{escape(paragraph)}</p>')
+        if article['tool'] == 'commands':
+            body.append(f'<h4>결과 읽기 · 가상 예시</h4><pre>{e("sample")}</pre><p>{e("interpretation")}</p>')
+            for key in article['commands']:
+                command = commands[key]
+                if command['risk'] != 'read':
+                    raise ValueError(f'실무 가이드의 조회 명령을 확인하세요: {key}')
+                title, target = escape(command['title']), escape(command['where'])
+                body.append(f'<p>{target}<br><a class="btn field-command" href="#reference-{escape(key)}" '
+                            f'data-field-command="{escape(key)}">{title} 열기</a></p>')
+            body.append(f'<p class="small muted">공식 문서 주소 · {e("source")}</p>')
+        else:
+            key = article['tool']
+            example = catalog['guides'][key]['example']
+            dialect = article.get('db')
+            db_attr = ''
+            if dialect:
+                if key != 'sqlformat' or dialect not in catalog['dbs']:
+                    raise ValueError(f'가이드의 DB를 확인하세요: {dialect}')
+                db_attr = f' data-field-db="{escape(dialect)}"'
+            body.append(f'<h4>연습용 입력</h4><pre>{escape(example["input"])}</pre>'
+                        f'<h4>예상 결과</h4><pre>{escape(example["output"])}</pre>'
+                        f'<button class="btn" data-field-example="{escape(key)}"{db_attr}>도구에서 예제로 열기</button>')
+        item = (f'<details data-field-article="{e("slug")}"><summary>{e("title")}</summary>'
+                + ''.join(body) + '</details>')
+        topics.setdefault(article['topic'], []).append(item)
+    return ''.join('<section><h3>' + escape(topic) + '</h3>' + ''.join(items) + '</section>'
+                   for topic, items in topics.items())
+
+
+def render_reference(catalog, articles=()):
     """Static, escaped catalog for HTML viewers that disable scripting."""
     commands = catalog['commands']
     by_id = {item['id']: item for item in commands}
@@ -36,6 +72,9 @@ html.app-ready #script-fallback{display:none!important}
 <p>Windows · PowerShell / Linux · Bash / DB(CUBRID · MariaDB · Oracle · PostgreSQL)별 예제입니다. 각 명령의 <strong>입력</strong> 줄이 붙여넣을 곳(Linux 셸, PowerShell, csql&gt;, MariaDB&gt;, SQL&gt;, psql =&gt;)입니다. 명령어를 실행하지 않습니다. 검색·즐겨찾기·변환·자동 복사·값 검증·배포하기는 사용할 수 없습니다. 텍스트 길게 누르기·선택 복사는 뷰어 지원에 따라 가능합니다.</p>
 <p><strong>{{PORT}}, {{PATH}} 같은 표시는 입력 자리입니다. 그대로 실행하거나 단순 치환해 붙여넣지 마세요.</strong> 셸 인용·권한·대상 확인이 필요합니다. 값을 넣어 복사하려면 JavaScript를 지원하는 허용된 브라우저에서 이 파일을 여세요. 부하·변경 명령은 영향과 복구 절차를 먼저 확인하세요.</p>
 <nav aria-label="읽기 전용 분류"><a href="#reference-windows">Windows</a><a href="#reference-linux">Linux</a><a href="#reference-db">DB</a></nav></header>''']
+    if articles:
+        parts.append(f'<details class="field-library" id="field-reference"><summary>실무 가이드 {len(articles)}편</summary>'
+                     + offline_guides(articles, catalog, by_id) + '</details>')
     for domain, label in [('windows', 'Windows · PowerShell'), ('linux', 'Linux · Bash'), ('db', 'DB · SQL / 관리 도구')]:
         parts.append('<section id="reference-' + domain + '"><h2>' + label + '</h2>')
         for item in commands:
@@ -84,7 +123,8 @@ def build():
     digest = base64.b64encode(hashlib.sha256(('\n' + script + '\n').encode()).digest()).decode('ascii')
     template = (SRC / 'shell.html').read_text(encoding='utf-8')
     assert template.count('__READ_ONLY_REFERENCE__') == 1
-    template = template.replace('__READ_ONLY_REFERENCE__', render_reference(catalog))
+    articles = json.loads((ROOT / 'download-site/guides.json').read_text(encoding='utf-8'))
+    template = template.replace('__READ_ONLY_REFERENCE__', render_reference(catalog, articles))
     template = template.replace('<script>', '<template id="release-data">' + PAYLOAD_MARKER + '</template>\n<script>')
     template = template.replace('__STYLES__', styles).replace('__SCRIPT__', script).replace('__SCRIPT_HASH__', digest)
     assert template.count(PAYLOAD_MARKER) == 1

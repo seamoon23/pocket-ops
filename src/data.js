@@ -1,6 +1,6 @@
 /* Curated offline reference data. Never auto-executed. */
 window.PocketData = {
-  "version": "0.6.1",
+  "version": "0.7.0",
   "commands": [
     {
       "id": "cmd-001",

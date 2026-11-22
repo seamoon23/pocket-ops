@@ -218,3 +218,12 @@ ol.guide-steps{list-style:none;padding:0;margin:14px 0}
 
 /* The toast is a manual popover (top layer); undo the UA popover box so it keeps its bottom-centre position. */
 .toast[popover]{top:auto;right:auto;margin:0;border:0;overflow:visible;height:auto;width:max-content}
+.field-library{margin:14px 0;max-width:100%;overflow-wrap:anywhere}
+.field-library summary{cursor:pointer;padding:10px 4px;min-height:44px;font-weight:650}
+.field-library>summary{font-size:1.1rem}
+.field-library details{border-top:1px solid var(--line);padding:0 6px}
+.field-library details[open]{padding-bottom:12px}
+.field-library h4{margin:15px 0 4px}.field-library p{margin:4px 0 10px}
+.field-library pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--bg);padding:12px;border:1px solid var(--line);border-radius:8px}
+.field-library a.btn{display:inline-flex;align-items:center;min-height:44px;white-space:normal}
+#field-reference [data-field-example]{display:none}

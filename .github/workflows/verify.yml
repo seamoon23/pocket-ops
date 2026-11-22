@@ -48,6 +48,8 @@ jobs:
         run: python -m playwright install chromium
       - name: Web tools and guide examples on desktop and mobile
         run: python tests/web_site_test.py
+      - name: Offline field guides from standalone and ZIP on desktop and mobile
+        run: python tests/offline_field_guides.py
       - name: Offline browser and file-open checks
         run: |
           $env:CHROMIUM_PATH = python -c "from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()"
