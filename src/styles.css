@@ -192,3 +192,29 @@ body.menu-open{overflow:hidden}
  #command-domain-guide{display:none}
  #command-domain-guide.show{display:block}
 }
+
+/* v0.6.0 usage guide: a "사용 예시" button in every title row and one dialog for all screens. */
+.guide-link{white-space:nowrap;gap:6px}
+.guide-link svg{width:16px;height:16px}
+.guide-switch{margin:18px 0 0;padding-top:14px;border-top:1px solid var(--line)}
+.guide-when{font-size:13px;line-height:1.75;margin:2px 0 4px}
+.guide-when b{color:var(--accent);margin-right:8px}
+ol.guide-steps{list-style:none;padding:0;margin:14px 0}
+.guide-steps .help-step{font-size:13px;line-height:1.6}
+.guide-steps .help-step p{font-size:12px;line-height:1.7}
+.guide-example{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin:16px 0}
+.guide-example .field-label{margin-bottom:6px}
+.guide-example pre{margin:0;background:var(--code);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto}
+.guide-actions{margin-top:16px;align-items:center}
+@media(max-width:900px){.guide-key{display:none}}
+@media(max-width:520px){
+ .guide-example{grid-template-columns:minmax(0,1fr)}
+ .guide-example pre{font-size:13px}
+ .guide-steps .help-step,.guide-when{font-size:14px}
+ .guide-steps .help-step p{font-size:13px}
+ .page-title>.actions .guide-link{min-height:40px;padding:6px 10px;font-size:13px}
+ .guide-actions .btn{flex:1}
+}
+
+/* The toast is a manual popover (top layer); undo the UA popover box so it keeps its bottom-centre position. */
+.toast[popover]{top:auto;right:auto;margin:0;border:0;overflow:visible;height:auto;width:max-content}

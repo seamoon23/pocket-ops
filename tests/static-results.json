@@ -1,6 +1,6 @@
 {
-  "total": 21,
-  "passed": 21,
+  "total": 22,
+  "passed": 22,
   "failed": 0,
   "results": {
     "Only four curated CRUD presets have corresponding editor and reference text": true,
@@ -23,6 +23,7 @@
     "No-script reference warns about placeholders and change commands": true,
     "Read-only reference shown until the app starts, not only without JavaScript": true,
     "Every reference entry names its paste target": true,
+    "Every screen has a usage guide whose example targets that screen": true,
     "Release ZIP name follows the catalog version": true
   }
 }

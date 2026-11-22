@@ -538,6 +538,73 @@ with sync_playwright() as p:
         equal(v('#command-preview'),"PGOPTIONS='-c default_transaction_read_only=on' psql -h '127.0.0.1' -U 'reader' -d 'appdb'")
         click('#modal [data-close]');click('[data-sql-db="cubrid"]')
     check('Dashboard gathers favorites, opens each work environment and starts the SQL workbench per DB',dashboard)
+    GUIDES=page.evaluate('PocketData.guides')
+    GUIDE_ORDER=page.evaluate("['home','favorites'].concat(PocketData.tools.map(t=>t.id),'settings')")
+    def wait_value(element_id,want):
+        page.wait_for_function("([id,want])=>{const el=document.getElementById(id);if(!el)return false;const v=el.value!==undefined?el.value:el.textContent;return v===want;}",arg=[element_id,want],timeout=4000)
+    def usage_guides():
+        equal(sorted(GUIDES),sorted(GUIDE_ORDER));equal(len(GUIDE_ORDER),18)
+        for route in GUIDE_ORDER:
+            g=GUIDES[route];go(route)
+            # The link sits in the title row, the first block of every screen, inside the first viewport.
+            button=page.locator('#view > section > .page-title:first-child [data-guide="'+route+'"]')
+            expect(button).to_be_visible()
+            box=button.bounding_box();assert box and box['y']+box['height']<=page.viewport_size['height']/2, route+': 사용 예시 is not at the top'
+            button.click();expect(page.locator('#modal[open]')).to_have_count(1)
+            contains(txt('#modal .dialog-head h2'),'사용 예시')
+            equal(page.locator('#modal .guide-steps li').count(),len(g['steps']));equal(v('#guide-switch'),route)
+            ex=g.get('example')
+            if ex:
+                equal(page.locator('#guide-example-input').text_content(),ex['input'])
+                equal(page.locator('#guide-example-output').text_content(),ex['output'])
+            runnable=bool(ex and ('fill' in ex or 'click' in ex))
+            equal(page.locator('#guide-try').count(),1 if runnable else 0)
+            if not runnable:
+                click('#modal [data-close]');continue
+            click('#guide-try')
+            if route=='home':
+                expect(page.locator('#palette[open]')).to_have_count(1);page.keyboard.press('Escape');continue
+            if route=='commands':
+                equal(v('#command-query'),'포트');contains(page.locator('#command-list .command-card').first.inner_text(),'포트');continue
+            expect(page.locator('#modal[open]')).to_have_count(0)
+            if route=='hash' and not page.evaluate('!!crypto.subtle'):
+                # set_content is not a secure context; the file:// evidence run computes the real hash.
+                expect(page.locator('#hash-status')).to_contain_text('Web Crypto');equal(v('#hash-output'),'');continue
+            # The example runs through the screen's own fields and buttons and must show what the guide promises.
+            if ex.get('result'):
+                try: wait_value(ex['result'],ex.get('expect',ex['output']))
+                except Exception as e: raise AssertionError(route+' result '+repr(page.evaluate("id=>{const el=document.getElementById(id);return el.value!==undefined?el.value:el.textContent}",ex['result']))) from e
+            if ex.get('status'):
+                assert 'error' not in (page.locator('#'+ex['status']).get_attribute('class') or ''), route+': '+txt('#'+ex['status'])
+    check('Every screen has 사용 예시 at the top; each guide opens and its example reproduces the shown result',usage_guides)
+    def guide_switch_and_keyboard():
+        go('json');page.keyboard.press('?')
+        expect(page.locator('#modal[open]')).to_have_count(1);equal(v('#guide-switch'),'json')
+        page.locator('#guide-switch').select_option('cron')
+        contains(txt('#modal .dialog-head h2'),'크론 미리보기');expect(page.locator('#guide-switch')).to_be_focused()
+        click('#guide-open');expect(page.locator('#modal[open]')).to_have_count(0);contains(txt('#page-crumb'),'크론')
+        # Text the user typed is never replaced silently by an example.
+        go('json');fill('#json-input','{"mine":1}');click('#view [data-guide="json"]')
+        contains(txt('#guide-overwrite'),'JSON 원문');contains(txt('#guide-try'),'입력을 예시로 바꾸고')
+        page.keyboard.press('Escape');expect(page.locator('#modal[open]')).to_have_count(0);equal(v('#json-input'),'{"mine":1}')
+        click('#view [data-guide="json"]');click('#guide-try');wait_value('json-output',GUIDES['json']['example']['output'])
+        click('#view [data-guide="json"]');page.screenshot(path=str(PREVIEWS/'preview-guide.png'),full_page=False);click('#modal [data-close]')
+    check('Guide switches screens, opens with ? and warns before replacing typed input',guide_switch_and_keyboard)
+    def toast_above_dialog():
+        # Found in the evidence screenshots: the copy confirmation sat under the dialog's blurred backdrop.
+        go('commands');click('[data-command-domain=""]');page.locator('#command-favorites').uncheck();fill('#command-query','특정 포트 리스닝')
+        page.locator('#command-list [data-command="cmd-044"]').first.click()
+        page.evaluate("document.execCommand=()=>{window.__copied=document.activeElement.value;return true}")
+        click('#copy-command');expect(page.locator('#toast')).to_have_class(re.compile('show'))
+        equal(page.evaluate('window.__copied'),'ss -lnt "( sport = :8080 )"')
+        page.wait_for_timeout(250)
+        # Shown as a popover after the modal opened, so it is above the dialog in the top layer (hit testing
+        # cannot prove this: the toast has pointer-events:none and is inert behind a modal).
+        on_top=page.evaluate("(()=>{const t=document.getElementById('toast'),r=t.getBoundingClientRect();return document.getElementById('modal').open&&t.matches(':popover-open')&&r.bottom<=innerHeight&&r.top>innerHeight/2&&r.width>0})()")
+        assert on_top, 'copy toast is not in the top layer at the bottom of the screen'
+        page.screenshot(path=str(PREVIEWS/'preview-toast-over-dialog.png'),full_page=False)
+        click('#modal [data-close]')
+    check('Copy confirmation is drawn above an open dialog at the bottom of the screen',toast_above_dialog)
     def large_backup_roundtrip():
         go('settings')
         data={'version':1,'theme':'light','toolFavs':['json'],'cmdFavs':['custom-large-0'],
@@ -596,6 +663,15 @@ with sync_playwright() as p:
                 try: phone_overflow()
                 except AssertionError as e: raise AssertionError(route+': '+str(e)) from e
         check(f'Touch {width}x{height}: all 18 routes fit viewport',touch_routes)
+        def touch_guides():
+            for route in ['home','commands','sqlformat','logs','settings']:
+                phone_go(route)
+                link=phone.locator('#view .page-title [data-guide]');expect(link).to_be_visible()
+                box=link.bounding_box();assert box['y']+box['height']<=height, route+': 사용 예시 below the first screen'
+                link.tap();expect(phone.locator('#modal[open]')).to_have_count(1)
+                assert phone.evaluate("(()=>{const d=document.getElementById('modal');return d.scrollWidth<=d.clientWidth+1&&d.getBoundingClientRect().right<=innerWidth+1})()"),route+': guide overflows'
+                phone.locator('#modal [data-close]').tap()
+        check(f'Touch {width}x{height}: 사용 예시 on the first screen and the guide fits',touch_guides)
         def touch_menu():
             phone_go('home')
             menu=phone.locator('#mobile-menu');expect(menu).to_be_visible()

@@ -2746,5 +2746,661 @@ window.PocketData = {
       "prompt": "psql =>",
       "flow": "psql 접속 → BEGIN; 먼저 실행 (기본값 자동 커밋) → SQL 붙여넣기 → UPDATE n 등 결과 확인 → COMMIT; 또는 ROLLBACK;"
     }
+  },
+  "guides": {
+    "home": {
+      "when": "처음 열었거나, 자주 쓰는 명령과 도구로 바로 가고 싶을 때",
+      "steps": [
+        [
+          "위쪽 검색 상자를 누르거나 Ctrl K",
+          "‘포트’, ‘한글’, ‘autocommit’처럼 상황을 입력 → ↑ ↓로 고르고 Enter로 엽니다."
+        ],
+        [
+          "환경 카드에서 작업할 곳 고르기",
+          "Windows PowerShell · Linux 셸 · DB 중 하나를 누르면 명령어 포켓이 그 환경만 보여 줍니다."
+        ],
+        [
+          "DB 카드에서 DB 고르기",
+          "CUBRID · MariaDB · Oracle · PostgreSQL을 누르면 SQL 작업대가 그 DB 기준으로 열립니다."
+        ],
+        [
+          "별표로 모으기",
+          "명령어 카드나 도구 제목 옆 ☆를 누르면 아래 ‘즐겨찾는 명령 / 도구’에 모입니다."
+        ],
+        [
+          "나머지 도구",
+          "‘모든 도구’를 펼치면 전체 목록이 나옵니다. 휴대폰은 왼쪽 위 메뉴 버튼을 누르세요."
+        ]
+      ],
+      "cautions": [
+        "명령을 실행하거나 서버에 접속하지 않습니다. 복사한 뒤 카드의 ‘입력:’ 위치에 직접 붙여넣으세요."
+      ],
+      "example": {
+        "input": "Ctrl K → 포트",
+        "output": "도구와 명령어가 함께 나옵니다.\n예: 특정 포트 리스닝 확인 · 입력: Linux 셸 · $",
+        "click": [
+          "[data-open-palette]"
+        ],
+        "label": "검색창 열어 보기"
+      }
+    },
+    "favorites": {
+      "when": "매일 쓰는 도구와 명령만 따로 모아 보고 싶을 때",
+      "steps": [
+        [
+          "도구 화면 제목 옆 ☆ 누르기",
+          "별이 채워지면 추가된 것입니다. 다시 누르면 빠집니다."
+        ],
+        [
+          "명령어 카드의 ☆ 누르기",
+          "명령어 포켓과 검색 결과의 카드 모두 같은 별표입니다."
+        ],
+        [
+          "왼쪽 메뉴 → 즐겨찾기",
+          "휴대폰은 왼쪽 위 메뉴 버튼 → 즐겨찾기. 카드에서 바로 ‘값 넣기 · 복사’를 할 수 있습니다."
+        ],
+        [
+          "다른 PC로 옮기기",
+          "내 포켓 관리 → 설정 백업 → 새 PC에서 백업 가져오기"
+        ]
+      ],
+      "cautions": [
+        "즐겨찾기는 이 브라우저에만 저장됩니다. HTML 파일 위치나 브라우저가 바뀌면 보이지 않을 수 있으니 설정 백업을 남기세요."
+      ],
+      "example": {
+        "input": "명령어 포켓 → ‘특정 포트 리스닝 확인’ 카드의 ☆",
+        "output": "즐겨찾기 → 즐겨찾는 명령어에 표시\n내 작업실 → 즐겨찾는 명령에도 표시"
+      }
+    },
+    "commands": {
+      "when": "서버나 PC에서 포트 · 로그 · 프로세스를 확인할 명령이 바로 떠오르지 않을 때",
+      "steps": [
+        [
+          "환경 고르기: 전체 · Windows · Linux · DB",
+          "고른 환경의 명령만 남고, 아래 안내에 붙여넣을 곳이 표시됩니다."
+        ],
+        [
+          "검색창 또는 자주 찾는 검색어",
+          "‘포트’, ‘로그’, ‘JEUS’처럼 상황으로 찾습니다. 분류 · 권한으로 더 좁힐 수 있습니다."
+        ],
+        [
+          "카드의 ‘입력:’ 확인",
+          "Linux 셸 · $, Windows PowerShell · PS>, csql> 등 명령을 붙여넣을 곳입니다."
+        ],
+        [
+          "값 넣기 · 복사",
+          "창에서 PORT 같은 값을 바꾸면 최종 명령어가 바로 바뀝니다. 변경 · 부하 명령은 확인 체크 후 복사됩니다."
+        ],
+        [
+          "안 될 때는 대체 명령",
+          "창 아래 ‘사용할 수 없을 때’에서 조건을 비교해 고르면 입력한 값이 이어지고, ‘← 원래 명령으로’로 돌아올 수 있습니다."
+        ]
+      ],
+      "cautions": [
+        "이 페이지는 명령을 실행하지 않습니다. 결과가 비어 있다고 미설치로 단정하지 말고 설치 경로 · 권한을 함께 확인하세요."
+      ],
+      "example": {
+        "input": "포트 검색 → 특정 포트 리스닝 확인 → 포트: 8111",
+        "output": "ss -lnt \"( sport = :8111 )\"\n입력: Linux 셸 · $",
+        "click": [
+          "[data-command-search=\"포트\"]"
+        ],
+        "label": "‘포트’로 찾아보기"
+      }
+    },
+    "sqlformat": {
+      "when": "DB 클라이언트에 붙여넣을 쿼리를 정리하고, 데이터를 바꾸는 쿼리는 최종 내용을 확인한 뒤 복사할 때",
+      "steps": [
+        [
+          "DB 고르기",
+          "CUBRID · MariaDB · Oracle · PostgreSQL 중 하나. 붙여넣을 프롬프트(csql>, MariaDB>, SQL>, psql =>)가 표시됩니다."
+        ],
+        [
+          "작업 순서 1 ~ 3",
+          "접속(Linux 셸) → 대상 · 자동 커밋 확인 → 트랜잭션 시작 버튼을 누르면 값 확인 · 복사 창이 열립니다."
+        ],
+        [
+          "4 쿼리 작성",
+          "SELECT · INSERT · UPDATE · DELETE 프리셋을 누르거나 SQL 원문에 붙여넣고 테이블 · 값 · 조건을 고칩니다."
+        ],
+        [
+          "정렬된 SQL의 복사 · 저장",
+          "SELECT는 바로 복사됩니다. 변경 SQL은 최종 쿼리 확인 창이 열리고, WHERE가 없으면 확인 체크를 해야 복사됩니다."
+        ],
+        [
+          "5 확정 · 취소 · 종료",
+          "영향받은 행 수를 확인한 뒤 COMMIT 또는 ROLLBACK을 복사해 붙여넣습니다."
+        ]
+      ],
+      "cautions": [
+        "정렬은 공백만 바꾸며 DB에 접속하거나 실행하지 않습니다.",
+        "WHERE 1=1처럼 범위가 넓은 조건이나 함수의 부작용은 판별하지 않습니다. 고른 DB가 실제로 붙여넣을 클라이언트와 같은지 확인하세요."
+      ],
+      "example": {
+        "input": "update sample_items set item_name = '새 이름', updated_at = current_timestamp where item_id = 'A001';",
+        "output": "update sample_items\nset item_name = '새 이름',\n  updated_at = current_timestamp\nwhere item_id = 'A001';",
+        "fill": {
+          "sqlformat-input": "update sample_items set item_name = '새 이름', updated_at = current_timestamp where item_id = 'A001';"
+        },
+        "click": [
+          "#sqlformat-run"
+        ],
+        "result": "sqlformat-output",
+        "status": "sqlformat-status",
+        "label": "예시를 넣고 정렬"
+      }
+    },
+    "encoding": {
+      "when": "로그 · CSV · 설정 파일의 한글이 ‘ì•ˆë…•’ 또는 ‘�’처럼 깨져 보일 때",
+      "steps": [
+        [
+          "원본 파일이 있으면 01에서 다시 읽기",
+          "깨지기 전 파일을 고르고 문자셋을 UTF-8 ↔ EUC-KR로 바꿔 가며 한글이 바르게 보이는 쪽을 찾습니다."
+        ],
+        [
+          "바르게 보이면 UTF-8로 저장",
+          "Excel에서 열 파일이면 ‘UTF-8 BOM 추가’를 켭니다. 원본 파일은 바뀌지 않습니다."
+        ],
+        [
+          "문자열만 있으면 02 복구 후보",
+          "깨진 문자열을 붙여넣고 잘못 읽힌 문자셋과 원래 문자셋을 가정한 뒤 ‘복구 후보 만들기’를 누릅니다."
+        ],
+        [
+          "후보를 원본과 대조",
+          "그럴듯하게 보여도 원래 문장이라는 증거는 아닙니다."
+        ]
+      ],
+      "cautions": [
+        "이미 � 또는 ?로 저장된 글자는 되살릴 수 없습니다. 저장은 UTF-8만 지원합니다."
+      ],
+      "example": {
+        "input": "ì•ˆë…•í•˜ì„¸ìš”\n잘못 읽힌 문자셋: Windows-1252 · 원래 바이트: UTF-8",
+        "output": "안녕하세요",
+        "fill": {
+          "repair-input": "ì•ˆë…•í•˜ì„¸ìš”",
+          "repair-source": "windows-1252",
+          "repair-target": "utf-8"
+        },
+        "click": [
+          "#repair-run"
+        ],
+        "result": "repair-output",
+        "status": "repair-status"
+      }
+    },
+    "json": {
+      "when": "API 응답이나 설정 JSON을 읽기 좋게 펼치거나 문법이 맞는지 확인할 때",
+      "steps": [
+        [
+          "JSON 원문 붙여넣기",
+          "한 줄로 된 응답도 그대로 넣습니다."
+        ],
+        [
+          "보기 좋게 정리 · 공백 압축 · 문법 검증",
+          "들여쓰기는 2칸 또는 4칸. 문법 오류가 있으면 상태 줄에 원인이 표시됩니다."
+        ],
+        [
+          "결과 복사 · 저장",
+          "정리된 JSON 오른쪽 위의 복사 또는 저장 버튼"
+        ]
+      ],
+      "cautions": [
+        "큰 정수, 1.2300 같은 숫자 표기, 키 순서를 바꾸지 않습니다. 업무 스키마나 중복 키의 의미는 검증하지 않습니다."
+      ],
+      "example": {
+        "input": "{\"id\":900719925474099312345,\"amount\":1.2300,\"tags\":[\"한글\",\"offline\"]}",
+        "output": "{\n  \"id\": 900719925474099312345,\n  \"amount\": 1.2300,\n  \"tags\": [\n    \"한글\",\n    \"offline\"\n  ]\n}",
+        "fill": {
+          "json-input": "{\"id\":900719925474099312345,\"amount\":1.2300,\"tags\":[\"한글\",\"offline\"]}",
+          "json-indent": "2"
+        },
+        "click": [
+          "#json-pretty"
+        ],
+        "result": "json-output",
+        "status": "json-status"
+      }
+    },
+    "codec": {
+      "when": "URL 파라미터, Base64 값, \\uXXXX 이스케이프, HTML 엔티티를 읽거나 만들 때",
+      "steps": [
+        [
+          "변환 형식 고르기",
+          "URL · Base64 · HEX · 유니코드 이스케이프 · HTML 엔티티"
+        ],
+        [
+          "입력 붙여넣기 → 인코딩 또는 디코딩",
+          "form 데이터의 +를 공백으로 읽으려면 아래 체크를 켭니다."
+        ],
+        [
+          "결과 복사",
+          "‘결과를 입력으로 옮기기’로 이어서 다른 변환을 할 수 있습니다."
+        ]
+      ],
+      "cautions": [
+        "Base64는 암호화가 아닙니다. 비밀번호 · 토큰을 붙여넣지 마세요."
+      ],
+      "example": {
+        "input": "URL 인코딩 · 한글 이름&x=1",
+        "output": "%ED%95%9C%EA%B8%80%20%EC%9D%B4%EB%A6%84%26x%3D1",
+        "fill": {
+          "codec-mode": "url",
+          "codec-plus": false,
+          "codec-input": "한글 이름&x=1"
+        },
+        "click": [
+          "#codec-encode"
+        ],
+        "result": "codec-output",
+        "status": "codec-status"
+      }
+    },
+    "text": {
+      "when": "복사한 서버 · ID 목록에서 공백 · 빈 줄 · 중복을 정리하고 정렬할 때",
+      "steps": [
+        [
+          "원문 붙여넣기",
+          "한 줄에 하나씩"
+        ],
+        [
+          "정리 옵션 고르기",
+          "앞뒤 공백 · 빈 줄 · 중복 제거, 자연 정렬(2 다음 10), 결과 줄바꿈 LF / CRLF"
+        ],
+        [
+          "선택한 정리 적용",
+          "몇 줄이 몇 줄로 바뀌었는지 상태 줄에 표시됩니다."
+        ],
+        [
+          "복사 · 저장",
+          "저장 파일에는 고른 줄바꿈 형식이 적용됩니다."
+        ]
+      ],
+      "cautions": [
+        "코드나 CSV처럼 공백과 중복이 의미 있는 데이터는 필요한 옵션만 켜세요."
+      ],
+      "example": {
+        "input": "  item10\nitem2\nitem2\n\nitem1  \n(공백 · 빈 줄 · 중복 제거, 자연 오름차순)",
+        "output": "item1\nitem2\nitem10",
+        "fill": {
+          "text-input": "  item10\nitem2\nitem2\n\nitem1  ",
+          "text-trim": true,
+          "text-empty": true,
+          "text-unique": true,
+          "text-sort": "asc",
+          "text-eol": "lf"
+        },
+        "click": [
+          "#text-run"
+        ],
+        "result": "text-output",
+        "status": "text-status"
+      }
+    },
+    "diff": {
+      "when": "설정 파일을 바꾸기 전후나 두 서버의 설정이 어떻게 다른지 볼 때",
+      "steps": [
+        [
+          "변경 전 · 변경 후 붙여넣기",
+          "왼쪽에 기존 내용, 오른쪽에 바뀐 내용"
+        ],
+        [
+          "변경점 비교",
+          "추가 · 삭제 · 동일 줄 수와 양쪽 줄 번호가 표시됩니다."
+        ],
+        [
+          "필요하면 옵션",
+          "‘줄 앞뒤 공백 무시’는 다시 비교해야 적용되고, ‘바뀐 줄만 표시’는 바로 적용됩니다."
+        ],
+        [
+          "비교 결과 저장",
+          "참고용 텍스트 보고서입니다. git patch가 아닙니다."
+        ]
+      ],
+      "cautions": [
+        "줄 단위 비교입니다. 각 2,500줄 · 500,000자 이하로 나눠 넣으세요."
+      ],
+      "example": {
+        "input": "변경 전: server.port=8080 · pool.max=100 · encoding=UTF-8\n변경 후: server.port=8111 · pool.max=100 · encoding=UTF-8",
+        "output": "− server.port=8080\n+ server.port=8111\n  pool.max=100\n  encoding=UTF-8\n추가 1 · 삭제 1 · 동일 2",
+        "fill": {
+          "diff-before": "server.port=8080\npool.max=100\nencoding=UTF-8",
+          "diff-after": "server.port=8111\npool.max=100\nencoding=UTF-8",
+          "diff-space": false,
+          "diff-changes": false
+        },
+        "click": [
+          "#diff-run"
+        ],
+        "result": "diff-stats",
+        "expect": "1추가1삭제2동일",
+        "status": "diff-status"
+      }
+    },
+    "logs": {
+      "when": "긴 로그에서 ERROR · Exception 줄과 그 앞뒤만 추려 보고 싶을 때",
+      "steps": [
+        [
+          "로그 붙여넣기 또는 UTF-8 파일 열기",
+          "EUC-KR 로그는 한글 · 인코딩 진료소에서 먼저 UTF-8로 저장합니다."
+        ],
+        [
+          "포함 · 제외 단어",
+          "쉼표로 구분하면 OR 조건입니다. 예: ERROR,Exception"
+        ],
+        [
+          "주변 문맥 고르기",
+          "일치 줄 앞뒤 1 · 3 · 5 · 10줄"
+        ],
+        [
+          "로그 추려보기",
+          "전체 · 일치 · 문맥 포함 · ERROR · WARN 줄 수와 결과가 나옵니다. 결과는 복사 · 저장할 수 있습니다."
+        ]
+      ],
+      "cautions": [
+        "정규식이 아닌 고정 문자열 검색입니다. 로그에 토큰이나 개인정보가 있을 수 있으니 결과 반출에 유의하세요."
+      ],
+      "example": {
+        "input": "09:00:01 INFO  started\n09:00:02 WARN  pool nearly full\n09:00:03 ERROR request failed\njava.sql.SQLException: timeout\n09:00:05 INFO  completed\n(포함: ERROR · 앞뒤 1줄)",
+        "output": "09:00:02 WARN  pool nearly full\n09:00:03 ERROR request failed\njava.sql.SQLException: timeout",
+        "fill": {
+          "logs-input": "09:00:01 INFO  started\n09:00:02 WARN  pool nearly full\n09:00:03 ERROR request failed\njava.sql.SQLException: timeout\n09:00:05 INFO  completed",
+          "logs-include": "ERROR",
+          "logs-exclude": "",
+          "logs-context": "1",
+          "logs-case": true
+        },
+        "click": [
+          "#logs-run"
+        ],
+        "result": "logs-output",
+        "status": "logs-status"
+      }
+    },
+    "sql": {
+      "when": "엑셀 등에서 복사한 코드 목록으로 WHERE … IN (…) 조건을 만들 때",
+      "steps": [
+        [
+          "값 목록 붙여넣기",
+          "한 줄에 하나씩"
+        ],
+        [
+          "컬럼명 · 값 형식 · 묶음 크기",
+          "문자열의 작은따옴표는 두 번 써서 이스케이프합니다. 묶음 크기를 넘으면 OR로 나눕니다."
+        ],
+        [
+          "IN 조건 만들기",
+          "중복 · 앞뒤 공백 제거 여부를 고를 수 있습니다."
+        ],
+        [
+          "복사해서 쿼리에 붙이기",
+          "SQL 작업대의 WHERE 절에 넣고 정렬 · 점검을 거치세요."
+        ]
+      ],
+      "cautions": [
+        "DB에 접속하거나 실행하지 않습니다. 애플리케이션 코드에는 바인드 변수를 사용하세요."
+      ],
+      "example": {
+        "input": "A001\nO'Brien\nA001\n00123\n(컬럼: ITEM_ID · 문자열 · 중복 제거)",
+        "output": "ITEM_ID IN (\n  'A001', 'O''Brien', '00123'\n)",
+        "fill": {
+          "sql-input": "A001\nO'Brien\nA001\n00123",
+          "sql-column": "ITEM_ID",
+          "sql-kind": "string",
+          "sql-chunk": "1000",
+          "sql-unique": true,
+          "sql-trim": true
+        },
+        "click": [
+          "#sql-run"
+        ],
+        "result": "sql-output",
+        "status": "sql-status"
+      }
+    },
+    "unicode": {
+      "when": "눈에 안 보이는 공백 때문에 값 비교가 실패하거나 문자 코드 · UTF-8 바이트를 확인할 때",
+      "steps": [
+        [
+          "검사할 문자 붙여넣기 → 문자 분석",
+          "코드 포인트 · 10진수 · ASCII · UTF-8 HEX가 한 줄씩 나옵니다."
+        ],
+        [
+          "숨은 공백 샘플",
+          "ZERO WIDTH SPACE · NBSP 같은 보이지 않는 문자가 이름으로 표시됩니다."
+        ],
+        [
+          "ASCII 0~127 표",
+          "제어문자 이름까지 한 번에 봅니다."
+        ],
+        [
+          "숫자 코드 → 문자",
+          "65, U+D55C, 0x1F600처럼 입력하고 ‘문자로 바꾸기’를 누릅니다."
+        ]
+      ],
+      "cautions": [
+        "한 글자처럼 보여도 여러 코드 포인트일 수 있습니다. 한글과 이모지는 ASCII 값이 없습니다."
+      ],
+      "example": {
+        "input": "65 U+D55C U+AE00 0x1F600",
+        "output": "A한글😀",
+        "fill": {
+          "unicode-codes": "65 U+D55C U+AE00 0x1F600"
+        },
+        "click": [
+          "#unicode-decode"
+        ],
+        "result": "unicode-decoded",
+        "status": "unicode-code-status"
+      }
+    },
+    "time": {
+      "when": "로그의 Unix 타임스탬프를 KST로 읽거나 특정 시각의 타임스탬프가 필요할 때",
+      "steps": [
+        [
+          "타임스탬프 입력 + 단위 고르기",
+          "10자리는 대개 초, 13자리는 밀리초입니다. 단위를 직접 고릅니다."
+        ],
+        [
+          "날짜로 변환",
+          "UTC · KST · Unix 초 / 밀리초 · ISO 8601이 나란히 나옵니다."
+        ],
+        [
+          "반대 방향",
+          "오른쪽에 날짜와 시간대를 넣고 ‘타임스탬프로 변환’을 누릅니다."
+        ]
+      ],
+      "cautions": [
+        "KST는 UTC+9 고정으로 계산합니다. 서버의 실제 시간대와 시계 오차는 따로 확인하세요."
+      ],
+      "example": {
+        "input": "1700000000 · 초",
+        "output": "UTC        2023-11-14 22:13:20.000 UTC+00:00\nKST        2023-11-15 07:13:20.000 UTC+09:00\nUnix 초    1700000000\nUnix ms    1700000000000\nISO 8601   2023-11-14T22:13:20.000Z",
+        "fill": {
+          "time-epoch": "1700000000",
+          "time-unit": "s"
+        },
+        "click": [
+          "#time-from-epoch"
+        ],
+        "result": "time-output",
+        "status": "time-status"
+      }
+    },
+    "chmod": {
+      "when": "640 · 755 같은 숫자 권한과 rwx를 맞춰 보고 chmod 명령을 만들 때",
+      "steps": [
+        [
+          "체크박스 또는 숫자 3자리",
+          "소유자 · 그룹 · 기타별로 읽기 4 · 쓰기 2 · 실행 1을 더한 값입니다."
+        ],
+        [
+          "대상 경로 입력",
+          "공백이나 특수문자가 있어도 따옴표로 감싼 명령이 만들어집니다."
+        ],
+        [
+          "결과 확인",
+          "숫자 · rwx 표기 · 복사할 명령어가 함께 바뀝니다."
+        ],
+        [
+          "내용 확인 후 복사",
+          "확인 창에서 한 번 더 확인합니다. 붙여넣을 곳: Linux 셸 · $"
+        ]
+      ],
+      "cautions": [
+        "복사한 명령을 실행하면 실제 권한이 바뀝니다. 777은 모든 사용자에게 쓰기를 허용하니 신중히 검토하세요.",
+        "setuid · setgid · sticky 비트와 ACL은 다루지 않습니다."
+      ],
+      "example": {
+        "input": "숫자 권한 750 · 대상 경로 /app/batch/run.sh",
+        "output": "rwxr-x---\nchmod 750 -- '/app/batch/run.sh'",
+        "expect": "chmod 750 -- '/app/batch/run.sh'",
+        "fill": {
+          "chmod-path": "/app/batch/run.sh",
+          "chmod-octal": "750"
+        },
+        "click": [],
+        "result": "chmod-output",
+        "status": "chmod-status"
+      }
+    },
+    "cron": {
+      "when": "crontab에 넣을 예약식이 실제로 언제 실행되는지 미리 볼 때",
+      "steps": [
+        [
+          "표현식 입력 또는 칩 고르기",
+          "분 시 일 월 요일 5필드. 예: 30 9 * * 1-5"
+        ],
+        [
+          "시간대와 기준 시각",
+          "KST 또는 UTC, 이 시각 이후의 실행을 계산합니다."
+        ],
+        [
+          "다음 실행 미리보기",
+          "필드별 해석과 다음 5회 실행 시각 · 요일이 나옵니다."
+        ]
+      ],
+      "cautions": [
+        "미리보기만 하고 서버에 예약하지 않습니다. Quartz의 ? L W #, @reboot, 초 · 연도 필드는 지원하지 않습니다."
+      ],
+      "example": {
+        "input": "30 9 * * 1-5 · KST · 2026-11-21 00:00:00 이후",
+        "output": "1.  2026-11-23 09:30:00  KST  (월)\n2.  2026-11-24 09:30:00  KST  (화)\n3.  2026-11-25 09:30:00  KST  (수)\n4.  2026-11-26 09:30:00  KST  (목)\n5.  2026-11-27 09:30:00  KST  (금)",
+        "fill": {
+          "cron-zone": "540",
+          "cron-start": "2026-11-21T00:00:00",
+          "cron-expression": "30 9 * * 1-5"
+        },
+        "click": [
+          "#cron-run"
+        ],
+        "result": "cron-output",
+        "status": "cron-status"
+      }
+    },
+    "hash": {
+      "when": "반입 · 반출한 파일이 원본과 같은지 SHA-256 값으로 비교할 때",
+      "steps": [
+        [
+          "알고리즘 고르기",
+          "배포처가 알려 준 해시와 같은 종류(SHA-256 등)"
+        ],
+        [
+          "비교할 해시 붙여넣기",
+          "선택사항. 넣어 두면 계산 후 일치 / 불일치가 바로 표시됩니다."
+        ],
+        [
+          "파일 선택 → 파일 해시 계산",
+          "최대 32 MiB. 텍스트는 왼쪽 칸에 넣고 ‘텍스트 해시 계산’을 누릅니다."
+        ],
+        [
+          "결과 확인 · 복사",
+          "불일치면 파일 · 공백 · 줄바꿈 · 인코딩을 확인합니다."
+        ]
+      ],
+      "cautions": [
+        "해시가 같다는 것은 내용이 같다는 뜻이지 파일이 안전하다는 증명은 아닙니다. 큰 파일은 sha256sum · Get-FileHash 명령을 이용하세요."
+      ],
+      "example": {
+        "input": "텍스트 abc · SHA-256 · 비교할 해시 ba7816bf…15ad",
+        "output": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\n일치합니다. 같은 해시 값입니다.",
+        "expect": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "fill": {
+          "hash-algorithm": "SHA-256",
+          "hash-input": "abc",
+          "hash-expected": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+        },
+        "click": [
+          "#hash-text"
+        ],
+        "result": "hash-output",
+        "status": "hash-compare"
+      }
+    },
+    "regex": {
+      "when": "grep · 로그 필터 · 코드에 쓸 패턴이 의도대로 잡히는지 미리 확인할 때",
+      "steps": [
+        [
+          "패턴과 플래그",
+          "양쪽 / 없이 입력합니다. g 전체 · i 대소문자 무시 · m 여러 줄"
+        ],
+        [
+          "테스트 문자열 붙여넣기",
+          "실제 로그 몇 줄이면 충분합니다."
+        ],
+        [
+          "정규식 테스트",
+          "매치 위치(index) · 전체 매치 · 캡처 그룹이 JSON으로 나옵니다."
+        ],
+        [
+          "다른 도구로 옮길 때",
+          "JavaScript 문법입니다. grep -E · Java · sed와 다를 수 있습니다."
+        ]
+      ],
+      "cautions": [
+        "약 1.2초를 넘기면 중단합니다. Worker가 차단된 환경에서는 실행하지 않습니다."
+      ],
+      "example": {
+        "input": "ERROR connection timeout\nINFO ready\nWARN pool almost full\n(패턴: (ERROR|WARN)\\s+(.+) · 플래그: gm)",
+        "output": "[\n{\"index\":0,\"match\":\"ERROR connection timeout\",\"captures\":[\"ERROR\",\"connection timeout\"],\"groups\":null},\n{\"index\":36,\"match\":\"WARN pool almost full\",\"captures\":[\"WARN\",\"pool almost full\"],\"groups\":null}\n]",
+        "fill": {
+          "regex-pattern": "(ERROR|WARN)\\s+(.+)",
+          "regex-flags": "gm",
+          "regex-input": "ERROR connection timeout\nINFO ready\nWARN pool almost full"
+        },
+        "click": [
+          "#regex-run"
+        ],
+        "result": "regex-output",
+        "status": "regex-status"
+      }
+    },
+    "settings": {
+      "when": "PC를 옮기거나 즐겨찾기 · 내 명령어를 백업할 때, 다른 사람에게 배포 ZIP을 줄 때",
+      "steps": [
+        [
+          "설정 백업",
+          "pocket-ops-settings.json에 즐겨찾기 · 내 명령어 · 테마만 저장합니다. 작업 입력은 넣지 않습니다."
+        ],
+        [
+          "새 PC에서 백업 가져오기",
+          "같은 pocket-ops.html → 내 포켓 관리 → 백업 가져오기 → 교체 확인"
+        ],
+        [
+          "내 명령어 추가",
+          "자주 쓰는 명령을 저장합니다. 실행하지 않으며 평문으로 저장됩니다."
+        ],
+        [
+          "배포하기",
+          "위쪽 ‘배포하기’ → 현재 버전 ZIP(HTML · 안내문). 입력 · 설정 · 내 명령어는 넣지 않습니다."
+        ],
+        [
+          "입력 비우기",
+          "휴지통 버튼 또는 ‘열린 도구의 입력 비우기’로 이 탭의 입력과 결과를 지웁니다."
+        ]
+      ],
+      "cautions": [
+        "백업 파일에는 직접 저장한 명령이 평문으로 들어갑니다. 내부 주소나 비밀번호가 없는지 확인하고 반입 · 반출 규정을 따르세요."
+      ]
+    }
   }
 };

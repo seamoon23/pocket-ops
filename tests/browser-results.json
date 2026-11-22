@@ -21,8 +21,8 @@
   "storage_clipboard": "Main persistence and clipboard payload checks use explicitly labeled doubles. File smoke storage, when available, uses real origin and reload, not OS clipboard or browser restart.",
   "external_http_requests": [],
   "pageerrors": [],
-  "total": 129,
-  "passed": 129,
+  "total": 136,
+  "passed": 136,
   "failed": 0,
   "results": [
     {
@@ -374,6 +374,18 @@
       "pass": true
     },
     {
+      "name": "Every screen has 사용 예시 at the top; each guide opens and its example reproduces the shown result",
+      "pass": true
+    },
+    {
+      "name": "Guide switches screens, opens with ? and warns before replacing typed input",
+      "pass": true
+    },
+    {
+      "name": "Copy confirmation is drawn above an open dialog at the bottom of the screen",
+      "pass": true
+    },
+    {
       "name": "Valid backup larger than 2MiB exports and imports without loss",
       "pass": true
     },
@@ -410,6 +422,10 @@
       "pass": true
     },
     {
+      "name": "Touch 320x740: 사용 예시 on the first screen and the guide fits",
+      "pass": true
+    },
+    {
       "name": "Touch 320x740: drawer closes by button, backdrop and navigation",
       "pass": true
     },
@@ -431,6 +447,10 @@
     },
     {
       "name": "Touch 360x800: all 18 routes fit viewport",
+      "pass": true
+    },
+    {
+      "name": "Touch 360x800: 사용 예시 on the first screen and the guide fits",
       "pass": true
     },
     {
@@ -458,6 +478,10 @@
       "pass": true
     },
     {
+      "name": "Touch 412x915: 사용 예시 on the first screen and the guide fits",
+      "pass": true
+    },
+    {
       "name": "Touch 412x915: drawer closes by button, backdrop and navigation",
       "pass": true
     },
@@ -479,6 +503,10 @@
     },
     {
       "name": "Touch 844x390: all 18 routes fit viewport",
+      "pass": true
+    },
+    {
+      "name": "Touch 844x390: 사용 예시 on the first screen and the guide fits",
       "pass": true
     },
     {

@@ -31,6 +31,9 @@ fixture=dict(catalog['commands'][0],title=hostile,command=hostile,note=hostile,p
 escaped_reference=render_reference({'commands':[fixture]})
 escaped_parser=Inspect();escaped_parser.feed(escaped_reference)
 presets = {item['id']: item for item in catalog['commands'] if 'editorSql' in item}
+def element_id_in_script(name):
+    # Element IDs are written either as markup (id="x") or passed to a field/editor helper ('x').
+    return ('id="'+name+'"') in script or ("'"+name+"'") in script
 def valid_editor_preset(item):
     sql = item['editorSql']
     verb = sql.split(maxsplit=1)[0]
@@ -67,6 +70,11 @@ checks={
         and "classList.add('app-ready')" in script and '<noscript><style>#script-fallback{animation:none!important}</style></noscript>' in html,
     'Every reference entry names its paste target':
         reference.count('class="reference-where"')==len(catalog['commands']) and all(item['where'] for item in catalog['commands']),
+    'Every screen has a usage guide whose example targets that screen':
+        sorted(catalog['guides'])==sorted(['home','favorites','settings']+[t['id'] for t in catalog['tools']])
+        and all(element_id_in_script(name) for g in catalog['guides'].values() for name in (g.get('example') or {}).get('fill',{}))
+        and all(s.startswith('[data-') or element_id_in_script(s[1:]) for g in catalog['guides'].values() for s in (g.get('example') or {}).get('click',[]))
+        and "data-guide=\"'+id+'\"" in script and script.count("guideButton('")>=3,
     'Release ZIP name follows the catalog version':
         release.name=='pocket-ops-v'+catalog['version']+'.zip' and recipe['version']==catalog['version'],
 }

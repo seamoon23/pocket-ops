@@ -258,6 +258,27 @@ foreach ($sample in $samples) {
   // Oracle's default EXIT commits; the catalog's exit step must roll back explicitly.
   assert.ok(D.commands.some(c=>c.db==='oracle'&&c.step==='finish'&&c.command==='EXIT ROLLBACK'));
  });
+ await test('Usage guide examples show what the tools actually produce',()=>{
+  const G=D.guides,ex=id=>G[id].example,f=id=>ex(id).fill;
+  assert.deepEqual(Object.keys(G),['home','favorites',...D.tools.map(t=>t.id),'settings']);
+  for(const [id,g] of Object.entries(G)){assert.ok(g.when&&g.steps.length>=3&&g.cautions.length,id);const e=g.example;if(e&&(e.fill||e.click)){assert.ok(Array.isArray(e.click),id);for(const v of Object.values(e.fill||{}))assert.ok(['string','boolean'].includes(typeof v),id);}}
+  const sql=f('sqlformat')['sqlformat-input'];
+  for(const db of Object.keys(D.dbs))assert.equal(C.prepareSql(sql,db).sql,ex('sqlformat').output,db);
+  assert.equal(C.formatJson(f('json')['json-input'],false,Number(f('json')['json-indent'])),ex('json').output);
+  assert.equal(C.codec(f('codec')['codec-input'],f('codec')['codec-mode'],'encode',f('codec')['codec-plus']),ex('codec').output);
+  const t=f('text');assert.equal(C.cleanText(t['text-input'],{trim:t['text-trim'],empty:t['text-empty'],unique:t['text-unique'],sort:t['text-sort'],eol:t['text-eol']}),ex('text').output);
+  const l=f('logs');assert.equal(C.filterLogs(l['logs-input'],l['logs-include'],l['logs-exclude'],Number(l['logs-context']),l['logs-case']).text,ex('logs').output);
+  const s=f('sql');assert.equal(C.makeSql(s['sql-input'],s['sql-column'],s['sql-kind'],Number(s['sql-chunk']),s['sql-unique'],s['sql-trim']).sql,ex('sql').output);
+  const ms=C.timestamp(f('time')['time-epoch'],f('time')['time-unit']);
+  assert.equal('UTC        '+C.formatTime(ms,0)+' UTC+00:00\nKST        '+C.formatTime(ms,540)+' UTC+09:00\nUnix 초    '+String(ms/1000)+'\nUnix ms    '+String(ms)+'\nISO 8601   '+new Date(ms).toISOString(),ex('time').output);
+  const m=f('chmod');assert.equal('chmod '+m['chmod-octal']+' -- '+C.shellQuote(m['chmod-path']),ex('chmod').expect);assert.equal(ex('chmod').output,C.permission(m['chmod-octal'])+'\n'+ex('chmod').expect);
+  const c=f('cron'),off=Number(c['cron-zone']),r=C.nextCron(c['cron-expression'],C.dateInputToMs(c['cron-start'],off),off);
+  assert.equal(r.times.map((t,i)=>(i+1)+'.  '+C.formatTime(t,off).slice(0,19)+'  KST  ('+['일','월','화','수','목','금','토'][new Date(t+off*60000).getUTCDay()]+')').join('\n'),ex('cron').output);
+  const h=f('hash');assert.equal(createHash('sha256').update(h['hash-input']).digest('hex'),ex('hash').expect);assert.equal(h['hash-expected'],ex('hash').expect);
+  const d=C.diffLines(f('diff')['diff-before'],f('diff')['diff-after'],false),n=type=>d.filter(x=>x.type===type).length;
+  assert.equal(n('add')+'추가'+n('del')+'삭제'+n('same')+'동일',ex('diff').expect);
+  assert.equal(C.fillCommand(D.commands.find(x=>x.id==='cmd-044').command,{PORT:'8111'},D.params,'bash'),ex('commands').output.split('\n')[0]);
+ });
  await test('Command catalog unique and supported metadata',()=>{assert.ok(D.commands.length>=93);assert.equal(new Set(D.commands.map(x=>x.id)).size,D.commands.length);for(const c of D.commands){assert.ok(['read','load','change'].includes(c.risk));assert.ok(['user','limited'].includes(c.permission));assert.ok(c.title&&c.note&&c.command);}});
  await test('All command placeholders resolved; Docker Go template retained',()=>{for(const c of D.commands){const params=Object.fromEntries(Object.entries(D.params).map(([k,v])=>[k,v.default||'1234']));const out=C.fillCommand(c.command,params,D.params,c.shell);assert.ok(!/\{\{[A-Z_]+\}\}/.test(out));}assert.ok(D.commands.find(c=>c.id==='cmd-080').command.includes('{{.State.Status}}'));});
  const report={environment:process.version,total:pass+fail,passed:pass,failed:fail,results};fs.writeFileSync(path.join(__dirname,'core-results.json'),JSON.stringify(report,null,2));console.log(`Core: ${pass} passed, ${fail} failed`);process.exitCode=fail?1:0;

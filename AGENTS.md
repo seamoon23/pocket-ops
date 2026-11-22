@@ -41,6 +41,8 @@ python tests/static_test.py
 python tests/browser_test.py
 ```
 
+Optional usage evidence: `python tests/evidence_walkthrough.py [--os-clipboard]` opens the built HTML as `file://`, uses every menu with fake data, checks results against Python oracles and writes screenshots plus `index.html`/`README.md`/`evidence.json` to `evidence/v<version>/`. `--os-clipboard` briefly opens a visible Chromium window to compare copy buttons with `Get-Clipboard` and restores the previous clipboard text (skipped when the clipboard holds non-text data). Headless Chromium's clipboard does not reach the OS clipboard, and Chromium on Windows stores multi-line clipboard text with CRLF.
+
 The core suite targets Node 22+. The browser suite requires the Python Playwright package and an approved Chromium installation only on the development machine. Set `CHROMIUM_PATH` if `/usr/bin/chromium` is not correct. On Windows PowerShell, set `$env:CHROMIUM_PATH` to the approved Chrome/Edge executable, then run the Python script. Never modify enterprise browser policy to run a test.
 
 GitHub → Actions → Verify offline release runs these checks on a Windows runner for pushes and pull requests. It first regenerates the catalog/HTML/ZIP and rejects differences from the committed artifacts. Official actions use pinned commits and read-only repository permission; no secrets or automatic release publishing are needed.
@@ -75,6 +77,8 @@ For the four built-in CRUD presets (portable SQL for all four DBs), `editorSql` 
 ## Adding a tool
 
 Add metadata in the catalog generator, pure functions in `core.js`, a renderer and `bindPage` branch in `app.js`, and entries in `renderers`. Each tool needs sample input, copy/export where appropriate, visible scope/limits, error clearing, keyboard labels, responsive states and tests. Avoid silently keeping stale results after a failed run or after changing a calculation's source.
+
+Every route also needs an entry in `guides` in `make_data.py` (when, steps, cautions, optional example). The title row shows a "사용 예시" button and `?` opens it. An example with `fill`/`click` is run through the screen's own element IDs and buttons, so keep `output` (or `expect` for `result`) identical to what the tool shows: the core suite recomputes pure examples and the browser suite runs every example. Examples come only from the catalog, never from imported data, and must warn before replacing text the user typed.
 
 Alternatives opened from a command dialog carry same-name values (and FILE/PATH/LOG/DIR as one location) and offer a way back; keep that behavior when adding alternatives. The home route is a dashboard (search, environment cards, favorite commands/tools, folded full tool grid); keep it short on phones.
 

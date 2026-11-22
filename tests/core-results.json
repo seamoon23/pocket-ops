@@ -1,7 +1,7 @@
 {
   "environment": "v22.17.0",
-  "total": 114,
-  "passed": 114,
+  "total": 115,
+  "passed": 115,
   "failed": 0,
   "results": [
     {
@@ -450,6 +450,10 @@
     },
     {
       "name": "Each DB has independent connect, check and finish steps labeled with the paste target",
+      "pass": true
+    },
+    {
+      "name": "Usage guide examples show what the tools actually produce",
       "pass": true
     },
     {
