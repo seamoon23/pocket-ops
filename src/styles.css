@@ -119,3 +119,102 @@ body.menu-open{overflow:hidden}
  .inline-input{flex-wrap:wrap}
  .inline-input input{flex-basis:100%}
 }
+
+/* v0.6: paste target, dashboard, DB workbench and review checks. */
+.where-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:0 0 2px}
+.where-tag{display:inline-flex;align-items:center;gap:5px;font:650 11px/1.45 var(--font);color:var(--ink);background:var(--subtle);border:1px solid var(--line);border-radius:6px;padding:3px 8px;white-space:normal;max-width:100%}
+.where-tag svg{width:13px;height:13px;color:var(--accent)}
+.back-command{margin:-4px 0 12px;padding-left:0}
+.alternative-commands .field-label{margin-bottom:4px}
+.alt-row{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.alt-row:first-of-type{border-top:0}
+.alt-meta{display:grid;gap:2px;font-size:11px;color:var(--muted);flex:1 1 220px;min-width:0}
+.dash-search{display:flex;align-items:center;gap:12px;width:100%;padding:15px 18px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--muted);text-align:left;margin-bottom:16px;box-shadow:var(--shadow)}
+.dash-search>span{flex:1;font-size:14px;color:var(--ink);font-weight:600;min-width:0}
+.dash-search small{display:block;color:var(--muted);font-weight:400}
+.dash-search>svg{color:var(--accent)}
+.env-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.env-card{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:18px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--shadow);min-width:0}
+.env-card h2{font-size:15px;display:flex;gap:8px;align-items:center}
+.env-card h2 svg{color:var(--accent)}
+.env-card p{font-size:12px;color:var(--muted);flex:1}
+.env-card>.btn{align-self:flex-start}
+.dash-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.dash-grid>.panel{margin-bottom:0;min-width:0}
+.dash-list{display:grid}
+.dash-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.dash-row:last-child{border-bottom:0}
+.dash-row-text{display:grid;gap:5px;justify-items:start;min-width:0}
+.dash-row-text strong{font-size:13px}
+.dash-tool{display:flex;gap:12px;align-items:center;text-align:left;padding:9px 6px;border-radius:10px;width:100%}
+.dash-tool:hover{background:var(--subtle)}
+.dash-tool strong{display:block;font-size:13px}
+.dash-tool small{display:block;color:var(--muted)}
+.dash-tool .tool-icon{height:34px;width:34px;flex-shrink:0}
+.all-tools{margin-top:16px}
+.all-tools>summary{cursor:pointer;font-weight:700;font-size:14px;padding:12px 0;min-height:44px}
+.db-filter{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.db-filter[hidden]{display:none}
+.db-switch .chip.active{background:var(--accent);color:var(--surface)}
+.sql-steps-panel>summary{display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;list-style:none;min-height:44px}
+.sql-steps-panel>summary::-webkit-details-marker{display:none}
+.sql-steps-panel>summary h2{font-size:14px}
+.sql-steps-panel>summary h2::before{content:'▾ ';color:var(--muted)}
+.sql-steps-panel:not([open])>summary h2::before{content:'▸ '}
+.sql-steps{display:grid;margin-top:8px}
+.sql-step{display:grid;grid-template-columns:230px minmax(0,1fr);gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.sql-step:last-child{border-bottom:0}
+.sql-step-head{display:grid;gap:5px;justify-items:start}
+.sql-step-head strong{font-size:13px}
+.sql-checks{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px}
+.sql-checks li{padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.7;background:var(--orange-soft);color:var(--orange)}
+.sql-checks li.danger{background:var(--red-soft);color:var(--red);font-weight:700}
+.sql-review-ack{margin:4px 0 14px}
+@media(max-width:900px){
+ .env-grid,.dash-grid{grid-template-columns:1fr}
+ .sql-step{grid-template-columns:1fr;gap:8px}
+ .where-tag,.alt-meta{font-size:13px}
+ .dash-search>span{font-size:16px}
+ .dash-row-text strong,.dash-tool strong,.sql-step-head strong{font-size:15px}
+ .env-card p,.sql-checks li{font-size:14px}
+ .dash-row{flex-wrap:wrap}
+}
+/* Phones: keep the first matching command within the first screen. */
+@media(max-width:520px){
+ .command-controls{grid-template-columns:1fr 1fr;gap:8px}
+ .command-controls input{grid-column:1/-1}
+ .command-controls select{padding:10px 8px}
+ .command-quick{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;max-width:100%}
+ .command-quick .chip{flex-shrink:0}
+ .command-tools{flex-wrap:nowrap;gap:8px}
+ .command-tools>.btn{flex-shrink:0;padding:6px 10px}
+ .command-tools>.chip-row{min-width:0;flex:1}
+ #command-domain-guide{display:none}
+ #command-domain-guide.show{display:block}
+}
+
+/* v0.6.0 usage guide: a "사용 예시" button in every title row and one dialog for all screens. */
+.guide-link{white-space:nowrap;gap:6px}
+.guide-link svg{width:16px;height:16px}
+.guide-switch{margin:18px 0 0;padding-top:14px;border-top:1px solid var(--line)}
+.guide-when{font-size:13px;line-height:1.75;margin:2px 0 4px}
+.guide-when b{color:var(--accent);margin-right:8px}
+ol.guide-steps{list-style:none;padding:0;margin:14px 0}
+.guide-steps .help-step{font-size:13px;line-height:1.6}
+.guide-steps .help-step p{font-size:12px;line-height:1.7}
+.guide-example{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin:16px 0}
+.guide-example .field-label{margin-bottom:6px}
+.guide-example pre{margin:0;background:var(--code);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:12px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;max-height:240px;overflow:auto}
+.guide-actions{margin-top:16px;align-items:center}
+@media(max-width:900px){.guide-key{display:none}}
+@media(max-width:520px){
+ .guide-example{grid-template-columns:minmax(0,1fr)}
+ .guide-example pre{font-size:13px}
+ .guide-steps .help-step,.guide-when{font-size:14px}
+ .guide-steps .help-step p{font-size:13px}
+ .page-title>.actions .guide-link{min-height:40px;padding:6px 10px;font-size:13px}
+ .guide-actions .btn{flex:1}
+}
+
+/* The toast is a manual popover (top layer); undo the UA popover box so it keeps its bottom-centre position. */
+.toast[popover]{top:auto;right:auto;margin:0;border:0;overflow:visible;height:auto;width:max-content}

@@ -17,10 +17,12 @@ PASS Route hash
 PASS Route regex
 PASS Route settings
 PASS Route favorites
-PASS 135 built-in commands visible
+PASS All built-in commands visible
+PASS Every command card and dialog names where to paste it (Linux shell, PowerShell or DB prompt)
 PASS Environment tabs match catalog and expose DB editor guidance
 PASS DB menu separates CSQL login and session commands from guarded SQL changes
 PASS Alternative command opens an independent reviewed choice
+PASS Alternative keeps typed values, shows its condition first and returns to the original
 PASS Returning to cached command favorites reflects changes in shared favorites
 PASS Situation search for port
 PASS Port template and invalid port guard
@@ -75,12 +77,17 @@ PASS SQL formatter sample, preserved literals, UTF8 SQL download and stale resul
 PASS Edited SELECT copies directly; each DML preset reviews the final edited text before copying
 PASS Editing SELECT into UPDATE rechecks the current SQL, including on file export
 PASS Declining a preset preserves the draft; manual clipboard fallback receives only confirmed SQL
+PASS DB choice drives paste target and checks; WHERE-less change needs explicit acknowledgment and delivers the reviewed text
 PASS Settings backup excludes working inputs
 PASS Release excludes working data and reopens into identical repeatable ZIP
 PASS Invalid backup version rejected
 PASS Imported commands cannot claim trusted read-only risk
+PASS Imported command markup stays text on the dashboard, dialog and search
 PASS Clear inputs preserves settings, clears working text
-PASS Recommended tools link to matching environment and shared favorites
+PASS Dashboard gathers favorites, opens each work environment and starts the SQL workbench per DB
+PASS Every screen has 사용 예시 at the top; each guide opens and its example reproduces the shown result
+PASS Guide switches screens, opens with ? and warns before replacing typed input
+PASS Copy confirmation is drawn above an open dialog at the bottom of the screen
 PASS Valid backup larger than 2MiB exports and imports without loss
 PASS Mobile 390px layout home
 PASS Mobile 390px layout commands
@@ -90,32 +97,45 @@ PASS Mobile 390px layout sql
 PASS Mobile 390px layout settings
 PASS Resizing between mobile drawer and desktop restores visible keyboard focus
 PASS Touch 320x740: all 18 routes fit viewport
+PASS Touch 320x740: 사용 예시 on the first screen and the guide fits
 PASS Touch 320x740: drawer closes by button, backdrop and navigation
 PASS Touch 320x740: search opens, closes and selects without keyboard
 PASS Touch 320x740: readable fields, commands and 44px primary targets
 PASS Touch 320x740: command copy fallback and safety gates (clipboard double)
+PASS Touch 320x740: SQL workbench preset, Oracle review and blocked-clipboard manual copy
 PASS Touch 360x800: all 18 routes fit viewport
+PASS Touch 360x800: 사용 예시 on the first screen and the guide fits
 PASS Touch 360x800: drawer closes by button, backdrop and navigation
 PASS Touch 360x800: search opens, closes and selects without keyboard
 PASS Touch 360x800: readable fields, commands and 44px primary targets
 PASS Touch 360x800: command copy fallback and safety gates (clipboard double)
+PASS Touch 360x800: SQL workbench preset, Oracle review and blocked-clipboard manual copy
 PASS Touch 412x915: all 18 routes fit viewport
+PASS Touch 412x915: 사용 예시 on the first screen and the guide fits
 PASS Touch 412x915: drawer closes by button, backdrop and navigation
 PASS Touch 412x915: search opens, closes and selects without keyboard
 PASS Touch 412x915: readable fields, commands and 44px primary targets
 PASS Touch 412x915: command copy fallback and safety gates (clipboard double)
+PASS Touch 412x915: SQL workbench preset, Oracle review and blocked-clipboard manual copy
 PASS Touch 844x390: all 18 routes fit viewport
+PASS Touch 844x390: 사용 예시 on the first screen and the guide fits
 PASS Touch 844x390: drawer closes by button, backdrop and navigation
 PASS Touch 844x390: search opens, closes and selects without keyboard
 PASS Touch 844x390: readable fields, commands and 44px primary targets
 PASS Touch 844x390: command copy fallback and safety gates (clipboard double)
-PASS JavaScript disabled 360px: all 135 commands and risk guidance remain readable
+PASS Touch 844x390: SQL workbench preset, Oracle review and blocked-clipboard manual copy
+PASS JavaScript disabled 360px: all 157 commands, paste targets and risk guidance remain readable
 PASS JavaScript disabled 360px: native reference fits viewport
-PASS JavaScript disabled 1440px: all 135 commands and risk guidance remain readable
+PASS JavaScript disabled 1440px: all 157 commands, paste targets and risk guidance remain readable
 PASS JavaScript disabled 1440px: native reference fits viewport
+PASS Blocked inline script shows the read-only reference instead of an empty app
 PASS Settings-only storage writes (test double)
 PASS Missing Crypto does not prevent settings and backup access
+PASS Local file cubrid: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download
+PASS Local file mariadb: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download
+PASS Local file oracle: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download
+PASS Local file postgresql: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download
 PASS Local file open, real SHA256, ZIP save/reopen and storage reload
 PASS No uncaught browser errors across all tested pages
 PASS Zero HTTP(S) requests across full offline workflow and reopened pages
-BROWSER SUMMARY 120 passed, 0 failed
+BROWSER SUMMARY 140 passed, 0 failed

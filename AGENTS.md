@@ -9,12 +9,12 @@ Maintain a small, attractive Korean-language offline utility pocket for an opera
 - `src/shell.html`: document, application containers, CSP placeholders.
 - `src/styles.css`: responsive system-font UI, light/dark tokens, inline SVG styling.
 - `src/data.js`: generated tool/catalog metadata (`window.PocketData`).
-- `make_data.py`: human-editable source of the 135 catalog entries; run it to regenerate data.js after catalog edits.
+- `make_data.py`: human-editable source of the 157 catalog entries, the parameter specs and the four DB profiles (`dbs`: label, client, prompt, transaction flow); run it to regenerate data.js after catalog edits. It writes LF bytes on every OS.
 - `src/core.js`: dependency-free pure transformations (`window.PocketCore`).
 - `src/app.js`: routes, UI binding, safety prompts, import/export, in-memory views.
 - `src/release.js`: immutable source recipe to offline ZIP; never serialize live inputs or configuration.
 - `build.py`: combines sources, computes CSP script hash, writes self-contained HTML.
-- `build.py` also renders an escaped read-only catalog into the shell's noscript placeholder. Keep all built-in commands and risk/placeholder warnings available in that same HTML when JavaScript is disabled; never include personal configuration.
+- `build.py` also renders an escaped read-only catalog into the shell's `#script-fallback` placeholder. It is outside `<noscript>` on purpose: CSS hides it only after `app.js` adds `html.app-ready` at the end of a successful start, so a disabled, CSP-blocked, altered or failing script still leaves the reference visible (immediately without JavaScript, after 1.5 s otherwise). Keep all built-in commands, each command's paste target (`where`) and risk/placeholder warnings available there; never include personal configuration.
 - `tests/`: Node core suite, offline Playwright browser suite, Python static suite, measured reports.
 - `samples/`: non-sensitive encoding/log/config fixtures.
 
@@ -41,6 +41,8 @@ python tests/static_test.py
 python tests/browser_test.py
 ```
 
+Optional usage evidence: `python tests/evidence_walkthrough.py [--os-clipboard]` opens the built HTML as `file://`, uses every menu with fake data, checks results against Python oracles and writes screenshots plus `index.html`/`README.md`/`evidence.json` to `evidence/v<version>/`. `--os-clipboard` briefly opens a visible Chromium window to compare copy buttons with `Get-Clipboard` and restores the previous clipboard text (skipped when the clipboard holds non-text data). Headless Chromium's clipboard does not reach the OS clipboard, and Chromium on Windows stores multi-line clipboard text with CRLF.
+
 The core suite targets Node 22+. The browser suite requires the Python Playwright package and an approved Chromium installation only on the development machine. Set `CHROMIUM_PATH` if `/usr/bin/chromium` is not correct. On Windows PowerShell, set `$env:CHROMIUM_PATH` to the approved Chrome/Edge executable, then run the Python script. Never modify enterprise browser policy to run a test.
 
 GitHub → Actions → Verify offline release runs these checks on a Windows runner for pushes and pull requests. It first regenerates the catalog/HTML/ZIP and rejects differences from the committed artifacts. Official actions use pinned commits and read-only repository permission; no secrets or automatic release publishing are needed.
@@ -64,24 +66,30 @@ Node's ICU EUC-KR decoder in the tested runtime did not map some Windows-949 ext
 
 ## Adding a command
 
-Add an entry in `make_data.py`; use a unique ID and stable IDs for compatibility with favorites. Include concise Korean title, group, tags, exact command, notes, risk (`read`, `load`, `change`), permission (`user`, `limited`), shell (`bash`, `powershell`, or static `sql` queries or `csql` session commands without interpolation), domain, prerequisite and explicit alternative IDs. Templates use `{{UPPER_CASE}}`; Docker's literal `{{.State.Status}}` is intentionally not a Pocket Ops placeholder.
+Add an entry in `make_data.py`; use a unique ID and stable IDs for compatibility with favorites. Include concise Korean title, group, tags, exact command, notes, risk (`read`, `load`, `change`), permission (`user`, `limited`), shell (`bash`, `powershell`, or static client input without interpolation: `sql` statements, `csql` session commands, `sqlplus`, `psql` meta commands, `mariadb` client commands), domain, prerequisite and explicit alternative IDs. DB entries also set `db` (`cubrid`, `mariadb`, `oracle`, `postgresql`) and, when they belong to the SQL workbench flow, `step` (`connect`, `check`, `begin`, `finish`). The generator derives `where` (the paste target shown on cards, dialogs, search and the read-only reference); never hand-write it. Templates use `{{UPPER_CASE}}`; Docker's literal `{{.State.Status}}` is intentionally not a Pocket Ops placeholder.
 
 PID/port/numeric fields must validate before interpolation; string and path fields must be shell-quoted. A quoted string is not automatically protected against option parsing: path values starting with `-` are rejected and should be entered with `./`. Avoid destructive examples; put reads before writes and leave real process IDs blank.
 
 Do not infer installation absence from empty process/PATH/package/header output. In particular WebtoB/JEUS version and privileges vary across installations. Add alternative commands as explicit variants, not a script that executes everything.
 
-For the four built-in CSQL CRUD presets, `editorSql` holds the editable example; the catalog generator comments every line of a change preset's `command` for direct reference/copy. Classify the current SQL through `prepareSql` for formatter copy/save. Review the exact INSERT/UPDATE/DELETE output before delivery; an edit invalidates that review. Never trust imported commands as editor presets.
+For the four built-in CRUD presets (portable SQL for all four DBs), `editorSql` holds the editable example; the catalog generator comments every line of a change preset's `command` for direct reference/copy. Classify the current SQL through `prepareSql(source, dialect)` for formatter copy/save; it returns `{sql, verb, checks, review}` and never rewrites text beyond whitespace. Deliver only when `review` is false, otherwise after the exact output is reviewed; a `danger` check (UPDATE/DELETE without top-level WHERE, SELECT … INTO) additionally requires the explicit acknowledgment checkbox. An edit or a DB change invalidates the review and the previous result. Subquery row locks and client substitutions on SELECT also require review. The command-list workbench shortcut carries the selected DB filter. Dialect rules model the paste target, not the server: Oracle SQL*Plus blank/`/`/`.` lines are rejected and `&` warned, psql `:name` warned, MariaDB `/*! */` (all DBs) and `--x` rejected, `//` comments only for CUBRID. Cancelling a preset replacement must change neither the draft nor the selected DB. Never trust imported commands as editor presets.
 
 ## Adding a tool
 
 Add metadata in the catalog generator, pure functions in `core.js`, a renderer and `bindPage` branch in `app.js`, and entries in `renderers`. Each tool needs sample input, copy/export where appropriate, visible scope/limits, error clearing, keyboard labels, responsive states and tests. Avoid silently keeping stale results after a failed run or after changing a calculation's source.
 
+Every route also needs an entry in `guides` in `make_data.py` (when, steps, cautions, optional example). The title row shows a "사용 예시" button and `?` opens it. An example with `fill`/`click` is run through the screen's own element IDs and buttons, so keep `output` (or `expect` for `result`) identical to what the tool shows: the core suite recomputes pure examples and the browser suite runs every example. Examples come only from the catalog, never from imported data, and must warn before replacing text the user typed.
+
+Alternatives opened from a command dialog carry same-name values (and FILE/PATH/LOG/DIR as one location) and offer a way back; keep that behavior when adding alternatives. The home route is a dashboard (search, environment cards, favorite commands/tools, folded full tool grid); keep it short on phones.
+
 `views` caches detached nodes only in memory. Long-running async work must ignore out-of-date results and have cleanup behavior when inputs are cleared.
 
 ## Configuration format
 
-Storage key `pocket-ops:v1`. Fields: version, theme, toolFavs, cmdFavs, customCommands. Validate imports, bound arrays and string lengths, reject duplicate custom IDs. Bump schema only with a migration strategy. Backups are plain JSON and may contain sensitive strings deliberately saved as commands; show the existing warning.
+Storage key `pocket-ops:v1`. Fields: version, theme, toolFavs, cmdFavs, customCommands. The SQL workbench DB choice and the command list DB filter are in-memory only. Validate imports, bound arrays and string lengths, reject duplicate custom IDs. Bump schema only with a migration strategy. Backups are plain JSON and may contain sensitive strings deliberately saved as commands; show the existing warning.
 
 ## Product direction for a later iteration
 
-Start with feedback from actual authorized offline use, especially copied command shapes, Korean labels, keyboard search and restrictions. Candidate additions are an environment-specific command pack, checklist/runbook view and a manual log-redaction preview. They are not implemented in v0.4.0. Do not add cloud AI, background sync or user accounts to implement them.
+Start with feedback from actual authorized offline use, especially copied command shapes, Korean labels, keyboard search and restrictions. Candidate additions are an environment-specific command pack, checklist/runbook view, a manual log-redaction preview, an in-app confirmation dialog replacing `window.confirm` for HTML viewers that suppress native dialogs, and an explicitly saved default DB. They are not implemented in v0.6.0. Do not add cloud AI, background sync or user accounts to implement them.
+
+Keep the delivered artifact a single file. Reviewed in v0.6.0: splitting pages into linked HTML/JS files would break the Galaxy path (Android file managers open HTML through `content://`, where relative links and scripts usually cannot resolve), would replace the single CSP script hash with origin-based rules that `file://` handles inconsistently, and Workers/modules are restricted on `file://`. Size (≈1 MB including the release recipe) is not a bottleneck. Maintainability comes from the split `src/` files and the build step; add further source files to the build list in `build.py` instead of shipping several files.

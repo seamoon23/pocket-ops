@@ -72,6 +72,15 @@ CUBRID의 클라이언트/서버 모드, 읽기 전용 접속, 수동 커밋 접
 
 네 가지 기본 쿼리는 가상의 테이블과 키를 사용합니다. INSERT·UPDATE·DELETE의 각 줄은 주석으로 시작하므로 편집기에서 테이블·값·조건을 검토한 뒤 사용합니다. [SELECT](https://cubrid-manual.readthedocs.io/en/latest/sql/query/select.html) · [INSERT](https://cubrid-manual.readthedocs.io/en/latest/sql/query/insert.html) · [UPDATE](https://cubrid-manual.readthedocs.io/en/latest/sql/query/update.html) · [DELETE](https://www.cubrid.org/manual/en/11.2/sql/query/delete.html)
 
+### v0.6.0 DB 클라이언트 동작 근거
+
+아래는 v0.6.0에서 추가한 접속·트랜잭션 명령과 SQL 점검 규칙의 근거가 되는 공식 문서 위치입니다. 이번 작업에서는 온라인으로 다시 열어 대조하지 않았으므로, 기관 반입 전 설치 버전의 매뉴얼과 `--help`/`;help`/`HELP`로 확인하세요.
+
+- MySQL/MariaDB 클라이언트: `--safe-updates`(키 조건 없는 UPDATE·DELETE 거부, SELECT 1,000행 제한), `-p` 단독 사용 시 비밀번호 프롬프트, `-- ` 주석의 공백 요구와 `/*! */` 실행 주석 — MySQL Reference Manual의 *mysql Client Tips* · *Comments* 장, MariaDB *Comment Syntax*.
+- Oracle SQL*Plus: `EXIT`의 기본 커밋과 `EXIT ROLLBACK`, `SET DEFINE OFF`, `SQLBLANKLINES` 기본값 OFF(빈 줄에서 입력 종료), `/` 실행과 `.` 입력 종료, `SHOW AUTOCOMMIT`, `-L` — *SQL*Plus User's Guide and Reference*의 EXIT · SET · Entering and Executing Commands 장.
+- PostgreSQL psql: `AUTOCOMMIT` 변수, `\conninfo`, `\d`, `:이름` SQL 보간, `\q` — *psql* 애플리케이션 문서. `PGOPTIONS`의 `-c default_transaction_read_only=on` — libpq 환경 변수와 *Client Connection Defaults*. `SELECT … INTO`의 새 테이블 생성 — *SELECT INTO*.
+- CUBRID: 위 CSQL 매뉴얼의 `-r`, `--no-auto-commit`, 세션 명령과 `//`·`--`·`/* */` 주석.
+
 GNU tar는 콜론이 포함된 아카이브 이름을 원격 경로로 해석할 수 있어 로컬 목록 조회 예시에 `--force-local`을 사용합니다. [GNU tar 아카이브 파일명](https://www.gnu.org/software/tar/manual/html_node/file.html)
 
 ## 해석 주의
@@ -88,3 +97,7 @@ GNU tar는 콜론이 포함된 아카이브 이름을 원격 경로로 해석할
 - 삼성 공식 [다운로드 파일과 내 파일 위치](https://www.samsung.com/uk/support/mobile-devices/where-can-i-find-downloaded-files-on-my-samsung-galaxy-smartphone/): 앱스에서 내 파일 검색, 다운로드 분류, 앱별 저장 위치 차이를 확인했습니다(2026-10-24). 이 문서는 임의 로컬 HTML의 JavaScript·클립보드 지원을 보증하지 않습니다.
 
 CSQL 대화형 입력이 따옴표나 주석 안의 줄 시작 세션 명령도 인식하는 경우를 고려하여, SQL 정렬기는 이 형태를 감지하면 원문을 유지하고 출력을 중단합니다. [CUBRID CSQL 매뉴얼 원문 · Session Commands](https://github.com/CUBRID/cubrid-manual/blob/develop/en/csql.rst#session-commands)
+
+MariaDB 작업 순서는 이미 열린 트랜잭션에서 다시 시작하면 기존 변경이 확정되는 동작을 반영합니다. [MariaDB START TRANSACTION](https://mariadb.com/docs/server/reference/sql-statements/transactions/start-transaction)
+
+PostgreSQL 하위 SELECT의 잠금 절도 대상 행을 잠글 수 있어 최종 확인에 표시합니다. [PostgreSQL SELECT](https://www.postgresql.org/docs/current/sql-select.html#SQL-FOR-UPDATE-SHARE)

@@ -1,0 +1,5 @@
+Pocket Ops · 줄 단위 비교 보고서 (git patch 아님)
+-    1      | server.port=8080
++         1 | server.port=8111
+     2    2 | pool.max=100
+     3    3 | encoding=UTF-8

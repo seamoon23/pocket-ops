@@ -1,0 +1,1461 @@
+{
+  "environment": {
+    "browser": "Chromium 156.0.8078.4",
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.14",
+    "html": "pocket-ops.html",
+    "html_bytes": 1080378,
+    "html_sha256": "d125d89334dba6b858ce95fbe55d64488b20b1cb4165ddc82ac45bae87678cbd",
+    "url": "file:///…/pocket-ops.html",
+    "started": "2026-11-21T23:26:53+09:00",
+    "version": "0.6.0",
+    "external_requests": [],
+    "page_errors": [],
+    "finished": "2026-11-21T23:27:30+09:00"
+  },
+  "summary": {
+    "cases": 23,
+    "checks": 124,
+    "failed": 0,
+    "screenshots": 72,
+    "browser_dialogs": [
+      "SQL 원문에 작성한 내용이 있습니다. 이 프리셋으로 교체할까요?",
+      "실제 실행 시 파일/디렉터리 권한이 바뀝니다. 대상과 권한을 확인했나요?",
+      "이 앱의 즐겨찾기·내 명령어·테마를 초기화할까요? 다른 사이트 저장소는 건드리지 않습니다.",
+      "열린 모든 도구의 입력·선택한 파일·결과를 비울까요? 즐겨찾기와 저장한 명령어는 유지됩니다."
+    ]
+  },
+  "cases": [
+    {
+      "no": 1,
+      "menu": "파일 열기",
+      "title": "탐색기에서 연 것처럼 pocket-ops.html을 file://로 열기",
+      "expected": "설치·서버 없이 대시보드가 열리고 외부 요청이 없다",
+      "device": "PC 1366×900",
+      "steps": [
+        "file:// 주소로 pocket-ops.html 열기"
+      ],
+      "checks": [
+        {
+          "name": "앱 시작 완료(html.app-ready)",
+          "actual": "true",
+          "expected": "true",
+          "pass": true
+        },
+        {
+          "name": "실행 방식",
+          "actual": "file:",
+          "expected": "file:",
+          "pass": true
+        },
+        {
+          "name": "읽기 전용 대체 화면은 숨김",
+          "actual": "false",
+          "expected": "false",
+          "pass": true
+        },
+        {
+          "name": "보안 컨텍스트와 Web Crypto·Worker 사용 가능",
+          "actual": "true,true,true",
+          "expected": "true,true,true",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/001-home-open.jpg",
+          "caption": "파일을 연 직후의 첫 화면(내 작업실)"
+        }
+      ]
+    },
+    {
+      "no": 2,
+      "menu": "내 작업실",
+      "title": "검색 → 명령 값 입력 → 복사, 환경 카드와 DB 카드로 이동",
+      "expected": "검색 결과에서 연 명령에 입력한 값이 그대로 복사되고, 카드가 해당 환경·DB로 연다",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 검색창 열어 보기",
+        "검색창에 ‘포트’ 입력",
+        "‘특정 포트 리스닝 확인’ → 포트 8111",
+        "Linux 셸 · SSH 카드 → Linux 명령 보기",
+        "DB 카드 → Oracle"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=185px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 내 작업실",
+          "expected": "사용 예시 · 내 작업실",
+          "pass": true
+        },
+        {
+          "name": "예시 실행으로 검색창이 열림",
+          "actual": "1",
+          "expected": "1",
+          "pass": true
+        },
+        {
+          "name": "최종 명령어",
+          "actual": "ss -lnt \"( sport = :8111 )\"",
+          "expected": "ss -lnt \"( sport = :8111 )\"",
+          "pass": true
+        },
+        {
+          "name": "클립보드(브라우저 Clipboard API로 읽음)",
+          "actual": "ss -lnt \"( sport = :8111 )\"",
+          "expected": "ss -lnt \"( sport = :8111 )\"",
+          "pass": true
+        },
+        {
+          "name": "복사 완료 알림이 열린 창 위(최상위 레이어)에 표시",
+          "actual": "true",
+          "expected": "true",
+          "pass": true
+        },
+        {
+          "name": "명령어 포켓이 Linux로 열림",
+          "actual": "linux",
+          "expected": "linux",
+          "pass": true
+        },
+        {
+          "name": "SQL 작업대가 Oracle 기준",
+          "actual": "붙여넣을 곳: SQL> · SQL*Plus",
+          "expected": "SQL>",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/002-home-guide.jpg",
+          "caption": "내 작업실 사용 예시 창"
+        },
+        {
+          "file": "shots/003-home-palette.jpg",
+          "caption": "검색 결과: 도구와 명령어가 입력 위치와 함께 표시"
+        },
+        {
+          "file": "shots/004-home-command.jpg",
+          "caption": "값을 넣은 명령 창과 창 위에 표시된 복사 완료 알림"
+        },
+        {
+          "file": "shots/005-home-linux.jpg",
+          "caption": "Linux 환경만 표시된 명령어 포켓"
+        },
+        {
+          "file": "shots/006-home-oracle.jpg",
+          "caption": "DB 카드에서 연 SQL 작업대(Oracle)"
+        }
+      ]
+    },
+    {
+      "no": 3,
+      "menu": "명령어 포켓",
+      "title": "검색 → 대체 명령(값 이어받기) → 원래 명령 복귀, 변경 명령 확인 체크, 내 명령어 추가",
+      "expected": "대안으로 넘어가도 입력값이 유지되고, 변경 명령은 확인 전 복사가 잠기며, 내 명령어가 목록에 저장된다",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → ‘포트’로 찾아보기",
+        "‘프로세스 이름으로 PID 찾기’ → PATTERN: java",
+        "사용할 수 없을 때 → pgrep 대체 · ps와 문자열 검색",
+        "변경 명령 ‘프로세스에 정상 종료 요청’ → PID 12345(가짜 값)",
+        "내 명령어 → 제목·명령 입력 → 저장(증적 표식 EVID-CMD-5Z8)"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 명령어 포켓",
+          "expected": "사용 예시 · 명령어 포켓",
+          "pass": true
+        },
+        {
+          "name": "예시 실행으로 ‘포트’ 검색",
+          "actual": "포트",
+          "expected": "포트",
+          "pass": true
+        },
+        {
+          "name": "원래 명령",
+          "actual": "pgrep -af -- 'java'",
+          "expected": "pgrep -af -- 'java'",
+          "pass": true
+        },
+        {
+          "name": "대안이 입력값을 이어받음",
+          "actual": "ps -ef | grep -F -- 'java'",
+          "expected": "ps -ef | grep -F -- 'java'",
+          "pass": true
+        },
+        {
+          "name": "이어받은 값 안내",
+          "actual": "이전 명령에서 입력한 값을 이어받았습니다: PATTERN. 이 명령에도 맞는지 확인하세요.",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "원래 명령으로 복귀",
+          "actual": "java",
+          "expected": "java",
+          "pass": true
+        },
+        {
+          "name": "확인 체크 전 복사 잠김",
+          "actual": "true",
+          "expected": "true",
+          "pass": true
+        },
+        {
+          "name": "확인 체크 후 복사 가능",
+          "actual": "true",
+          "expected": "true",
+          "pass": true
+        },
+        {
+          "name": "복사된 명령",
+          "actual": "kill -TERM 12345",
+          "expected": "kill -TERM 12345",
+          "pass": true
+        },
+        {
+          "name": "내 명령어가 목록에 표시",
+          "actual": "1",
+          "expected": "1",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/007-commands-guide.jpg",
+          "caption": "명령어 포켓 사용 예시 창"
+        },
+        {
+          "file": "shots/008-commands-search.jpg",
+          "caption": "‘포트’ 검색 결과와 카드의 입력 위치"
+        },
+        {
+          "file": "shots/009-commands-alternative.jpg",
+          "caption": "대체 명령: 입력값 이어받기와 원래 명령 복귀 버튼"
+        },
+        {
+          "file": "shots/010-commands-ack.jpg",
+          "caption": "변경 명령: 확인 체크 전 복사 버튼 잠김"
+        },
+        {
+          "file": "shots/011-commands-custom.jpg",
+          "caption": "내 명령어 추가 창(평문 저장 경고)"
+        },
+        {
+          "file": "shots/012-commands-custom-saved.jpg",
+          "caption": "저장된 내 명령어 카드(사용자 명령 표시)"
+        }
+      ]
+    },
+    {
+      "no": 4,
+      "menu": "SQL 작업대",
+      "title": "MariaDB 접속 명령 → UPDATE 프리셋 수정 → WHERE 삭제 → 확인 후 복사·저장, Oracle 빈 줄 거부",
+      "expected": "확인 창에 보인 SQL이 클립보드·저장 파일과 같고, WHERE 없는 변경은 체크 전 잠긴다",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 예시를 넣고 정렬",
+        "DB: MariaDB → 1 접속 → 사용자 app_reader · DB appdb(가짜 값)",
+        "4 쿼리 → UPDATE 프리셋 → WHERE 줄 삭제, 값 EVID-SQL-5Z8",
+        "DB: Oracle → 빈 줄이 있는 SELECT → 정렬 · 점검"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · SQL 작업대",
+          "expected": "사용 예시 · SQL 작업대",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "update sample_items\nset item_name = '새 이름',\n  updated_at = current_timestamp\nwhere item_id = 'A001';",
+          "expected": "update sample_items\nset item_name = '새 이름',\n  updated_at = current_timestamp\nwhere item_id = 'A001';",
+          "pass": true
+        },
+        {
+          "name": "접속 명령(비밀번호는 프롬프트에서 입력)",
+          "actual": "mysql -h '127.0.0.1' -u 'app_reader' -p --safe-updates 'appdb'",
+          "expected": "mysql -h '127.0.0.1' -u 'app_reader' -p --safe-updates 'appdb'",
+          "pass": true
+        },
+        {
+          "name": "WHERE 없음 경고",
+          "actual": "WHERE 조건이 없습니다. 실행하면 테이블의 모든 행이 변경됩니다.\n예시 테이블 pocket_ops_sample이 그대로 있습니다. 실제 테이블명과 키 값으로 바꿨는지 확인하세요.",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "확인 체크 전 복사 잠김",
+          "actual": "true",
+          "expected": "true",
+          "pass": true
+        },
+        {
+          "name": "클립보드 = 확인 창에 보인 SQL(줄바꿈 정규화 후 글자 단위 비교)",
+          "actual": "UPDATE pocket_ops_sample\nSET item_name = 'EVID-SQL-5Z8'",
+          "expected": "UPDATE pocket_ops_sample\nSET item_name = 'EVID-SQL-5Z8'",
+          "pass": true
+        },
+        {
+          "name": "클립보드의 줄바꿈 형식(기록)",
+          "actual": "CRLF",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "저장 파일 = 확인 창에 보인 SQL",
+          "actual": "UPDATE pocket_ops_sample\nSET item_name = 'EVID-SQL-5Z8'",
+          "expected": "UPDATE pocket_ops_sample\nSET item_name = 'EVID-SQL-5Z8'",
+          "pass": true
+        },
+        {
+          "name": "SQL*Plus 빈 줄 거부",
+          "actual": "status error",
+          "expected": "",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/013-sqlformat-guide.jpg",
+          "caption": "SQL 작업대 사용 예시 창"
+        },
+        {
+          "file": "shots/014-sqlformat-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/015-sql-connect.jpg",
+          "caption": "MariaDB 접속 명령: 입력 위치 Linux 셸"
+        },
+        {
+          "file": "shots/016-sql-review.jpg",
+          "caption": "최종 쿼리 확인 창: WHERE 없는 UPDATE 위험과 확인 체크"
+        },
+        {
+          "file": "shots/017-sql-oracle-blank.jpg",
+          "caption": "Oracle: 빈 줄은 SQL*Plus 입력을 끊으므로 거부"
+        }
+      ]
+    },
+    {
+      "no": 5,
+      "menu": "한글 · 인코딩 진료소",
+      "title": "깨진 문자열 복구 후보, EUC-KR(CP949) 원본 파일 다시 읽기 → UTF-8 저장",
+      "expected": "CP949 파일이 Python cp949 디코딩과 같은 한글로 보이고, 저장 파일이 UTF-8로 같은 내용이다",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기",
+        "01 원본 파일 → samples/korean-cp949.txt → EUC-KR / Windows-949로 읽기"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 한글 · 인코딩 진료소",
+          "expected": "사용 예시 · 한글 · 인코딩 진료소",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "안녕하세요",
+          "expected": "안녕하세요",
+          "pass": true
+        },
+        {
+          "name": "화면 결과 = Python cp949 디코딩(줄바꿈 LF 표시)",
+          "actual": "Pocket Ops 인코딩 샘플\n한글 테스트: 안녕하세요.\n확장 한글: 갂 똠\n이 파일에는 실제 업무 자료가 없습니다.\n",
+          "expected": "Pocket Ops 인코딩 샘플\n한글 테스트: 안녕하세요.\n확장 한글: 갂 똠\n이 파일에는 실제 업무 자료가 없습니다.\n",
+          "pass": true
+        },
+        {
+          "name": "UTF-8로 저장한 파일 = 원문(CRLF 유지)",
+          "actual": "Pocket Ops 인코딩 샘플\r\n한글 테스트: 안녕하세요.\r\n확장 한글: 갂 똠\r\n이 파일에는 실제 업무 자료가 없습니다.\r\n",
+          "expected": "Pocket Ops 인코딩 샘플\r\n한글 테스트: 안녕하세요.\r\n확장 한글: 갂 똠\r\n이 파일에는 실제 업무 자료가 없습니다.\r\n",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/018-encoding-guide.jpg",
+          "caption": "한글 · 인코딩 진료소 사용 예시 창"
+        },
+        {
+          "file": "shots/019-encoding-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/020-encoding-file.jpg",
+          "caption": "CP949 파일을 EUC-KR로 다시 읽은 결과"
+        }
+      ]
+    },
+    {
+      "no": 6,
+      "menu": "JSON 정리함",
+      "title": "큰 숫자 보존 정리, 문법 오류, 압축 후 복사",
+      "expected": "숫자 표기를 바꾸지 않고, 오류는 결과를 비우고 원인을 표시한다",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기",
+        "끝에 쉼표가 있는 JSON → 문법 검증",
+        "samples/sample-api.json → 공백 압축 → 복사"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · JSON 정리함",
+          "expected": "사용 예시 · JSON 정리함",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "{\n  \"id\": 900719925474099312345,\n  \"amount\": 1.2300,\n  \"tags\": [\n    \"한글\",\n    \"offline\"\n  ]\n}",
+          "expected": "{\n  \"id\": 900719925474099312345,\n  \"amount\": 1.2300,\n  \"tags\": [\n    \"한글\",\n    \"offline\"\n  ]\n}",
+          "pass": true
+        },
+        {
+          "name": "문법 오류 표시",
+          "actual": "status error",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "원문의 숫자 표기를 그대로 유지(Python으로 추출한 숫자 토큰)",
+          "actual": "[]",
+          "expected": "[]",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/021-json-guide.jpg",
+          "caption": "JSON 정리함 사용 예시 창"
+        },
+        {
+          "file": "shots/022-json-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/023-json-error.jpg",
+          "caption": "문법 오류: 상태 줄에 원인 표시"
+        },
+        {
+          "file": "shots/024-json-minify.jpg",
+          "caption": "공백 압축 결과"
+        }
+      ]
+    },
+    {
+      "no": 7,
+      "menu": "인코딩 변환기",
+      "title": "URL 인코딩, Base64 디코딩",
+      "expected": "Python urllib/base64와 같은 결과",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기",
+        "Base64 → 7ZWc6riA → 디코딩"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 인코딩 변환기",
+          "expected": "사용 예시 · 인코딩 변환기",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "%ED%95%9C%EA%B8%80%20%EC%9D%B4%EB%A6%84%26x%3D1",
+          "expected": "%ED%95%9C%EA%B8%80%20%EC%9D%B4%EB%A6%84%26x%3D1",
+          "pass": true
+        },
+        {
+          "name": "Python quote와 같음",
+          "actual": "%ED%95%9C%EA%B8%80%20%EC%9D%B4%EB%A6%84%26x%3D1",
+          "expected": "%ED%95%9C%EA%B8%80%20%EC%9D%B4%EB%A6%84%26x%3D1",
+          "pass": true
+        },
+        {
+          "name": "Base64 디코딩 = Python base64",
+          "actual": "한글",
+          "expected": "한글",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/025-codec-guide.jpg",
+          "caption": "인코딩 변환기 사용 예시 창"
+        },
+        {
+          "file": "shots/026-codec-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/027-codec-base64.jpg",
+          "caption": "Base64 디코딩 결과"
+        }
+      ]
+    },
+    {
+      "no": 8,
+      "menu": "텍스트 다듬기",
+      "title": "목록 정리 후 CRLF로 저장",
+      "expected": "중복·빈 줄 제거, 자연 정렬, 저장 파일 줄바꿈이 CRLF",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기",
+        "결과 줄바꿈 CRLF → 적용 → 저장"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 텍스트 다듬기",
+          "expected": "사용 예시 · 텍스트 다듬기",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "item1\nitem2\nitem10",
+          "expected": "item1\nitem2\nitem10",
+          "pass": true
+        },
+        {
+          "name": "저장 파일 바이트(CRLF)",
+          "actual": "b'item1\\r\\nitem2\\r\\nitem10'",
+          "expected": "b'item1\\r\\nitem2\\r\\nitem10'",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/028-text-guide.jpg",
+          "caption": "텍스트 다듬기 사용 예시 창"
+        },
+        {
+          "file": "shots/029-text-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/030-text-crlf.jpg",
+          "caption": "CRLF로 정리한 결과와 상태 줄"
+        }
+      ]
+    },
+    {
+      "no": 9,
+      "menu": "변경점 비교",
+      "title": "설정 변경 전후 비교, 바뀐 줄만 보기, 보고서 저장",
+      "expected": "추가 1·삭제 1·동일 2, 보고서에 +/− 줄",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기",
+        "바뀐 줄만 표시 → 비교 결과 저장"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 변경점 비교",
+          "expected": "사용 예시 · 변경점 비교",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "1추가1삭제2동일",
+          "expected": "1추가1삭제2동일",
+          "pass": true
+        },
+        {
+          "name": "바뀐 줄만 표시",
+          "actual": "2",
+          "expected": "2",
+          "pass": true
+        },
+        {
+          "name": "보고서에 삭제·추가 줄",
+          "actual": "Pocket Ops · 줄 단위 비교 보고서 (git patch 아님)\n-    1      | server.port=8080\n+         1 | server.port=8111\n     2    2 | pool.max=100\n     3    3 | encoding=UTF-8",
+          "expected": "",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/031-diff-guide.jpg",
+          "caption": "변경점 비교 사용 예시 창"
+        },
+        {
+          "file": "shots/032-diff-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/033-diff-result.jpg",
+          "caption": "줄 단위 비교 결과"
+        }
+      ]
+    },
+    {
+      "no": 10,
+      "menu": "로그 돋보기",
+      "title": "오류 주변 문맥 추리기, UTF-8 로그 파일 열기",
+      "expected": "결과가 Python 필터(대소문자 무시)와 같다",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기",
+        "UTF-8 파일 열기 → samples/sample-log.txt → 포함: error · 일치 줄만",
+        "증적 표식 EVID-LOG-5Z8이 있는 로그 줄 입력(저장 범위 확인용)"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 로그 돋보기",
+          "expected": "사용 예시 · 로그 돋보기",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "09:00:02 WARN  pool nearly full\n09:00:03 ERROR request failed\njava.sql.SQLException: timeout",
+          "expected": "09:00:02 WARN  pool nearly full\n09:00:03 ERROR request failed\njava.sql.SQLException: timeout",
+          "pass": true
+        },
+        {
+          "name": "Python 필터와 같음",
+          "actual": "2026-10-03 09:00:02 ERROR request failed",
+          "expected": "2026-10-03 09:00:02 ERROR request failed",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/034-logs-guide.jpg",
+          "caption": "로그 돋보기 사용 예시 창"
+        },
+        {
+          "file": "shots/035-logs-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/036-logs-file.jpg",
+          "caption": "파일 로그 필터 결과와 통계"
+        }
+      ]
+    },
+    {
+      "no": 11,
+      "menu": "SQL IN 도우미",
+      "title": "문자열 목록 → IN 조건, 숫자 모드 잘못된 값",
+      "expected": "작은따옴표 이스케이프, 숫자 모드는 문자를 거부",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기",
+        "값 형식: 숫자 → 100, 2e3, A1 → IN 조건 만들기"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · SQL IN 도우미",
+          "expected": "사용 예시 · SQL IN 도우미",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "ITEM_ID IN (\n  'A001', 'O''Brien', '00123'\n)",
+          "expected": "ITEM_ID IN (\n  'A001', 'O''Brien', '00123'\n)",
+          "pass": true
+        },
+        {
+          "name": "숫자가 아닌 값 거부",
+          "actual": "status error",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "오류 시 결과 비움",
+          "actual": "",
+          "expected": "",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/037-sql-guide.jpg",
+          "caption": "SQL IN 도우미 사용 예시 창"
+        },
+        {
+          "file": "shots/038-sql-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/039-sql-in-error.jpg",
+          "caption": "숫자 모드 오류 표시"
+        }
+      ]
+    },
+    {
+      "no": 12,
+      "menu": "문자 · ASCII 검사기",
+      "title": "숫자 코드 → 문자, 숨은 공백 분석",
+      "expected": "U+200B, NBSP가 이름으로 표시된다",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기",
+        "숨은 공백 샘플"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 문자 · ASCII 검사기",
+          "expected": "사용 예시 · 문자 · ASCII 검사기",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "A한글😀",
+          "expected": "A한글😀",
+          "pass": true
+        },
+        {
+          "name": "ZERO WIDTH SPACE·NBSP 표시",
+          "actual": "#\t문자 / 제어문자 이름\t코드 포인트\t10진수\tASCII\tUTF-8 HEX\n1\tA\tU+0041\t65\t65\t41\n2\tSPACE\tU+0020\t32\t32\t20\n3\t한\tU+D55C\t54620\t—\tED 95 9C\n4\t글\tU+AE00\t44544\t—\tEA B8 80\n5\tSPACE\tU+0020\t32\t32\t20\n6\t😀\tU+1F600\t128512\t—\tF0 9F 98 80\n7\tTAB\tU+0009\t9\t9\t09\n8\tZERO WIDTH SPACE\tU+200B\t8203\t—\tE2 80 8B\n9\tNBSP\tU+00A0\t160\t—\tC2 A0\n10\tLF\tU+000A\t10\t10\t0A",
+          "expected": "",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/040-unicode-guide.jpg",
+          "caption": "문자 · ASCII 검사기 사용 예시 창"
+        },
+        {
+          "file": "shots/041-unicode-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/042-unicode-hidden.jpg",
+          "caption": "보이지 않는 문자 이름과 UTF-8 바이트"
+        }
+      ]
+    },
+    {
+      "no": 13,
+      "menu": "시간 번역기",
+      "title": "타임스탬프 → 날짜, KST 날짜 → 타임스탬프",
+      "expected": "Python datetime과 같은 값",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기",
+        "날짜 2026-11-21 09:00:00 · KST → 타임스탬프로 변환"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 시간 번역기",
+          "expected": "사용 예시 · 시간 번역기",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "UTC        2023-11-14 22:13:20.000 UTC+00:00\nKST        2023-11-15 07:13:20.000 UTC+09:00\nUnix 초    1700000000\nUnix ms    1700000000000\nISO 8601   2023-11-14T22:13:20.000Z",
+          "expected": "UTC        2023-11-14 22:13:20.000 UTC+00:00\nKST        2023-11-15 07:13:20.000 UTC+09:00\nUnix 초    1700000000\nUnix ms    1700000000000\nISO 8601   2023-11-14T22:13:20.000Z",
+          "pass": true
+        },
+        {
+          "name": "Unix 초 = Python datetime",
+          "actual": "1795219200",
+          "expected": "1795219200",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/043-time-guide.jpg",
+          "caption": "시간 번역기 사용 예시 창"
+        },
+        {
+          "file": "shots/044-time-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/045-time-date.jpg",
+          "caption": "KST 날짜를 타임스탬프로 변환"
+        }
+      ]
+    },
+    {
+      "no": 14,
+      "menu": "권한 계산기",
+      "title": "체크박스로 644 만들기 → 확인 후 복사",
+      "expected": "rw-r--r--, 확인 창을 거쳐 복사",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기",
+        "일반 파일 644 → 경로 입력 → 내용 확인 후 복사 → 확인 창 승인"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 권한 계산기",
+          "expected": "사용 예시 · 권한 계산기",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "chmod 750 -- '/app/batch/run.sh'",
+          "expected": "chmod 750 -- '/app/batch/run.sh'",
+          "pass": true
+        },
+        {
+          "name": "rwx 표기 = Python 계산",
+          "actual": "rwxr-x---",
+          "expected": "rwxr-x---",
+          "pass": true
+        },
+        {
+          "name": "복사 전 확인 창",
+          "actual": "실제 실행 시 파일/디렉터리 권한이 바뀝니다. 대상과 권한을 확인했나요?",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "복사된 명령",
+          "actual": "chmod 644 -- '/app/conf/server.properties'",
+          "expected": "chmod 644 -- '/app/conf/server.properties'",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/046-chmod-guide.jpg",
+          "caption": "권한 계산기 사용 예시 창"
+        },
+        {
+          "file": "shots/047-chmod-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/048-chmod-644.jpg",
+          "caption": "644와 rw-r--r--, 복사할 명령"
+        }
+      ]
+    },
+    {
+      "no": 15,
+      "menu": "크론 미리보기",
+      "title": "평일 9시 30분 예약식의 다음 실행",
+      "expected": "Python으로 계산한 평일 09:30 5회와 같다",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 크론 미리보기",
+          "expected": "사용 예시 · 크론 미리보기",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "1.  2026-11-23 09:30:00  KST  (월)\n2.  2026-11-24 09:30:00  KST  (화)\n3.  2026-11-25 09:30:00  KST  (수)\n4.  2026-11-26 09:30:00  KST  (목)\n5.  2026-11-27 09:30:00  KST  (금)",
+          "expected": "1.  2026-11-23 09:30:00  KST  (월)\n2.  2026-11-24 09:30:00  KST  (화)\n3.  2026-11-25 09:30:00  KST  (수)\n4.  2026-11-26 09:30:00  KST  (목)\n5.  2026-11-27 09:30:00  KST  (금)",
+          "pass": true
+        },
+        {
+          "name": "다음 5회 = Python 계산",
+          "actual": "[\"2026-11-23 09:30:00\", \"2026-11-24 09:30:00\", \"2026-11-25 09:30:00\", \"2026-11-26 09:30:00\", \"2026-11-27 09:30:00\"]",
+          "expected": "[\"2026-11-23 09:30:00\", \"2026-11-24 09:30:00\", \"2026-11-25 09:30:00\", \"2026-11-26 09:30:00\", \"2026-11-27 09:30:00\"]",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/049-cron-guide.jpg",
+          "caption": "크론 미리보기 사용 예시 창"
+        },
+        {
+          "file": "shots/050-cron-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        }
+      ]
+    },
+    {
+      "no": 16,
+      "menu": "파일 지문",
+      "title": "텍스트 기대값 일치, 파일 SHA-256",
+      "expected": "file://에서 Web Crypto가 동작하고 Python hashlib과 같다",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기",
+        "파일 선택 → samples/korean-utf8.txt → 파일 해시 계산"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 파일 지문",
+          "expected": "사용 예시 · 파일 지문",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+          "expected": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+          "pass": true
+        },
+        {
+          "name": "비교 결과",
+          "actual": "일치합니다. 같은 해시 값입니다.",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "파일 SHA-256 = Python hashlib",
+          "actual": "aa41f7637f461127eac846ee2d82af8e7c5f2e5b6aee42d5c819158908884aaf",
+          "expected": "aa41f7637f461127eac846ee2d82af8e7c5f2e5b6aee42d5c819158908884aaf",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/051-hash-guide.jpg",
+          "caption": "파일 지문 사용 예시 창"
+        },
+        {
+          "file": "shots/052-hash-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/053-hash-file.jpg",
+          "caption": "파일 SHA-256 결과"
+        }
+      ]
+    },
+    {
+      "no": 17,
+      "menu": "정규식 실험실",
+      "title": "캡처 확인, 과도한 역추적 패턴 중단",
+      "expected": "Worker에서 실행하고 약 1.2초 후 중단 안내",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "사용 예시 → 이 예시로 해보기",
+        "패턴 (a+)+$ · 입력 a×32 + ! → 정규식 테스트"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=184px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 정규식 실험실",
+          "expected": "사용 예시 · 정규식 실험실",
+          "pass": true
+        },
+        {
+          "name": "예시 결과가 가이드의 결과 예와 같음",
+          "actual": "[\n{\"index\":0,\"match\":\"ERROR connection timeout\",\"captures\":[\"ERROR\",\"connection timeout\"],\"groups\":null},\n{\"index\":36,\"match\":\"WARN pool almost full\",\"captures\":[\"WARN\",\"pool almost full\"],\"groups\":null}\n]",
+          "expected": "[\n{\"index\":0,\"match\":\"ERROR connection timeout\",\"captures\":[\"ERROR\",\"connection timeout\"],\"groups\":null},\n{\"index\":36,\"match\":\"WARN pool almost full\",\"captures\":[\"WARN\",\"pool almost full\"],\"groups\":null}\n]",
+          "pass": true
+        },
+        {
+          "name": "시간 제한으로 중단",
+          "actual": "약 1.2초 제한을 초과하여 정규식을 중단했습니다. 패턴이나 입력을 단순하게 바꿔 보세요.",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "화면이 멈추지 않음(중단까지 걸린 시간)",
+          "actual": "1.3초",
+          "expected": "",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/054-regex-guide.jpg",
+          "caption": "정규식 실험실 사용 예시 창"
+        },
+        {
+          "file": "shots/055-regex-example.jpg",
+          "caption": "이 예시로 해보기 결과"
+        },
+        {
+          "file": "shots/056-regex-timeout.jpg",
+          "caption": "과도한 역추적 패턴을 Worker에서 중단"
+        }
+      ]
+    },
+    {
+      "no": 18,
+      "menu": "즐겨찾기",
+      "title": "도구와 명령어 별표 → 즐겨찾기 화면",
+      "expected": "별표한 도구와 명령이 즐겨찾기와 대시보드에 모인다",
+      "device": "PC 1366×900",
+      "steps": [
+        "정규식 실험실 제목 옆 ☆",
+        "명령어 포켓 → ‘특정 포트 리스닝 확인’ 카드의 ☆",
+        "제목 줄 → 사용 예시"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=185px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 즐겨찾기",
+          "expected": "사용 예시 · 즐겨찾기",
+          "pass": true
+        },
+        {
+          "name": "즐겨찾는 도구에 정규식 실험실",
+          "actual": "1",
+          "expected": "1",
+          "pass": true
+        },
+        {
+          "name": "즐겨찾는 명령어에 cmd-044",
+          "actual": "1",
+          "expected": "1",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/057-favorites-guide.jpg",
+          "caption": "즐겨찾기 사용 예시 창"
+        },
+        {
+          "file": "shots/058-favorites.jpg",
+          "caption": "즐겨찾기 화면"
+        }
+      ]
+    },
+    {
+      "no": 19,
+      "menu": "내 포켓 관리",
+      "title": "저장 범위 확인 → 설정 백업 → 배포 ZIP → 초기화 → 백업 가져오기 → 다시 열기 → 입력 비우기",
+      "expected": "저장소·백업에는 내 명령어만, 배포 ZIP에는 작업 데이터와 설정이 없고 HTML이 빌드와 같다",
+      "device": "PC 1366×900",
+      "steps": [
+        "제목 줄 → 사용 예시",
+        "설정 백업 → pocket-ops-settings.json",
+        "상단 배포하기 → pocket-ops-v0.6.0.zip",
+        "이 앱의 저장 설정 초기화 → 확인",
+        "백업 가져오기 → pocket-ops-settings.json",
+        "같은 파일 다시 열기(새로 고침)",
+        "열린 도구의 입력 비우기 → 확인"
+      ],
+      "checks": [
+        {
+          "name": "사용 예시 링크가 화면 위쪽 제목 줄에 있음",
+          "actual": "y=185px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "가이드 창 제목",
+          "actual": "사용 예시 · 내 포켓 관리",
+          "expected": "사용 예시 · 내 포켓 관리",
+          "pass": true
+        },
+        {
+          "name": "localStorage 키",
+          "actual": "[\"pocket-ops:v1\"]",
+          "expected": "[\"pocket-ops:v1\"]",
+          "pass": true
+        },
+        {
+          "name": "저장소에 내 명령어 표식 있음",
+          "actual": "true",
+          "expected": "true",
+          "pass": true
+        },
+        {
+          "name": "저장소에 SQL·로그·JSON 작업 입력 없음",
+          "actual": "[]",
+          "expected": "[]",
+          "pass": true
+        },
+        {
+          "name": "백업 필드",
+          "actual": "[\"app\", \"cmdFavs\", \"customCommands\", \"exportedAt\", \"theme\", \"toolFavs\", \"version\"]",
+          "expected": "[\"app\", \"cmdFavs\", \"customCommands\", \"exportedAt\", \"theme\", \"toolFavs\", \"version\"]",
+          "pass": true
+        },
+        {
+          "name": "백업에 작업 입력 표식 없음",
+          "actual": "[]",
+          "expected": "[]",
+          "pass": true
+        },
+        {
+          "name": "ZIP 구성",
+          "actual": "[\"CHANGELOG.md\", \"README_KO.md\", \"START_HERE.txt\", \"pocket-ops.html\"]",
+          "expected": "[\"CHANGELOG.md\", \"README_KO.md\", \"START_HERE.txt\", \"pocket-ops.html\"]",
+          "pass": true
+        },
+        {
+          "name": "ZIP 안의 HTML = 빌드한 pocket-ops.html",
+          "actual": "d125d89334dba6b858ce95fbe55d64488b20b1cb4165ddc82ac45bae87678cbd",
+          "expected": "d125d89334dba6b858ce95fbe55d64488b20b1cb4165ddc82ac45bae87678cbd",
+          "pass": true
+        },
+        {
+          "name": "ZIP = 저장소의 배포 ZIP",
+          "actual": "dae50903e5db8512fce67b874292e1a56212541610018cdf444b1ce9fbb1a37f",
+          "expected": "dae50903e5db8512fce67b874292e1a56212541610018cdf444b1ce9fbb1a37f",
+          "pass": true
+        },
+        {
+          "name": "ZIP에 증적 표식(작업 입력·내 명령어) 없음",
+          "actual": "[]",
+          "expected": "[]",
+          "pass": true
+        },
+        {
+          "name": "초기화 후 내 명령어 0개",
+          "actual": "0",
+          "expected": "0",
+          "pass": true
+        },
+        {
+          "name": "가져온 뒤 내 명령어 복원",
+          "actual": "[\"EVID-CMD-5Z8 로그 용량 확인\"]",
+          "expected": "[\"EVID-CMD-5Z8 로그 용량 확인\"]",
+          "pass": true
+        },
+        {
+          "name": "다시 열면 작업 입력 없음",
+          "actual": "",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "다시 열어도 즐겨찾기 유지(file:// 저장소)",
+          "actual": "1",
+          "expected": "1",
+          "pass": true
+        },
+        {
+          "name": "입력 비우기 후 로그 입력 없음",
+          "actual": "",
+          "expected": "",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/059-settings-guide.jpg",
+          "caption": "내 포켓 관리 사용 예시 창"
+        },
+        {
+          "file": "shots/060-settings.jpg",
+          "caption": "내 포켓 관리: 브라우저 준비 상태와 저장 범위"
+        },
+        {
+          "file": "shots/061-settings-release.jpg",
+          "caption": "배포 ZIP 저장 직후"
+        },
+        {
+          "file": "shots/062-settings-import.jpg",
+          "caption": "가져오기 확인 창(교체 범위와 개수)"
+        },
+        {
+          "file": "shots/063-settings-reopen.jpg",
+          "caption": "다시 연 뒤 즐겨찾기 유지"
+        }
+      ]
+    },
+    {
+      "no": 20,
+      "menu": "테마",
+      "title": "어두운 테마로 전환",
+      "expected": "어두운 테마가 적용되고 설정에 저장된다",
+      "device": "PC 1366×900",
+      "steps": [
+        "상단 달 아이콘"
+      ],
+      "checks": [
+        {
+          "name": "data-theme",
+          "actual": "dark",
+          "expected": "dark",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/064-theme-dark.jpg",
+          "caption": "어두운 테마의 내 작업실"
+        }
+      ]
+    },
+    {
+      "no": 21,
+      "menu": "휴대폰 화면(에뮬레이션)",
+      "title": "360px 터치 화면에서 메뉴 → 명령 찾기 → 값 입력 → 복사, 사용 예시",
+      "expected": "가로 넘침 없이 첫 화면에 사용 예시와 첫 명령이 보이고, 값이 복사된다",
+      "device": "360×780 터치 에뮬레이션",
+      "steps": [
+        "왼쪽 위 메뉴 버튼",
+        "명령어 포켓 → Linux → ‘포트’ 검색",
+        "특정 포트 리스닝 확인 → 포트 9090 → 명령어 복사",
+        "SQL 작업대 → DELETE 프리셋 → 복사"
+      ],
+      "checks": [
+        {
+          "name": "가로 넘침 없음",
+          "actual": "true",
+          "expected": "true",
+          "pass": true
+        },
+        {
+          "name": "첫 명령 카드가 첫 화면 안에서 시작",
+          "actual": "y=688px",
+          "expected": "",
+          "pass": true
+        },
+        {
+          "name": "복사된 명령(브라우저 Clipboard API)",
+          "actual": "ss -lnt \"( sport = :9090 )\"",
+          "expected": "ss -lnt \"( sport = :9090 )\"",
+          "pass": true
+        },
+        {
+          "name": "확인한 DELETE가 복사됨",
+          "actual": "DELETE FROM pocket_ops_sample\r\nWHERE item_id = 1001\r\n  AND item_name = 'SAMPLE';",
+          "expected": "DELETE FROM pocket_ops_sample\nWHERE item_id = 1001\n  AND item_name = 'SAMPLE';",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/065-phone-home.jpg",
+          "caption": "휴대폰 첫 화면"
+        },
+        {
+          "file": "shots/066-phone-menu.jpg",
+          "caption": "열린 메뉴"
+        },
+        {
+          "file": "shots/067-phone-commands.jpg",
+          "caption": "Linux 명령 검색 결과"
+        },
+        {
+          "file": "shots/068-phone-guide.jpg",
+          "caption": "휴대폰의 사용 예시 창"
+        },
+        {
+          "file": "shots/069-phone-command.jpg",
+          "caption": "휴대폰 명령 창"
+        },
+        {
+          "file": "shots/070-phone-sql-review.jpg",
+          "caption": "휴대폰의 최종 쿼리 확인 창"
+        }
+      ]
+    },
+    {
+      "no": 22,
+      "menu": "JavaScript 제한",
+      "title": "JavaScript를 끈 브라우저로 같은 파일 열기",
+      "expected": "빈 화면 대신 읽기 전용 명령어 참고와 입력 위치가 보인다",
+      "device": "PC · JavaScript 꺼짐",
+      "steps": [
+        "JavaScript 비활성 컨텍스트에서 file:// 열기"
+      ],
+      "checks": [
+        {
+          "name": "읽기 전용 참고 표시",
+          "actual": "true",
+          "expected": "true",
+          "pass": true
+        },
+        {
+          "name": "모든 명령에 입력 위치 표시",
+          "actual": "157",
+          "expected": "157",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/071-nojs-reference.jpg",
+          "caption": "JavaScript 없이 보이는 읽기 전용 명령어 참고"
+        }
+      ]
+    },
+    {
+      "no": 23,
+      "menu": "OS 클립보드(실제 창)",
+      "title": "보이는 Chromium 창에서 복사 버튼 → Windows 클립보드 읽기",
+      "expected": "Get-Clipboard 값이 화면의 최종 명령·SQL과 같다",
+      "device": "PC · 보이는 Chromium 창",
+      "steps": [
+        "명령어 포켓 → 특정 포트 리스닝 확인 → 포트 8443 → 명령어 복사 → PowerShell Get-Clipboard",
+        "SQL 작업대 → UPDATE 프리셋 → 복사 → 확인 후 복사 → Get-Clipboard"
+      ],
+      "checks": [
+        {
+          "name": "Windows 클립보드 = 최종 명령",
+          "actual": "ss -lnt \"( sport = :8443 )\"",
+          "expected": "ss -lnt \"( sport = :8443 )\"",
+          "pass": true
+        },
+        {
+          "name": "Windows 클립보드 = 확인 창의 SQL(줄바꿈 포함 비교)",
+          "actual": "UPDATE pocket_ops_sample\nSET item_name = 'UPDATED'\nWHERE item_id = 1001\n  AND item_name = 'SAMPLE';",
+          "expected": "UPDATE pocket_ops_sample\nSET item_name = 'UPDATED'\nWHERE item_id = 1001\n  AND item_name = 'SAMPLE';",
+          "pass": true
+        },
+        {
+          "name": "작업 전 클립보드 텍스트 복원(내용은 기록하지 않음)",
+          "actual": "true",
+          "expected": "true",
+          "pass": true
+        }
+      ],
+      "shots": [
+        {
+          "file": "shots/072-os-clipboard-command.jpg",
+          "caption": "보이는 창에서 복사한 명령"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "PC 화면은 실제 Chromium으로 연 file:// 페이지입니다. 클립보드 값은 브라우저 Clipboard API로 읽었고, OS 클립보드는 별도 단계(실제 창)에서만 확인했습니다.",
+    "휴대폰 화면은 Chromium 터치 에뮬레이션입니다. 실제 갤럭시의 내 파일·HTML 뷰어·content:// 열기와 OS 클립보드는 단말에서 따로 확인해야 합니다.",
+    "다운로드는 Playwright가 받은 실제 브라우저 다운로드 파일입니다. 사용자의 다운로드 폴더 저장 동작은 확인 범위 밖입니다.",
+    "명령은 복사만 했고 어떤 서버·DB에서도 실행하지 않았습니다. 입력값은 모두 가짜 표본입니다."
+  ],
+  "findings": [
+    {
+      "title": "복사 완료 알림이 열린 창의 흐린 배경 뒤에 가려짐",
+      "status": "수정함",
+      "detail": "명령 창 · SQL 확인 창 · 가져오기 창에서 복사하면 \"클립보드에 복사했어요.\" 알림이 대화상자 배경(블러) 아래에 그려져 읽을 수 없었습니다. 알림을 최상위 레이어(manual popover)로 띄우도록 바꿨고, 브라우저 회귀 테스트를 추가했습니다. 수정 후 화면은 2번 시나리오의 명령 창 스크린샷입니다.",
+      "before": "findings/toast-under-dialog-before.jpg"
+    },
+    {
+      "title": "Windows 클립보드는 줄바꿈을 CRLF로 보관",
+      "status": "기록(앱 문제 아님)",
+      "detail": "앱은 확인 창과 같은 LF 텍스트를 넘기지만 Windows의 Chromium 클립보드는 여러 줄 텍스트를 CRLF로 저장합니다. 글자 단위 비교는 줄바꿈 정규화 후 일치했고, 저장 파일(pocket-query.sql)은 LF 그대로입니다. SSH 터미널은 붙여넣을 때 줄바꿈을 변환하므로 csql> · SQL> 입력에는 영향이 없지만 바이트 비교 시 참고하세요."
+    },
+    {
+      "title": "file://에서도 CSP가 문자열 평가(eval)를 차단",
+      "status": "확인(보안 통제 작동)",
+      "detail": "테스트 도구가 문자열식 대기 조건을 쓰자 페이지의 Content-Security-Policy가 unsafe-eval 없음으로 차단했습니다. 로컬 파일로 열어도 스크립트 해시 CSP가 적용됨을 보여 줍니다."
+    }
+  ]
+}

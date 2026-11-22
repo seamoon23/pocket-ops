@@ -139,18 +139,32 @@ function cleanText(text,options={}){
  }
  const ending=options.eol==='crlf'?'\r\n':'\n';return arr.join(ending);
 }
+const SQL_DIALECTS = ['cubrid', 'mariadb', 'oracle', 'postgresql'];
 // Move only top-level token boundaries. The lexer copies all quoted and commented text verbatim.
-function prepareSql(source) {
+// The dialect selects the target client's comment/prompt rules. Checks report risks; they never rewrite SQL.
+function prepareSql(source, dialect = 'cubrid') {
  limit(source, 100_000);
+ if (!SQL_DIALECTS.includes(dialect)) fail('지원하지 않는 DB 종류입니다.');
+ // Clipboard and UTF-8 export must be able to represent every character shown for review.
+ if (/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F\uD800-\uDFFF]/u.test(source)) fail('SQL에 제어 문자 또는 깨진 유니코드 문자가 있습니다. 해당 문자를 고친 뒤 다시 시도하세요.');
  // Interactive CSQL can process a line as a session command even inside an SQL literal or comment.
  if (/^[ \t]*;[ \t]*[a-z.!]/im.test(source)) {
   fail('줄 첫머리에 CSQL 세션 명령으로 읽힐 수 있는 내용이 있습니다. 문자열·주석 안에서도 인식될 수 있으므로 원문을 확인하세요.');
+ }
+ const checks = [];
+ const flag = (level, code, message) => { if (!checks.some(check => check.code === code)) checks.push({level, code, message}); };
+ if (dialect === 'oracle') {
+  // SQL*Plus reads raw lines: a blank line ends the buffer and a lone / or . runs or closes it, even inside a literal.
+  const body = source.replace(/\r\n?/g, '\n').trim();
+  if (/\n[ \t]*\n/.test(body)) fail('SQL*Plus는 빈 줄에서 문장 입력을 끝냅니다. 남은 줄이 따로 처리되지 않도록 빈 줄을 지우고 다시 정렬하세요.');
+  if (/^[ \t]*[/.][ \t]*$/m.test(body)) fail('/ 또는 . 만 있는 줄은 SQL*Plus가 실행하거나 입력을 끝냅니다. 문장 끝에는 ; 를 사용하세요.');
+  if (source.includes('&')) flag('warn', 'oracle-define', '& 문자가 있습니다. SQL*Plus가 치환 변수 값을 물어 문장을 바꿀 수 있으니 SET DEFINE OFF를 먼저 실행하세요.');
  }
  const tokens = /[ \t\r\n]+|--[^\r\n]*|\/\/[^\r\n]*|\/\*|[A-Za-z0-9_\u0080-\uFFFF]+|[\s\S]/gy;
  const startsStatement = /^(SELECT|INSERT|UPDATE|DELETE)$/i;
  const majorClause = /^(FROM|WHERE|GROUP|ORDER|HAVING|LIMIT|SET|VALUES|UNION|EXCEPT|INTERSECT|JOIN|LEFT|RIGHT|INNER|CROSS|FULL)$/i;
  const newline = source.match(/\r\n|\r|\n/)?.[0] || '\n';
- let output = '', gap = '', previous = '', depth = 0, verb = '', ended = false;
+ let output = '', gap = '', previous = '', word = '', depth = 0, verb = '', ended = false, hasWhere = false;
  let match;
  while ((match = tokens.exec(source)) !== null) {
   let token = match[0];
@@ -160,12 +174,19 @@ function prepareSql(source) {
   }
   const start = match.index;
   const comment = token.startsWith('--') || token.startsWith('//') || token === '/*';
+  if (token.startsWith('//') && dialect !== 'cubrid') fail('// 주석은 CUBRID 전용입니다. 이 DB에서는 -- 또는 /* */ 주석을 사용하세요.');
+  // MariaDB reads "--x" as two minus signs; treating it as a comment would misjudge the statement.
+  if (token.startsWith('--') && dialect === 'mariadb' && token.length > 2 && !/[ \t]/.test(token[2])) {
+   fail('MariaDB는 -- 뒤에 공백이 있어야 주석으로 읽습니다. -- 다음에 공백을 넣으세요.');
+  }
   if (token === '/*') {
+   // MariaDB/MySQL execute /*! ... */ and /*M! ... */ bodies, so they are code, not comments.
+   if (/^\/\*M?!/.test(source.slice(start, start + 4))) fail('/*! */ 형식은 MariaDB·MySQL이 실행하는 주석이라 지원하지 않습니다.');
    const end = source.indexOf('*/', tokens.lastIndex);
    if (end < 0 || source.slice(tokens.lastIndex, end).includes('/*')) fail('닫히지 않았거나 중첩된 블록 주석이 있습니다.');
    tokens.lastIndex = end + 2;
    token = source.slice(start, tokens.lastIndex);
-  } else if (['\'', '"', '`', '['].includes(token)) {
+  } else if (['\'', '"', '`'].includes(token) || token === '[' && dialect !== 'postgresql') {
    if (!gap && /^(n?q)$/i.test(previous) && token === '\'') fail('Oracle 대체 인용문은 지원하지 않습니다.');
    const close = token === '[' ? ']' : token;
    let cursor = tokens.lastIndex;
@@ -179,8 +200,10 @@ function prepareSql(source) {
    tokens.lastIndex = cursor;
    token = source.slice(start, cursor);
    if (token.includes('\\')) fail('역슬래시의 해석은 DB 설정에 따라 달라 정렬을 중단했습니다.');
-  } else if (/^[\\$#{}\x00-\x08\x0B\x0C\x0E-\x1F]$/.test(token)) {
-   fail('지원 범위 밖의 특수 구문이 있습니다. CUBRID 기본 SQL 한 문장을 입력하세요.');
+  } else if (/^[\\$#{}]$/.test(token)) {
+   fail('지원 범위 밖의 특수 구문이 있습니다. 기본 SQL 한 문장을 입력하세요.');
+  } else if (token === ':' && dialect === 'postgresql' && source[start - 1] !== ':' && /^[A-Za-z_'"]/.test(source[start + 1] || '')) {
+   flag('warn', 'psql-variable', ':이름 형식은 psql이 변수 값으로 바꿉니다. 문자 그대로의 값이면 작은따옴표 문자열로 쓰세요.');
   }
   if (!comment) {
    if (!verb) {
@@ -188,6 +211,16 @@ function prepareSql(source) {
     verb = token.toUpperCase();
    }
    if (ended) fail('SQL 한 문장씩 정렬하세요. CSQL 세션 명령은 제외하세요.');
+   const upper = token.toUpperCase();
+   if (depth === 0) {
+    if (upper === 'WHERE') hasWhere = true;
+    if (verb === 'SELECT' && upper === 'INTO') flag('danger', 'select-into', 'SELECT … INTO는 결과를 파일·새 테이블·변수에 기록할 수 있습니다. 조회만 하는 문장인지 확인하세요.');
+   }
+   if (verb === 'SELECT' && (upper === 'LOCK' || /^(UPDATE|SHARE)$/.test(upper) && /^(FOR|KEY)$/.test(word))) {
+    flag('warn', 'select-lock', '행을 잠그는 SELECT입니다(FOR UPDATE 등). 트랜잭션을 끝낼 때까지 다른 작업이 기다릴 수 있습니다.');
+   }
+   if (upper === 'POCKET_OPS_SAMPLE') flag('warn', 'sample', '예시 테이블 pocket_ops_sample이 그대로 있습니다. 실제 테이블명과 키 값으로 바꿨는지 확인하세요.');
+   word = upper;
    if (depth === 0 && !/[\r\n]/.test(gap)) {
     if (previous === ',' && token !== ';') gap = newline + '  ';
     else if (gap && /^(AND|OR)$/i.test(token)) gap = newline + '  ';
@@ -208,11 +241,18 @@ function prepareSql(source) {
  if (!verb) fail('정렬할 SQL 한 문장을 입력하세요.');
  if (depth) fail('여는 괄호의 짝을 확인하세요.');
  if (output.length + gap.length > 200_000) fail('정렬 결과는 200,000자 이하로 나누어 주세요.');
- return {sql: output + gap, verb};
+ // A WHERE inside a subquery does not limit the outer UPDATE or DELETE.
+ if ((verb === 'UPDATE' || verb === 'DELETE') && !hasWhere) {
+  flag('danger', 'no-where', 'WHERE 조건이 없습니다. 실행하면 테이블의 모든 행이 ' + (verb === 'DELETE' ? '삭제' : '변경') + '됩니다.');
+ }
+ checks.sort((a, b) => (a.level === 'danger' ? 0 : 1) - (b.level === 'danger' ? 0 : 1));
+ // Changes and side-effecting SELECTs are delivered only after the exact final text is reviewed.
+ const review = verb !== 'SELECT' || checks.some(check => check.code !== 'sample');
+ return {sql: output + gap, verb, dialect, checks, review};
 }
 
-function formatSql(source) {
- return prepareSql(source).sql;
+function formatSql(source, dialect) {
+ return prepareSql(source, dialect).sql;
 }
 
 function makeSql(text,column='ITEM_ID',kind='string',chunk=1000,unique=true,trim=true){
@@ -266,7 +306,7 @@ function permission(octal){
 function shellQuote(s,shell='bash'){limit(s,4096);if(/[\u0000-\u001f\u007f]/.test(s))fail('매개변수에 개행·제어문자를 넣을 수 없습니다.');return shell==='powershell'?"'"+s.replace(/['\u2018-\u201b]/g,ch=>ch+ch)+"'":"'"+s.replace(/'/g,"'\"'\"'")+"'";}
 function fillCommand(template,values,spec,shell='bash'){
  return limit(template,16_000).replace(/\{\{([A-Z_]+)\}\}/g,(_,name)=>{
-  if(shell==='sql'||shell==='csql')fail('SQL과 CSQL 세션 명령은 고정 예시만 지원합니다.');
+  if(['sql','csql','sqlplus','psql','mariadb'].includes(shell))fail('SQL과 DB 클라이언트 명령은 고정 예시만 지원합니다.');
   const v=limit(String(values[name]===undefined?'':values[name]),4096);if(!v.trim())fail(name+' 값을 입력하세요.');const kind=(spec[name]||{}).kind;
   if(kind==='path'&&v.startsWith('-'))fail('하이픈으로 시작하는 경로에는 ./를 앞에 붙이세요. 명령 옵션으로 해석되지 않도록 차단했습니다.');
   if(kind==='identifier'&&v.startsWith('-'))fail(name+'는 하이픈(-)으로 시작할 수 없습니다. 명령 옵션으로 해석되지 않도록 차단했습니다.');

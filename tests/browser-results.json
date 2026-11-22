@@ -21,8 +21,8 @@
   "storage_clipboard": "Main persistence and clipboard payload checks use explicitly labeled doubles. File smoke storage, when available, uses real origin and reload, not OS clipboard or browser restart.",
   "external_http_requests": [],
   "pageerrors": [],
-  "total": 120,
-  "passed": 120,
+  "total": 140,
+  "passed": 140,
   "failed": 0,
   "results": [
     {
@@ -102,7 +102,11 @@
       "pass": true
     },
     {
-      "name": "135 built-in commands visible",
+      "name": "All built-in commands visible",
+      "pass": true
+    },
+    {
+      "name": "Every command card and dialog names where to paste it (Linux shell, PowerShell or DB prompt)",
       "pass": true
     },
     {
@@ -115,6 +119,10 @@
     },
     {
       "name": "Alternative command opens an independent reviewed choice",
+      "pass": true
+    },
+    {
+      "name": "Alternative keeps typed values, shows its condition first and returns to the original",
       "pass": true
     },
     {
@@ -334,6 +342,10 @@
       "pass": true
     },
     {
+      "name": "DB choice drives paste target and checks; WHERE-less change needs explicit acknowledgment and delivers the reviewed text",
+      "pass": true
+    },
+    {
       "name": "Settings backup excludes working inputs",
       "pass": true
     },
@@ -350,11 +362,27 @@
       "pass": true
     },
     {
+      "name": "Imported command markup stays text on the dashboard, dialog and search",
+      "pass": true
+    },
+    {
       "name": "Clear inputs preserves settings, clears working text",
       "pass": true
     },
     {
-      "name": "Recommended tools link to matching environment and shared favorites",
+      "name": "Dashboard gathers favorites, opens each work environment and starts the SQL workbench per DB",
+      "pass": true
+    },
+    {
+      "name": "Every screen has 사용 예시 at the top; each guide opens and its example reproduces the shown result",
+      "pass": true
+    },
+    {
+      "name": "Guide switches screens, opens with ? and warns before replacing typed input",
+      "pass": true
+    },
+    {
+      "name": "Copy confirmation is drawn above an open dialog at the bottom of the screen",
       "pass": true
     },
     {
@@ -394,6 +422,10 @@
       "pass": true
     },
     {
+      "name": "Touch 320x740: 사용 예시 on the first screen and the guide fits",
+      "pass": true
+    },
+    {
       "name": "Touch 320x740: drawer closes by button, backdrop and navigation",
       "pass": true
     },
@@ -410,7 +442,15 @@
       "pass": true
     },
     {
+      "name": "Touch 320x740: SQL workbench preset, Oracle review and blocked-clipboard manual copy",
+      "pass": true
+    },
+    {
       "name": "Touch 360x800: all 18 routes fit viewport",
+      "pass": true
+    },
+    {
+      "name": "Touch 360x800: 사용 예시 on the first screen and the guide fits",
       "pass": true
     },
     {
@@ -430,7 +470,15 @@
       "pass": true
     },
     {
+      "name": "Touch 360x800: SQL workbench preset, Oracle review and blocked-clipboard manual copy",
+      "pass": true
+    },
+    {
       "name": "Touch 412x915: all 18 routes fit viewport",
+      "pass": true
+    },
+    {
+      "name": "Touch 412x915: 사용 예시 on the first screen and the guide fits",
       "pass": true
     },
     {
@@ -450,7 +498,15 @@
       "pass": true
     },
     {
+      "name": "Touch 412x915: SQL workbench preset, Oracle review and blocked-clipboard manual copy",
+      "pass": true
+    },
+    {
       "name": "Touch 844x390: all 18 routes fit viewport",
+      "pass": true
+    },
+    {
+      "name": "Touch 844x390: 사용 예시 on the first screen and the guide fits",
       "pass": true
     },
     {
@@ -470,7 +526,11 @@
       "pass": true
     },
     {
-      "name": "JavaScript disabled 360px: all 135 commands and risk guidance remain readable",
+      "name": "Touch 844x390: SQL workbench preset, Oracle review and blocked-clipboard manual copy",
+      "pass": true
+    },
+    {
+      "name": "JavaScript disabled 360px: all 157 commands, paste targets and risk guidance remain readable",
       "pass": true
     },
     {
@@ -478,11 +538,15 @@
       "pass": true
     },
     {
-      "name": "JavaScript disabled 1440px: all 135 commands and risk guidance remain readable",
+      "name": "JavaScript disabled 1440px: all 157 commands, paste targets and risk guidance remain readable",
       "pass": true
     },
     {
       "name": "JavaScript disabled 1440px: native reference fits viewport",
+      "pass": true
+    },
+    {
+      "name": "Blocked inline script shows the read-only reference instead of an empty app",
       "pass": true
     },
     {
@@ -491,6 +555,22 @@
     },
     {
       "name": "Missing Crypto does not prevent settings and backup access",
+      "pass": true
+    },
+    {
+      "name": "Local file cubrid: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download",
+      "pass": true
+    },
+    {
+      "name": "Local file mariadb: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download",
+      "pass": true
+    },
+    {
+      "name": "Local file oracle: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download",
+      "pass": true
+    },
+    {
+      "name": "Local file postgresql: edited CRUD matches reviewed SQL, browser clipboard and UTF-8 download",
       "pass": true
     },
     {
