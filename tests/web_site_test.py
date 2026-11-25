@@ -9,6 +9,7 @@ from threading import Thread
 from urllib.parse import urlsplit
 
 from playwright.sync_api import expect, sync_playwright
+from field_steps import verify_steps
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from build_site import build_site, ROOT, SITE, SRC
@@ -97,6 +98,9 @@ def verify(browser, origin, width, height, mobile):
         page.goto(origin + '/guides/')
         page.get_by_role('link',name=a['title'],exact=False).click()
         fits()
+        if 'steps' in a:
+            verify_steps(page, a, page.locator('article'), {c['id']: c for c in catalog['commands']}, web=True)
+            continue
         if a['tool'] == 'commands':
             article_url = page.url
             for command_id in a['commands']:

@@ -437,8 +437,8 @@ log_samples = [
          text='09:00:00 INFO  application started\n09:00:01 INFO  healthcheck OK\n09:00:02 WARN  connection pool nearly full\n09:00:03 ERROR request failed\njava.sql.SQLException: connection timeout\n  at app.service.DataService.find(DataService.java:82)\nCaused by: java.net.SocketTimeoutException\n09:00:05 INFO  request completed\n09:00:06 ERROR retry failed'),
     dict(title='HTTP 503과 상태 점검 제외', include=' 503 ', exclude='/health', context='0',
          text='10:20:01 GET /home 200 15ms\n10:20:02 GET /health 503 2ms\n10:20:03 GET /orders 503 850ms\n10:20:04 GET /orders 200 28ms'),
-    dict(title='요청 ID로 재시도 추적', include='REQ-1042', exclude='', context='0',
-         text='11:01:00 REQ-1042 start\n11:01:01 REQ-1043 start\n11:01:02 REQ-1042 WARN retry=1\n11:01:03 REQ-1043 done\n11:01:04 REQ-1042 done'),
+    dict(id='request-trace', title='요청 ID로 재시도 추적', include='REQ-1042', exclude='', context='0',
+         text='11:01:00 REQ-1042 start worker-7\n11:01:01 REQ-1043 start worker-8\n11:01:02 REQ-1042 ERROR worker-7 upstream call failed\n11:01:02 worker-7 Caused by: java.net.SocketTimeoutException: Read timed out\n11:01:02 REQ-1042 WARN retry=1\n11:01:03 REQ-1043 done status=200\n11:01:04 REQ-1042 done status=200'),
     dict(title='DB 연결 풀 대기 시간 초과', include='pool timeout', exclude='', context='1',
          text='12:00:00 INFO db ready\n12:00:01 WARN active=20 idle=0\n12:00:02 ERROR pool timeout\n12:00:03 INFO retry scheduled\n12:00:04 INFO db ready'),
     dict(title='배치 종료 코드 확인', include='exit=1', exclude='', context='1',
@@ -626,5 +626,5 @@ for key, g in guides.items():
     if ex and ('fill' in ex or 'click' in ex):
         assert isinstance(ex.get('click'), list) and all(isinstance(v, (str, bool)) for v in ex.get('fill', {}).values()), key
 # Write LF bytes on every OS so a regenerated catalog matches the committed source exactly.
-Path(__file__).resolve().parent.joinpath('src/data.js').write_bytes(('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.8.0',logSamples=log_samples,commands=commands,params=params,tools=tool_data,dbs=dbs,guides={k:guides[k] for k in GUIDE_ROUTES}),ensure_ascii=False,indent=2)+';\n').encode('utf-8'))
+Path(__file__).resolve().parent.joinpath('src/data.js').write_bytes(('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.8.1',logSamples=log_samples,commands=commands,params=params,tools=tool_data,dbs=dbs,guides={k:guides[k] for k in GUIDE_ROUTES}),ensure_ascii=False,indent=2)+';\n').encode('utf-8'))
 print('Commands:',len(commands),'Tools:',len(tools))

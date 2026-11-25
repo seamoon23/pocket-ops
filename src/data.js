@@ -1,6 +1,6 @@
 /* Curated offline reference data. Never auto-executed. */
 window.PocketData = {
-  "version": "0.8.0",
+  "version": "0.8.1",
   "logSamples": [
     {
       "title": "Java 예외와 원인",
@@ -17,11 +17,12 @@ window.PocketData = {
       "text": "10:20:01 GET /home 200 15ms\n10:20:02 GET /health 503 2ms\n10:20:03 GET /orders 503 850ms\n10:20:04 GET /orders 200 28ms"
     },
     {
+      "id": "request-trace",
       "title": "요청 ID로 재시도 추적",
       "include": "REQ-1042",
       "exclude": "",
       "context": "0",
-      "text": "11:01:00 REQ-1042 start\n11:01:01 REQ-1043 start\n11:01:02 REQ-1042 WARN retry=1\n11:01:03 REQ-1043 done\n11:01:04 REQ-1042 done"
+      "text": "11:01:00 REQ-1042 start worker-7\n11:01:01 REQ-1043 start worker-8\n11:01:02 REQ-1042 ERROR worker-7 upstream call failed\n11:01:02 worker-7 Caused by: java.net.SocketTimeoutException: Read timed out\n11:01:02 REQ-1042 WARN retry=1\n11:01:03 REQ-1043 done status=200\n11:01:04 REQ-1042 done status=200"
     },
     {
       "title": "DB 연결 풀 대기 시간 초과",

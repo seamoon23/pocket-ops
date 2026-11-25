@@ -573,6 +573,12 @@ function openPalette(){setMenu(false);if($('#modal').open)$('#modal').close();co
 function renderPalette(){const text=$('#palette-input').value.trim(),ts=D.tools.filter(t=>matches([t.title,t.desc,t.keywords].join(' '),text)).map(t=>({type:'tool',id:t.id,title:t.title,detail:t.desc,icon:t.icon})),cs=allCommands().filter(c=>matches([c.title,c.command,c.tags,c.group,c.where||''].join(' '),text)).map(c=>({type:'command',id:c.id,title:c.title,detail:'입력: '+whereLabel(c)+' · '+c.command,icon:'terminal'}));paletteItems=text?ts.concat(cs).slice(0,24):ts.filter(t=>state.toolFavs.includes(t.id)).concat(cs.filter(c=>state.cmdFavs.includes(c.id))).slice(0,12);paletteIndex=0;$('#palette-results').innerHTML=paletteItems.length?paletteItems.map((r,i)=>'<button class="palette-item '+(!i?'selected':'')+'" id="palette-item-'+i+'" role="option" aria-selected="'+(!i)+'" data-palette-index="'+i+'" tabindex="-1">'+icon(r.icon)+'<span><strong>'+E(r.title)+'</strong><small>'+E(r.detail)+'</small></span><span class="tag right">'+(r.type==='tool'?'도구':'명령어')+'</span></button>').join(''):'<div class="empty">다른 단어로 찾아보세요.</div>';$('#palette-input').setAttribute('aria-activedescendant',paletteItems.length?'palette-item-0':'');}
 function selectPalette(index){const item=paletteItems[index];if(!item)return;$('#palette').close();if(item.type==='tool')go(item.id);else openCommand(item.id);}
 function outputText(id){const el=document.getElementById(id);return el.value!==undefined?editorValue(el):el.textContent;}
+function selectLogScenario(id){
+ const index=D.logSamples.findIndex(sample=>id && sample.id===id);
+ if(index<0)return;
+ const select=$('#logs-scenario');
+ select.value=String(index);select.focus();
+}
 document.addEventListener('click',e=>{
  const b=e.target.closest('button,[data-go],a');if(!b)return;
  if(b.hasAttribute('data-open-field-guides')){
@@ -582,6 +588,9 @@ document.addEventListener('click',e=>{
  }
  if(b.hasAttribute('data-field-command')&&b.closest('#field-guides')){
   e.preventDefault();openCommand(b.dataset.fieldCommand);return;
+ }
+ if(b.hasAttribute('data-field-scenario')&&b.closest('#field-guides')){
+  go('logs');selectLogScenario(b.dataset.fieldScenario);return;
  }
  if(b.hasAttribute('data-field-example')){
   const id=b.dataset.fieldExample;

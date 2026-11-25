@@ -6,6 +6,7 @@ from tempfile import TemporaryDirectory
 from zipfile import ZipFile
 
 from playwright.sync_api import expect, sync_playwright
+from field_steps import verify_steps
 
 ROOT = Path(__file__).resolve().parents[1]
 articles = json.loads((ROOT / 'download-site/guides.json').read_text('utf-8'))
@@ -38,6 +39,10 @@ def verify(browser, html, width, height):
         entry = library.locator(f'[data-field-article="{article["slug"]}"]')
         entry.locator('summary').click()
         expect(entry).to_contain_text(article['intro'])
+        if 'steps' in article:
+            verify_steps(page, article, entry, commands, reopen=show_library)
+            assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+            continue
         for heading, paragraph in article['sections']:
             expect(entry.get_by_text(heading, exact=True)).to_be_visible()
             expect(entry.get_by_text(paragraph, exact=True)).to_be_visible()
@@ -99,6 +104,15 @@ if __name__ == '__main__':
             entry = library.locator(f'[data-field-article="{article["slug"]}"]')
             entry.locator('summary').click()
             expect(entry.get_by_text(article['intro'],exact=True)).to_be_visible()
+            for i, (_, _, keys) in enumerate(article.get('steps', [])):
+                step = entry.locator('.field-step').nth(i)
+                for key in keys:
+                    if key in commands:
+                        step.locator(f'[href="#reference-{key}"]').click()
+                        assert reader.url.endswith('#reference-'+key)
+                        expect(reader.locator('#reference-'+key+' pre')).to_have_text(commands[key]['command'])
+                    else:
+                        expect(step.locator('pre')).to_contain_text('worker-7 Caused by:')
             for key in article.get('commands',[]):
                 entry.locator(f'[data-field-command="{key}"]').click()
                 expect(reader.locator('#reference-'+key+' pre')).to_have_text(commands[key]['command'])

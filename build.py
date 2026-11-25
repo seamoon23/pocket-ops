@@ -14,14 +14,45 @@ SRC = ROOT / 'src'
 PAYLOAD_MARKER = '__RELEASE_PAYLOAD__'
 
 
+def guided_steps(article, catalog, commands, *, web):
+    heading = 'h2' if web else 'h4'
+    parts = []
+    for title, paragraph, targets in article['steps']:
+        parts.append(f'<section class="field-step"><{heading}>{escape(title)}</{heading}><p>{escape(paragraph)}</p>')
+        for key in targets:
+            if key in commands:
+                entry = commands[key]
+                label = escape(entry['title']) + ' 열기'
+                key = escape(key)
+                href = f'/tools/commands/?command={key}' if web else f'#reference-{key}'
+                note = ' · 변경 전 확인' if entry['risk'] == 'change' else ''
+                parts.append(f'<p><a class="btn field-command" data-field-command="{key}" href="{href}">{label}</a>'
+                             f'<br><small>{escape(entry["where"])}{note}</small></p>')
+            else:
+                sample = next(s for s in catalog['logSamples'] if s.get('id') == key)
+                parts.append(f'<pre>{escape(sample["text"])}</pre>')
+                label = escape(sample['title']) + ' · 로그 돋보기 열기'
+                if web:
+                    parts.append(f'<a class="btn" href="/tools/logs/?scenario={escape(key)}">{label}</a>')
+                else:
+                    parts.append(f'<template><button class="btn" data-field-scenario="{escape(key)}">{label}</button></template>')
+        parts.append('</section>')
+    if 'source' in article:
+        source = escape(article['source'])
+        parts.append(f'<p><a href="{source}">공식 문서 보기</a></p>' if web else f'<p>공식 문서 주소 · {source}</p>')
+    return ''.join(parts)
+
+
 def offline_guides(articles, catalog, commands):
     topics = {}
     for article in articles:
         e = lambda key: escape(article[key])
         body = [f'<p>{e("intro")}</p>']
-        for heading, paragraph in article['sections']:
+        for heading, paragraph in article.get('sections', []):
             body.append(f'<h4>{escape(heading)}</h4><p>{escape(paragraph)}</p>')
-        if article['tool'] == 'commands':
+        if 'steps' in article:
+            body.append(guided_steps(article, catalog, commands, web=False))
+        elif article['tool'] == 'commands':
             body.append(f'<h4>결과 읽기 · 가상 예시</h4><pre>{e("sample")}</pre><p>{e("interpretation")}</p>')
             for key in article['commands']:
                 command = commands[key]

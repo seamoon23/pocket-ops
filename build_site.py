@@ -7,7 +7,7 @@ import base64
 import json
 import re
 
-from build import ROOT, SRC, platform_app
+from build import ROOT, SRC, guided_steps, platform_app
 
 SITE = ROOT / 'download-site'
 BUNDLE = ROOT / '.test-artifacts' / 'pocket-ops-web-site.zip'
@@ -23,9 +23,11 @@ go(webRoute(),false);
 if(location.search==='?example' && D.guides[current]?.example?.fill){
  history.replaceState(null,'',location.pathname);
  runGuideExample(current);
+}else if(current==='logs'){
+ selectLogScenario(new URLSearchParams(location.search).get('scenario'));
 }else if(current==='commands'){
  const id=new URLSearchParams(location.search).get('command');
- const entry=D.commands.find(c=>c.id===id && c.risk==='read');
+ const entry=D.commands.find(c=>c.id===id && (c.risk==='read' || c.domain==='git'));
  if(entry){
   setCommandDomain(entry.domain);
   if(entry.db)setCommandDb(entry.db);
@@ -101,8 +103,10 @@ def build_site():
          '<main class="wrap" id="main"><article class="paper"><h1>실무 가이드</h1>'
          '<p>작업 환경을 고르면 예시 결과와 확인할 항목, 해당 도구를 함께 볼 수 있습니다.</p>' + index + '</article></main>')
     for a in guides:
-        tool = a['tool']
-        if tool == 'commands':
+        tool = a.get('tool')
+        if 'steps' in a:
+            exercise = guided_steps(a, catalog, commands, web=True)
+        elif tool == 'commands':
             actions = []
             for command_id in a['commands']:
                 entry = commands[command_id]
@@ -118,7 +122,7 @@ def build_site():
             exercise = (f'<h2>연습용 입력</h2><pre>{escape(example["input"])}</pre>'
                         f'<h2>예상 결과</h2><pre>{escape(example["output"])}</pre>'
                         f'<a class="btn" href="/tools/{tool}/?example">{escape(tools[tool]["title"])}에서 예제로 열기</a>')
-        sections = ''.join(f'<h2>{escape(h)}</h2><p>{escape(p)}</p>' for h, p in a['sections'])
+        sections = ''.join(f'<h2>{escape(h)}</h2><p>{escape(p)}</p>' for h, p in a.get('sections', []))
         content = (f'<main class="wrap" id="main"><article class="paper"><a href="/guides/">← 실무 가이드</a>'
                    f'<p class="kicker">{escape(a["topic"])}</p><h1>{escape(a["title"])}</h1>'
                    f'<p>{escape(a["intro"])}</p>{sections}{exercise}'
