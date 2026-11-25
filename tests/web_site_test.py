@@ -64,6 +64,35 @@ def verify(browser, origin, width, height, mobile):
         assert page.goto(origin + path).ok
         expect(page.locator('#view > section')).to_have_attribute('data-page',t['id'])
         fits()
+    page.goto(origin + '/tools/commands/')
+    expect(page.locator('.command-card .command-basis')).to_have_count(len(catalog['commands']))
+    page.locator('[data-command-domain="git"]').click()
+    expect(page.locator('.command-card')).to_have_count(15)
+    page.locator('[data-command="cmd-171"]').click()
+    expect(page.locator('#modal .command-basis')).to_contain_text('main:refs/heads/main')
+    expect(page.locator('#copy-command')).to_be_disabled()
+    page.locator('#command-ack').check()
+    page.locator('#copy-command').click()
+    page.wait_for_function("async () => await navigator.clipboard.readText() === 'git push origin main:refs/heads/main'")
+    fits()
+    page.goto(origin + '/tools/logs/')
+    expected_lines = ['java.sql.SQLException: connection timeout','10:20:03 GET /orders 503 850ms',
+                      '11:01:02 REQ-1042 WARN retry=1','12:00:03 INFO retry scheduled','01:30:01 WARN input missing']
+    for i, expected_line in enumerate(expected_lines):
+        page.locator('#logs-scenario').select_option(str(i))
+        if i:
+            page.once('dialog',lambda d:d.accept())
+        page.locator('#logs-sample').click()
+        result = page.locator('#logs-output').input_value()
+        assert expected_line in result.splitlines(), (i,result)
+        if i == 1:
+            assert '/health' not in result
+    page.locator('#logs-input').fill('preserve my draft')
+    expect(page.locator('#logs-output')).to_have_value('')
+    page.once('dialog',lambda d:d.dismiss())
+    page.locator('#logs-sample').click()
+    expect(page.locator('#logs-input')).to_have_value('preserve my draft')
+    fits()
     for a in guides:
         page.goto(origin + '/guides/')
         page.get_by_role('link',name=a['title'],exact=False).click()

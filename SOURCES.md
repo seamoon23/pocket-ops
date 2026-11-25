@@ -101,3 +101,6 @@ CSQL 대화형 입력이 따옴표나 주석 안의 줄 시작 세션 명령도 
 MariaDB 작업 순서는 이미 열린 트랜잭션에서 다시 시작하면 기존 변경이 확정되는 동작을 반영합니다. [MariaDB START TRANSACTION](https://mariadb.com/docs/server/reference/sql-statements/transactions/start-transaction)
 
 PostgreSQL 하위 SELECT의 잠금 절도 대상 행을 잠글 수 있어 최종 확인에 표시합니다. [PostgreSQL SELECT](https://www.postgresql.org/docs/current/sql-select.html#SQL-FOR-UPDATE-SHARE)
+## Git 작업 예시
+
+스테이지와 작업 트리 비교, 로컬 추적 브랜치와의 커밋 범위, 푸시 refspec과 dry-run 동작은 Git 공식 문서를 기준으로 작성했습니다. [git diff](https://git-scm.com/docs/git-diff) · [git rev-list](https://git-scm.com/docs/git-rev-list) · [git push](https://git-scm.com/docs/git-push)

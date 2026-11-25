@@ -98,7 +98,7 @@ with sync_playwright() as p:
         check('Route '+route,lambda r=route:(go(r),equal(page.locator('#view h1').count(),1)))
     go('commands')
     CATALOG_SIZE=page.evaluate('PocketData.commands.length')
-    check('All built-in commands visible',lambda:(equal(CATALOG_SIZE,157),equal(page.locator('.command-card').count(),CATALOG_SIZE)))
+    check('All built-in commands visible',lambda:(equal(CATALOG_SIZE,176),equal(page.locator('.command-card').count(),CATALOG_SIZE)))
     def paste_targets():
         equal(page.locator('#command-list .command-card .where-tag').count(),CATALOG_SIZE)
         for cid,where in [('cmd-001','Linux 셸 · $'),('cmd-112','Windows PowerShell · PS>'),('cmd-128','csql> · CSQL 세션 명령'),
@@ -108,7 +108,7 @@ with sync_playwright() as p:
         click('[data-command="cmd-128"]');contains(txt('#modal .panel-head'),'csql> · CSQL 세션 명령');click('#modal [data-close]')
     check('Every command card and dialog names where to paste it (Linux shell, PowerShell or DB prompt)',paste_targets)
     def environment_tabs():
-        for domain in ['windows','linux','db']:
+        for domain in ['windows','linux','db','git']:
             click('[data-command-domain="'+domain+'"]')
             expected=page.evaluate('(domain)=>PocketData.commands.filter(c=>c.domain===domain).length',domain)
             equal(page.locator('.command-card').count(),expected)
@@ -818,7 +818,7 @@ with sync_playwright() as p:
             equal(reference.locator('.reference-command').count(),CATALOG_SIZE)
             equal(reference.locator('.reference-where').count(),CATALOG_SIZE)
             expect(reader.locator('.layout')).to_be_hidden()
-            for domain in ['windows','linux','db']:
+            for domain in ['windows','linux','db','git']:
                 assert reference.locator('#reference-'+domain+' .reference-command').count()>0
             content=reference.text_content()
             for text in ['cat /etc/os-release','PowerShell','실제 변경','권한','{{PID}}','--no-auto-commit',';autocommit','-- DELETE FROM pocket_ops_sample','입력: csql>','입력: MariaDB>','EXIT ROLLBACK']:
@@ -827,7 +827,7 @@ with sync_playwright() as p:
             equal(reference.locator('button, input, textarea, select').count(),0)
         check(f'JavaScript disabled {width}px: all {CATALOG_SIZE} commands, paste targets and risk guidance remain readable',static_reference)
         def static_reference_layout():
-            for domain in ['windows','linux','db']:
+            for domain in ['windows','linux','db','git']:
                 reference.locator('nav a[href="#reference-'+domain+'"]').tap()
                 expect(reference.locator('#reference-'+domain+' h2')).to_be_in_viewport()
             for selector in ['#offline-reference','.reference-command','.reference-command pre']:

@@ -72,11 +72,11 @@ html.app-ready #script-fallback{display:none!important}
 <p>이 뷰어에서 JavaScript가 꺼져 있거나 차단되어 기본 명령어를 읽는 화면을 표시합니다. 인터넷이나 다른 파일은 필요하지 않습니다.</p>
 <p>Windows · PowerShell / Linux · Bash / DB(CUBRID · MariaDB · Oracle · PostgreSQL)별 예제입니다. 각 명령의 <strong>입력</strong> 줄이 붙여넣을 곳(Linux 셸, PowerShell, csql&gt;, MariaDB&gt;, SQL&gt;, psql =&gt;)입니다. 명령어를 실행하지 않습니다. 검색·즐겨찾기·변환·자동 복사·값 검증·배포하기는 사용할 수 없습니다. 텍스트 길게 누르기·선택 복사는 뷰어 지원에 따라 가능합니다.</p>
 <p><strong>{{PORT}}, {{PATH}} 같은 표시는 입력 자리입니다. 그대로 실행하거나 단순 치환해 붙여넣지 마세요.</strong> 셸 인용·권한·대상 확인이 필요합니다. 값을 넣어 복사하려면 JavaScript를 지원하는 허용된 브라우저에서 이 파일을 여세요. 부하·변경 명령은 영향과 복구 절차를 먼저 확인하세요.</p>
-<nav aria-label="읽기 전용 분류"><a href="#reference-windows">Windows</a><a href="#reference-linux">Linux</a><a href="#reference-db">DB</a></nav></header>''']
+<nav aria-label="읽기 전용 분류"><a href="#reference-windows">Windows</a><a href="#reference-linux">Linux</a><a href="#reference-db">DB</a><a href="#reference-git">Git</a></nav></header>''']
     if articles:
         parts.append(f'<details class="field-library" id="field-reference"><summary>실무 가이드 {len(articles)}편</summary>'
                      + offline_guides(articles, catalog, by_id) + '</details>')
-    for domain, label in [('windows', 'Windows · PowerShell'), ('linux', 'Linux · Bash'), ('db', 'DB · SQL / 관리 도구')]:
+    for domain, label in [('windows', 'Windows · PowerShell'), ('linux', 'Linux · Bash'), ('db', 'DB · SQL / 관리 도구'), ('git', 'Git · Windows PowerShell')]:
         parts.append('<section id="reference-' + domain + '"><h2>' + label + '</h2>')
         for item in commands:
             if item['domain'] != domain:
@@ -88,6 +88,10 @@ html.app-ready #script-fallback{display:none!important}
             parts.append('<h3>' + e('title') + '</h3><p>' + e('group') + (' · ' + escape(db) if db and db not in item['group'] else '') + '</p>')
             parts.append('<p class="reference-where"><strong>입력: ' + e('where') + '</strong></p>')
             parts.append('<p class="reference-risk">' + escape(risk_labels.get(risk, '미검증 · 실행 전 확인')) + ' · ' + ('일반 계정 범위' if item['permission'] == 'user' else '권한·환경 제한 확인') + '</p>')
+            rows = ''.join('<div><dt><code>' + escape(token) + '</code></dt><dd>' + escape(desc) + '</dd></div>'
+                           for token, desc in item.get('basis', []))
+            basis = '<dl>' + rows + '</dl>' if rows else '<p>별도 입력란이 없는 고정 구문입니다. 실행 위치와 옵션을 확인하세요.</p>'
+            parts.append('<details class="command-basis"><summary>기준 파라미터</summary>' + basis + '</details>')
             parts.append('<p>조건: ' + e('prerequisite') + '</p><pre><code>' + e('command') + '</code></pre><p>' + e('note') + '</p>')
             if re.search(r'\{\{[A-Z_]+\}\}', item['command']):
                 parts.append('<p><strong>입력 자리 포함: 자동 치환·검증 없이 그대로 실행하지 마세요.</strong></p>')

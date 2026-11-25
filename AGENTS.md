@@ -9,7 +9,7 @@ Maintain a small, attractive Korean-language offline utility pocket for an opera
 - `src/shell.html`: document, application containers, CSP placeholders.
 - `src/styles.css`: responsive system-font UI, light/dark tokens, inline SVG styling.
 - `src/data.js`: generated tool/catalog metadata (`window.PocketData`).
-- `make_data.py`: human-editable source of the 157 catalog entries, the parameter specs and the four DB profiles (`dbs`: label, client, prompt, transaction flow); run it to regenerate data.js after catalog edits. It writes LF bytes on every OS.
+- `make_data.py`: human-editable source of the 176 catalog entries, the parameter specs and the four DB profiles (`dbs`: label, client, prompt, transaction flow); run it to regenerate data.js after catalog edits. It writes LF bytes on every OS.
 - `src/core.js`: dependency-free pure transformations (`window.PocketCore`).
 - `src/app.js`: routes, UI binding, safety prompts, import/export, in-memory views.
 - `src/release.js`: immutable source recipe to offline ZIP; never serialize live inputs or configuration.

@@ -300,6 +300,41 @@ add('PostgreSQL psql 종료', pg_group, '\\q',
     '연결을 끊으면 미확정 트랜잭션은 롤백됩니다. 먼저 COMMIT; 또는 ROLLBACK;을 명시적으로 실행하세요.',
     'postgresql psql 종료 quit', risk='change', shell='psql', prerequisite=pg_session, db='postgresql', step='finish')
 
+# Fixed, independently copyable examples. Git is optional on the target PC.
+git_file = ('src/example.txt', '저장소 루트 기준 파일 경로. 경로 하나를 따옴표 안에 적습니다.')
+git_upstream = ('origin/main', '마지막으로 로컬에 기록된 원격 추적 브랜치. 실제 원격 상태와 다를 수 있습니다.')
+git_target = ('main:refs/heads/main', '콜론 왼쪽은 로컬 브랜치, 오른쪽은 원격 브랜치입니다. 현재 체크아웃과 무관하게 왼쪽 브랜치를 보냅니다.')
+git_remote = ('origin', '작업 대상 원격 저장소의 등록 이름입니다.')
+for title, group, command, note, risk, basis in [
+    ('작업 위치와 저장소 루트 확인','Git · 작업 전','git rev-parse --show-toplevel','출력 경로를 작업 요청의 저장소와 대조하세요.','read',[]),
+    ('현재 브랜치와 변경 파일 요약','Git · 작업 전','git status -sb','첫 줄은 브랜치 정보, 아래 두 칸은 각각 스테이지와 작업 트리 상태입니다. 추적 브랜치가 설정돼 있어야 ahead/behind가 표시됩니다.','read',[]),
+    ('작업 파일 한 개의 수정 내용','Git · 변경 검토',"git --literal-pathspecs diff -- 'src/example.txt'",'스테이지에 올리기 전 변경을 봅니다. 아직 추적하지 않는 파일 내용은 표시되지 않습니다.','read',[git_file]),
+    ('스테이지에 올라간 파일 목록','Git · 변경 검토','git diff --cached --name-status','다음 일반 커밋에 들어갈 모든 경로를 봅니다. 다른 파일이 이미 올라가 있으면 먼저 범위를 확인하세요.','read',[]),
+    ('스테이지의 실제 변경 내용','Git · 변경 검토','git diff --cached','파일 이름뿐 아니라 추가·삭제된 줄을 확인합니다.','read',[]),
+    ('파일 한 개의 변경 이력','Git · 이력 비교',"git --literal-pathspecs log -n 10 --oneline -- 'src/example.txt'",'해당 경로의 최근 커밋을 봅니다. 이름 변경 이전 이력은 별도 확인하세요.','read',[git_file,('-n 10','표시할 최대 커밋 수입니다.')]),
+    ('로컬·추적 브랜치 관계 확인','Git · 이력 비교','git branch -vv','현재 브랜치와 연결된 추적 브랜치를 봅니다. 원격 조회 없이 로컬 기록을 읽습니다.','read',[]),
+    ('충돌 해결이 남은 파일 목록','Git · 변경 검토','git diff --name-only --diff-filter=U','병합 중 아직 해결되지 않은 경로를 읽습니다. 빈 출력만으로 테스트 성공이나 병합 완료가 보장되지는 않습니다.','read',[]),
+    ('로컬에 임시 보관한 작업 목록','Git · 작업 전','git stash list','보관 목록만 봅니다. 적용하거나 삭제하지 않습니다.','read',[]),
+    ('파일 하나만 스테이지에 올리기','Git · 커밋과 푸시',"git --literal-pathspecs add -- 'src/example.txt'",'이 파일의 현재 변경을 스테이지에 반영합니다. 기존에 올라간 다른 파일은 그대로이므로 이어서 전체 스테이지를 검토하세요.','change',[git_file]),
+    ('검토한 스테이지 커밋','Git · 커밋과 푸시',"git commit -m 'Update example text'",'현재 브랜치에 스테이지 전체를 커밋합니다. 먼저 git diff --cached로 확인하세요. 작은따옴표가 있는 문구는 PowerShell 작은따옴표 문자열에서 두 번 씁니다.','change',[('Update example text','이번 변경 이유를 설명할 커밋 메시지입니다.')]),
+    ('푸시 전에 전송 후보 커밋 확인','Git · 커밋과 푸시','git log --oneline origin/main..main','로컬 main에서 도달 가능하고 origin/main에는 없는 커밋입니다. 기존 4개에 새 커밋 1개가 더해졌다면 5개가 보일 수 있습니다. 원격 추적 정보의 갱신 시점도 확인하세요.','read',[git_upstream,('..main','비교 범위의 오른쪽은 전송할 로컬 브랜치입니다.')]),
+    ('원격 전송 미리 확인','Git · 커밋과 푸시','git push --dry-run origin main:refs/heads/main','승인된 원격에 연결해 갱신 대상을 미리 확인합니다. 원격 브랜치는 갱신하지 않으며 이후 실제 푸시의 성공을 보장하지 않습니다.','read',[git_remote,git_target]),
+    ('확인한 브랜치 푸시','Git · 커밋과 푸시','git push origin main:refs/heads/main','등록된 원격 주소와 커밋 범위를 먼저 확인하세요. 파일 하나만 골라 보낼 수 없습니다. 원격이 앞서 거절되면 강제 푸시하지 말고 이력을 확인하세요.','change',[git_remote,git_target]),
+    ('푸시 대상 주소 확인','Git · 작업 전','git remote -v','push 행이 승인된 저장소인지 확인합니다. 주소에 계정 정보가 포함될 수 있으므로 외부 공유 전 확인하세요.','read',[]),
+]:
+    add(title, group, command, note, 'git 깃 형상관리 버전관리', risk=risk, shell='powershell', domain='git',
+        prerequisite='기존 Git CLI 필요 · 탐색기 → 작업 저장소 루트 → 주소창에 powershell 입력 → Enter')
+    commands[-1]['basis'] = basis
+
+for title, shell, command, note, basis in [
+    ('요청 ID로 재시도 흐름 찾기','bash',"grep -n -F -- 'REQ-1042' './app.log'",'같은 ID가 남은 줄을 시간 순서와 함께 읽습니다. 한 요청이 여러 파일에 걸쳐 기록될 수도 있습니다.',[('REQ-1042','찾을 요청 ID입니다.'),('./app.log','조회할 로그 경로입니다.')]),
+    ('최근 구간에서 JVM 예외 원인 찾기','bash',"tail -n 500 -- './app.log' | grep -n -F -C 2 -- 'Caused by:'",'줄번호는 마지막 500줄 발췌 안에서의 번호입니다. 경계 밖의 예외 문맥은 포함되지 않습니다.',[('500','파일 끝에서 읽을 줄 수입니다.'),('2','일치 앞뒤 문맥 줄 수입니다.'),('./app.log','애플리케이션 로그 경로입니다.'),('Caused by:','예외 원인을 나타내는 고정 문자열입니다.')]),
+    ('HTTP 503 응답 줄 대조','bash',"""awk '$9 == 503 {print}' './access.log'""",'공백으로 나눴을 때 9번째 필드가 상태 코드인 access 로그용입니다. 사용자 정의 로그 형식에서는 먼저 필드 위치를 대조하세요.',[('$9','이 예시 형식에서 응답 상태 필드입니다.'),('503','찾을 HTTP 상태 코드입니다.'),('./access.log','확인할 접근 로그입니다.')]),
+    ('Windows 요청 ID 앞뒤 기록 읽기','powershell',"Select-String -LiteralPath '.\\app.log' -SimpleMatch -Pattern 'REQ-1042' -Context 1,2 -Encoding UTF8",'UTF-8 파일에 사용합니다. 앞뒤 줄이 같은 요청인지는 ID로 다시 확인하세요.',[('.\\app.log','대상 UTF-8 로그 경로입니다.'),('REQ-1042','찾을 요청 식별자입니다.'),('1,2','앞 1줄과 뒤 2줄을 함께 봅니다.')]),
+]:
+    add(title,'로그 분석',command,note,'로그 검토 장애 요청 추적 HTTP WAS',shell=shell)
+    commands[-1]['basis'] = basis
+
 commands_by_id={entry['id']:entry for entry in commands}
 # Existing DB entries keep their IDs; only the DB field is added so filters and the workbench can find them.
 for db_name,ids in {'oracle':['cmd-082','cmd-083','cmd-087','cmd-116','cmd-117'],
@@ -363,8 +398,54 @@ params={
 'DBNAME':{'label':'대상 DB 이름','default':'','kind':'identifier'},
 'SERVICE':{'label':'서비스 unit 이름 · Ubuntu SSH는 ssh.service','default':'sshd.service','kind':'identifier'},
 }
+# Keep descriptions separate from executable text. Values here are documentation only.
+for numbers, token, meaning in [
+    ([11], '1 5', '1초 간격으로 5회 측정'), ([22], '-xhd 1', '같은 파일시스템 안에서 한 단계 깊이'),
+    ([23,24,40], '-maxdepth 3', '최대 탐색 깊이'), ([23], '+100M', '100 MiB 초과 크기'),
+    ([24], '-60', '최근 60분'), ([30], '-N64', '앞에서 읽을 바이트 수'),
+    ([31], '-f EUC-KR -t UTF-8', '원본과 출력 인코딩 순서'),
+    ([32], '-n 200', '끝에서 읽을 줄 수'), ([35], '-C 3', '일치 줄 앞뒤 문맥'),
+    ([36], 'ERROR|Exception|Caused by', '어느 하나와 일치하는 정규식'),
+    ([40], '*.log', '찾을 파일 이름 패턴'), ([42], '-n 20', '표시할 최대 순위'),
+    ([50,51], '--connect-timeout 5', '연결 대기 초'), ([50], '--max-time 10', '전체 제한 초'),
+    ([51], '--max-time 15', '전체 제한 초'), ([52], 'timeout 3', '접속 시도 제한 초'),
+    ([58], '640', '소유자·그룹·기타 사용자 순서의 권한'),
+    ([63], '1000 5', '밀리초 간격과 측정 횟수'), ([76], '--tail 200', '최근 로그 줄 수'),
+    ([87], '1521', '조회할 리스닝 포트'), ([88], '-Tail 200', '마지막 줄 수'),
+    ([89], '-Tail 100', '처음 표시할 마지막 줄 수'), ([88,89,112], 'UTF8', '읽을 파일의 문자 인코딩'),
+    ([92], '-First 10', '표시할 프로세스 수'), ([102], '-n 100', '최근 로그 최대 줄 수'),
+    ([111], 'Application', '이벤트 로그 이름'), ([111], 'Level=2,3', '오류와 경고 수준'),
+    ([111], '-MaxEvents 50', '최대 이벤트 수'), ([112], '-Context 3,3', '앞·뒤 문맥 줄 수'),
+    ([127,132,133,134,135,138,145,153], 'pocket_ops_sample', '실제 대상과 대조할 예시 테이블명'),
+    ([132,133,134,135], '1001', '예시 품목 키'), ([133,134,135], 'SAMPLE', '예시 품목명'),
+    ([134], 'UPDATED', '변경할 예시 값'),
+]:
+    for number in numbers:
+        commands[number-1].setdefault('basis', []).append((token, meaning))
+for entry in commands:
+    rows = entry.setdefault('basis', [])
+    for token, meaning in rows:
+        if not meaning or token not in entry['command']:
+            raise ValueError(f'{entry["id"]}: invalid parameter note {token}')
+    for name in reversed(list(dict.fromkeys(re.findall(r'\{\{([A-Z_]+)\}\}',entry['command'])))):
+        spec = params[name]
+        default = spec.get('defaultPowerShell',spec['default']) if entry['shell']=='powershell' else spec['default']
+        rows.insert(0, ('{{'+name+'}}', spec['label'] + (' · 기본값 '+default if default else ' · 직접 입력')))
+
+log_samples = [
+    dict(title='Java 예외와 원인', include='ERROR,Exception', exclude='', context='0',
+         text='09:00:00 INFO  application started\n09:00:01 INFO  healthcheck OK\n09:00:02 WARN  connection pool nearly full\n09:00:03 ERROR request failed\njava.sql.SQLException: connection timeout\n  at app.service.DataService.find(DataService.java:82)\nCaused by: java.net.SocketTimeoutException\n09:00:05 INFO  request completed\n09:00:06 ERROR retry failed'),
+    dict(title='HTTP 503과 상태 점검 제외', include=' 503 ', exclude='/health', context='0',
+         text='10:20:01 GET /home 200 15ms\n10:20:02 GET /health 503 2ms\n10:20:03 GET /orders 503 850ms\n10:20:04 GET /orders 200 28ms'),
+    dict(title='요청 ID로 재시도 추적', include='REQ-1042', exclude='', context='0',
+         text='11:01:00 REQ-1042 start\n11:01:01 REQ-1043 start\n11:01:02 REQ-1042 WARN retry=1\n11:01:03 REQ-1043 done\n11:01:04 REQ-1042 done'),
+    dict(title='DB 연결 풀 대기 시간 초과', include='pool timeout', exclude='', context='1',
+         text='12:00:00 INFO db ready\n12:00:01 WARN active=20 idle=0\n12:00:02 ERROR pool timeout\n12:00:03 INFO retry scheduled\n12:00:04 INFO db ready'),
+    dict(title='배치 종료 코드 확인', include='exit=1', exclude='', context='1',
+         text='01:30:00 batch=report start\n01:30:01 WARN input missing\n01:30:02 batch=report exit=1\n01:30:03 INFO notify operator\n01:35:00 batch=cleanup exit=0'),
+]
 tools=[
-('commands','명령어 포켓','상황으로 찾고, 내 환경에 맞춰 복사하세요.','terminal','accent','서버 운영','LINUX · WAS','리눅스 linux 명령어 사전 포트 로그 tomcat jeus webtob docker jboss 서버'),
+('commands','명령어 포켓','상황으로 찾고, 내 환경에 맞춰 복사하세요.','terminal','accent','서버 운영','LINUX · WAS','Git 깃 PowerShell 리눅스 linux 명령어 사전 포트 로그 tomcat jeus webtob docker jboss 서버'),
 ('sqlformat','SQL 작업대','DB를 고르고 접속 → 확인 → 쿼리 → 확정 순서로 복사해요.','database','green','서버 운영','CUBRID · MARIADB · ORACLE · PG','CUBRID CSQL MariaDB MySQL Oracle SQL*Plus PostgreSQL psql SELECT INSERT UPDATE DELETE 포맷 SQL 쿼리 정렬 작업대 트랜잭션'),
 ('encoding','한글 · 인코딩 진료소','깨진 한글과 파일의 문자셋을 함께 살펴봐요.','language','orange','변환 도구','UTF-8 · EUC-KR','인코딩 깨짐 한글 cp949 latin1 mojibake 복구 파일 변환'),
 ('json','JSON 정리함','검증, 보기 좋게 정렬, 공백 압축까지.','braces','green','데이터 작업','FORMAT · VALIDATE','json 포맷 format minify 데이터 api 응답 큰 숫자'),
@@ -545,5 +626,5 @@ for key, g in guides.items():
     if ex and ('fill' in ex or 'click' in ex):
         assert isinstance(ex.get('click'), list) and all(isinstance(v, (str, bool)) for v in ex.get('fill', {}).values()), key
 # Write LF bytes on every OS so a regenerated catalog matches the committed source exactly.
-Path(__file__).resolve().parent.joinpath('src/data.js').write_bytes(('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.7.0',commands=commands,params=params,tools=tool_data,dbs=dbs,guides={k:guides[k] for k in GUIDE_ROUTES}),ensure_ascii=False,indent=2)+';\n').encode('utf-8'))
+Path(__file__).resolve().parent.joinpath('src/data.js').write_bytes(('/* Curated offline reference data. Never auto-executed. */\nwindow.PocketData = '+json.dumps(dict(version='0.8.0',logSamples=log_samples,commands=commands,params=params,tools=tool_data,dbs=dbs,guides={k:guides[k] for k in GUIDE_ROUTES}),ensure_ascii=False,indent=2)+';\n').encode('utf-8'))
 print('Commands:',len(commands),'Tools:',len(tools))
